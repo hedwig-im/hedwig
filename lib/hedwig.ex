@@ -1,0 +1,2 @@
+defmodule Hedwig do
+end
