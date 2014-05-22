@@ -9,7 +9,9 @@ defmodule Hedwig.Mixfile do
   end
 
   def application do
-    []
+    [
+      mod: { Hedwig, [] }
+    ]
   end
 
   defp deps do
