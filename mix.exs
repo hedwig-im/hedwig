@@ -4,7 +4,7 @@ defmodule Hedwig.Mixfile do
   def project do
     [ app: :hedwig,
       version: "0.0.1",
-      elixir: "~> 0.13.0-dev",
+      elixir: "0.13.2",
       deps: deps ]
   end
 
