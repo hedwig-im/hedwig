@@ -10,11 +10,15 @@ defmodule Hedwig.Mixfile do
 
   def application do
     [
+      applications: [:crypto, :ssl, :exml],
       mod: { Hedwig, [] }
     ]
   end
 
   defp deps do
-    []
+    [
+      {:exml, github: "paulgray/exml"},
+      {:socket, github: "meh/elixir-socket"}
+    ]
   end
 end

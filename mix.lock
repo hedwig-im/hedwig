@@ -1,0 +1,2 @@
+%{"exml": {:git, "git://github.com/paulgray/exml.git", "e8a9be9c0ad668a74d55c68b25f2fda13d48e7a8", []},
+  "socket": {:git, "git://github.com/meh/elixir-socket.git", "a1a3138cad51ca4a3e7d65b15b562682a6ea47b3", []}}
