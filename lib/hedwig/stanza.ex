@@ -1,7 +1,7 @@
 defmodule Hedwig.Stanza do
   use Hedwig.XML
 
-  def stream_start(server, xmlns \\ ns_jabber_client) do
+  def start_stream(server, xmlns \\ ns_jabber_client) do
     xmlstreamstart(name: "stream:stream",
       attrs: [
         {"to", server},
@@ -12,7 +12,7 @@ defmodule Hedwig.Stanza do
       ])
   end
 
-  def stream_end do
+  def end_stream do
     xmlstreamend(name: "stream:stream")
   end
 

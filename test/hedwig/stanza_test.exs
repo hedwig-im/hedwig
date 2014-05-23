@@ -4,18 +4,18 @@ defmodule Hedwig.StanzaTest do
 
   alias Hedwig.Stanza
 
-  test "stream_start with default xmlns" do
-    assert Stanza.stream_start("im.wonderland.lit") |> :exml.to_binary ==
+  test "start_stream with default xmlns" do
+    assert Stanza.start_stream("im.wonderland.lit") |> :exml.to_binary ==
       "<stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:client' xml:lang='en' version='1.0' to='im.wonderland.lit'>"
   end
 
-  test "stream_start with 'jabber:server' xmlns" do
-    assert Stanza.stream_start("im.wonderland.lit", ns_jabber_server) |> :exml.to_binary ==
+  test "start_stream with 'jabber:server' xmlns" do
+    assert Stanza.start_stream("im.wonderland.lit", ns_jabber_server) |> :exml.to_binary ==
       "<stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:server' xml:lang='en' version='1.0' to='im.wonderland.lit'>"
   end
 
-  test "stream_end" do
-    assert Stanza.stream_end |> :exml.to_binary == "</stream:stream>"
+  test "end_stream" do
+    assert Stanza.end_stream |> :exml.to_binary == "</stream:stream>"
   end
 
   test "start_tls" do

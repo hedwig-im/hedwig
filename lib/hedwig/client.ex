@@ -28,8 +28,8 @@ defmodule Hedwig.Client do
     :gen_server.call pid, :connect
   end
 
-  def stream_start(pid) do
-    :gen_server.call pid, :stream_start
+  def start_stream(pid) do
+    :gen_server.call pid, :start_stream
   end
 
   def start_tls(pid) do
@@ -66,8 +66,8 @@ defmodule Hedwig.Client do
     end
   end
 
-  def handle_call(:stream_start, _from, state) do
-    stanza = Stanza.stream_start state.server
+  def handle_call(:start_stream, _from, state) do
+    stanza = Stanza.start_stream state.server
     Hedwig.Socket.send!(state.socket, stanza)
     {:reply, :ok, state}
   end
