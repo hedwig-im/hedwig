@@ -17,8 +17,7 @@ defmodule Hedwig.Mixfile do
 
   defp deps do
     [
-      {:exml, github: "paulgray/exml"},
-      {:socket, github: "meh/elixir-socket"}
+      {:exml, github: "paulgray/exml"}
     ]
   end
 end

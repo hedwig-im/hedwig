@@ -68,17 +68,17 @@ defmodule Hedwig.Client do
 
   def handle_call(:start_stream, _from, state) do
     stanza = Stanza.start_stream state.server
-    Hedwig.Socket.send!(state.socket, stanza)
+    Hedwig.Socket.send(state.socket, stanza)
     {:reply, :ok, state}
   end
 
   def handle_call(:start_tls, _from, state) do
-    Hedwig.Socket.send! state.socket, Stanza.start_tls
+    Hedwig.Socket.send state.socket, Stanza.start_tls
     {:reply, :ok, state}
   end
 
   def handle_call({:send, data}, _from, state) do
-    Hedwig.Socket.send! state.socket, data
+    Hedwig.Socket.send state.socket, data
     {:reply, :ok, state}
   end
 
