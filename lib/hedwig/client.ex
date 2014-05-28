@@ -2,7 +2,8 @@ defmodule Hedwig.Client do
   @moduledoc """
   XMPP Client
   """
-  use GenServer.Behaviour
+
+  use GenServer
   alias Hedwig.Stanza
 
   defmodule State do
@@ -25,25 +26,25 @@ defmodule Hedwig.Client do
   Connect to the XMPP server.
   """
   def connect(pid) do
-    :gen_server.call pid, :connect
+    GenServer.call pid, :connect
   end
 
   def start_stream(pid) do
-    :gen_server.call pid, :start_stream
+    GenServer.call pid, :start_stream
   end
 
   def start_tls(pid) do
-    :gen_server.call pid, :start_tls
+    GenServer.call pid, :start_tls
   end
 
   def send(pid, data) do
-    :gen_server.call pid, {:send, data}
+    GenServer.call pid, {:send, data}
   end
 
   # GenServer API
 
   def start_link(options \\ []) do
-    :gen_server.start_link(__MODULE__, options, [])
+    GenServer.start_link(__MODULE__, options, [])
   end
 
   @spec init(list(any) | []) :: {:ok, State.t}
