@@ -5,12 +5,13 @@ defmodule Hedwig.XML do
   defmacro __using__(_opts) do
     quote do
       use Hedwig.XMLNS
+      require Record
       import unquote __MODULE__
 
-      defrecordp :xmlel, name: "", attrs: [], children: []
-      defrecordp :xmlcdata, content: []
-      defrecordp :xmlstreamstart, name: "", attrs: []
-      defrecordp :xmlstreamend, name: ""
+      Record.defrecordp :xmlel, name: "", attrs: [], children: []
+      Record.defrecordp :xmlcdata, content: []
+      Record.defrecordp :xmlstreamstart, name: "", attrs: []
+      Record.defrecordp :xmlstreamend, name: ""
     end
   end
 end
