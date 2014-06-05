@@ -11,6 +11,9 @@ defmodule Hedwig.Socket do
     :gen_tcp.connect(List.from_char_data!(server), port, [:binary, {:active, true}, {:keepalive, true}])
   end
 
+  @doc """
+  Send data over the socket.
+  """
   @spec send(socket :: port, data :: binary) :: :ok | {:error, binary}
   def send(socket, data) do
     :gen_tcp.send socket, data |> :exml.to_binary
