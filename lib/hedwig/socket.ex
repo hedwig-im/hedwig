@@ -8,7 +8,7 @@ defmodule Hedwig.Socket do
   """
   @spec connect(server :: binary, port :: integer | 5222) :: port | {:error, :nxdomain}
   def connect(server, port \\ 5222) do
-    :gen_tcp.connect(List.from_char_data!(server), port, [:binary, {:active, true}, {:keepalive, true}])
+    :gen_tcp.connect(String.to_char_list(server), port, [:binary, {:active, true}, {:keepalive, true}])
   end
 
   @doc """
