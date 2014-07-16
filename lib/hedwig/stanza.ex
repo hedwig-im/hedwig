@@ -1,6 +1,8 @@
 defmodule Hedwig.Stanza do
   use Hedwig.XML
 
+  def to_xml(record), do: :exml.to_binary(record)
+
   def start_stream(server, xmlns \\ ns_jabber_client) do
     xmlstreamstart(name: "stream:stream",
       attrs: [
