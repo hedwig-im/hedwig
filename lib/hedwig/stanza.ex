@@ -20,9 +20,20 @@ defmodule Hedwig.Stanza do
 
   def start_tls do
     xmlel(name: "starttls",
-    attrs: [
-      {"xmlns", ns_tls}
-    ])
+      attrs: [
+        {"xmlns", ns_tls}
+      ])
+  end
+
+  def compress(method) do
+    xmlel(name: "compress",
+      attrs: [
+        {"xmlns", ns_compress}
+      ],
+      children: [
+        xmlel(name: "method", children: [:exml.escape_cdata(method)])
+      ])
+  end
   def id do
     :crypto.rand_bytes(2) |> Base.encode16(case: :lower)
   end
