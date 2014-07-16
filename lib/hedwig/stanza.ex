@@ -34,6 +34,15 @@ defmodule Hedwig.Stanza do
         xmlel(name: "method", children: [:exml.escape_cdata(method)])
       ])
   end
+
+  def iq(type, body) do
+    xmlel(name: "iq",
+      attrs: [
+        {"type", type},
+        {"id", id}
+      ],
+      children: body)
+  end
   def id do
     :crypto.rand_bytes(2) |> Base.encode16(case: :lower)
   end
