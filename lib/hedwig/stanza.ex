@@ -23,5 +23,7 @@ defmodule Hedwig.Stanza do
     attrs: [
       {"xmlns", ns_tls}
     ])
+  def id do
+    :crypto.rand_bytes(2) |> Base.encode16(case: :lower)
   end
 end
