@@ -1,7 +1,10 @@
 defmodule Hedwig.Jid do
+
+  alias Hedwid.Jid
+
   defstruct user: "", server: "", resource: ""
 
-  def to_binary(%{user: user, server: server, resource: ""}) do
+  def to_binary(%Jid{user: user, server: server, resource: ""}) do
     user <> "@" <> server
   end
   def to_binary(%{user: user, server: server, resource: resource}) do
@@ -11,9 +14,9 @@ defmodule Hedwig.Jid do
   def to_jid(string) do
     case String.split(string, ["@", "/"]) do
       [user, server, resource] ->
-        %__MODULE__{user: user, server: server, resource: resource}
+        %Jid{user: user, server: server, resource: resource}
       [user, server] ->
-        %__MODULE__{user: user, server: server}
+        %Jid{user: user, server: server}
     end
   end
 end
