@@ -1,6 +1,6 @@
 defmodule Hedwig.Jid do
 
-  alias Hedwid.Jid
+  alias Hedwig.Jid
 
   defstruct user: "", server: "", resource: ""
 
