@@ -1,2 +1,4 @@
 %{"exml": {:git, "git://github.com/paulgray/exml.git", "e8a9be9c0ad668a74d55c68b25f2fda13d48e7a8", []},
+  "fsm": {:package, "0.0.2"},
+  "logger": {:git, "git://github.com/josevalim/logger.git", "e22af7e77195331c917e39aac8c488bb06ef826c", []},
   "socket": {:git, "git://github.com/meh/elixir-socket.git", "a1a3138cad51ca4a3e7d65b15b562682a6ea47b3", []}}

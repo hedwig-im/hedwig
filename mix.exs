@@ -10,13 +10,14 @@ defmodule Hedwig.Mixfile do
 
   def application do
     [
-      applications: [:crypto, :ssl, :exml],
+      applications: [:crypto, :ssl, :exml, :logger],
       mod: { Hedwig, [] }
     ]
   end
 
   defp deps do
     [
+      {:logger, github: "josevalim/logger"},
       {:exml, github: "paulgray/exml"}
     ]
   end
