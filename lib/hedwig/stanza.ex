@@ -35,6 +35,39 @@ defmodule Hedwig.Stanza do
       ])
   end
 
+  def auth(mechanism, body) do
+    xmlel(name: "auth",
+      attrs: [
+        {"xmlns", ns_sasl},
+        {"mechanism", mechanism}
+      ],
+      children: base64_cdata(body))
+  end
+
+  def bind(resource) do
+    body = xmlel(name: "bind",
+      attrs: [
+        {"xmlns", ns_bind},
+      ],
+      children: [
+        xmlel(name: "resource",
+          children: xmlcdata(content: resource))
+      ])
+    iq("set", body)
+  end
+
+  def session do
+    body = xmlel(name: "session",
+      attrs: [
+        {"xmlns", ns_session}
+      ])
+    iq("set", body)
+  end
+
+  def presence do
+    xmlel(name: "presence")
+  end
+
   def iq(type, body) do
     xmlel(name: "iq",
       attrs: [
@@ -43,6 +76,14 @@ defmodule Hedwig.Stanza do
       ],
       children: body)
   end
+
+  def iq(to, type, body) do
+  end
+
+  def base64_cdata(payload) do
+    [xmlcdata(content: Base.encode64(payload))]
+  end
+
   def id do
     :crypto.rand_bytes(2) |> Base.encode16(case: :lower)
   end
