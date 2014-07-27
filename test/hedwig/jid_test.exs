@@ -1,19 +1,19 @@
 defmodule Hedwig.JidTest do
   use ExUnit.Case, async: true
 
-  alias Hedwig.Jid
+  alias Hedwig.JID
 
   test "it converts structs to binaries" do
-    jid = %Jid{user: "jdoe", server: "example.com"}
-    assert Jid.to_binary(jid) == "jdoe@example.com"
-    jid = %Jid{user: "jdoe", server: "example.com", resource: "library"}
-    assert Jid.to_binary(jid) == "jdoe@example.com/library"
+    jid = %JID{user: "jdoe", server: "example.com"}
+    assert JID.to_string(jid) == "jdoe@example.com"
+    jid = %JID{user: "jdoe", server: "example.com", resource: "library"}
+    assert JID.to_string(jid) == "jdoe@example.com/library"
   end
 
   test "it converts binaries into structs" do
     string = "jdoe@example.com"
-    assert Jid.to_jid(string) == %Jid{user: "jdoe", server: "example.com"}
+    assert JID.parse(string) == %JID{user: "jdoe", server: "example.com"}
     string = "jdoe@example.com/library"
-    assert Jid.to_jid(string) == %Jid{user: "jdoe", server: "example.com", resource: "library"}
+    assert JID.parse(string) == %JID{user: "jdoe", server: "example.com", resource: "library"}
   end
 end

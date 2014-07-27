@@ -1,22 +1,25 @@
-defmodule Hedwig.Jid do
+defmodule Hedwig.JID do
 
-  alias Hedwig.Jid
+  alias Hedwig.JID
 
+  @type t :: %__MODULE__{}
   defstruct user: "", server: "", resource: ""
 
-  def to_binary(%Jid{user: user, server: server, resource: ""}) do
+  @spec to_string(jid :: JID.t) :: binary
+  def to_string(%JID{user: user, server: server, resource: ""}) do
     user <> "@" <> server
   end
-  def to_binary(%{user: user, server: server, resource: resource}) do
+  def to_string(%{user: user, server: server, resource: resource}) do
     user <> "@" <> server <> "/" <> resource
   end
 
-  def to_jid(string) do
+  @spec parse(jid :: binary) :: JID.t
+  def parse(string) do
     case String.split(string, ["@", "/"]) do
       [user, server, resource] ->
-        %Jid{user: user, server: server, resource: resource}
+        %JID{user: user, server: server, resource: resource}
       [user, server] ->
-        %Jid{user: user, server: server}
+        %JID{user: user, server: server}
     end
   end
 end
