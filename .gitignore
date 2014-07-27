@@ -3,3 +3,5 @@
 erl_crash.dump
 *.ez
 .envrc
+/config/test.exs
+/config/dev.exs
