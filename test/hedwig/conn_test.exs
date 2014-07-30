@@ -1,5 +1,6 @@
 defmodule Hedwig.ConnTest do
   use ExUnit.Case, async: true
+  import ExUnit.CaptureIO
 
   alias Hedwig.Conn
   alias Hedwig.Client
@@ -9,6 +10,9 @@ defmodule Hedwig.ConnTest do
     |> Client.client_for
     |> Client.to_struct
 
-    Conn.start(client)
+    assert capture_io(:user, fn ->
+      Client.start_link(client)
+      :timer.sleep(500)
+    end) =~ ~r/#{client.jid} successfully connected/
   end
 end
