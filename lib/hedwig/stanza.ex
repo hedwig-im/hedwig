@@ -77,6 +77,17 @@ defmodule Hedwig.Stanza do
       children: body)
   end
 
+  def join(room, username) do
+    xmlel(name: "presence",
+      attrs: [
+        {"to", "#{room}/#{username}"}
+      ],
+      children: [
+        xmlel(name: "x",
+          attrs: [{"xmlns", ns_muc}])
+      ])
+  end
+
   def iq(to, type, body) do
   end
 
