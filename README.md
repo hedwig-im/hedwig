@@ -35,10 +35,10 @@ config :hedwig,
         "lobby@conference.capulet.lit"
       ],
       scripts: [
-        {canned_replies: []},
-        {hangout: [
+        canned_replies: [],
+        hangout: [
           hangout_url: System.get_env("HANGOUT_URL")
-        ]}
+        ]
       ]
     },
     %{
@@ -50,10 +50,10 @@ config :hedwig,
         "lobby@conference.capulet.lit"
       ],
       scripts: [
-        {canned_replies: []},
-        {hangout: [
+        canned_replies: [],
+        hangout: [
           hangout_url: System.get_env("HANGOUT_URL")
-        ]}
+        ]
       ]
     }
   ]
