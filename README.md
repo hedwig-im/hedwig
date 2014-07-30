@@ -36,9 +36,9 @@ config :hedwig,
       ],
       scripts: [
         {canned_replies: []},
-	{hangout: [
-	  hangout_url: System.get_env("HANGOUT_URL")
-	]}
+        {hangout: [
+          hangout_url: System.get_env("HANGOUT_URL")
+        ]}
       ]
     },
     %{
@@ -51,9 +51,9 @@ config :hedwig,
       ],
       scripts: [
         {canned_replies: []},
-	{hangout: [
-	  hangout_url: System.get_env("HANGOUT_URL")
-	]}
+        {hangout: [
+          hangout_url: System.get_env("HANGOUT_URL")
+        ]}
       ]
     }
   ]
