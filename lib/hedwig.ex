@@ -6,7 +6,7 @@ defmodule Hedwig do
 
     clients = Application.get_env(:hedwig, :clients, [])
     children = for client <- clients, into: [] do
-      worker(Hedwig.Client, [client.jid])
+      worker(Hedwig.Client, [client])
     end
 
     opts = [strategy: :simple_one_for_one, name: Hedwig.Supervisor]
