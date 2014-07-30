@@ -6,7 +6,6 @@ defmodule Hedwig.Transports.TCP do
   use Hedwig.Transport
 
   alias Hedwig.Conn
-  alias Hedwig.Client
   alias Hedwig.Stanza
 
   @type t :: %__MODULE__{
@@ -105,7 +104,7 @@ defmodule Hedwig.Transports.TCP do
   def handle_info({:tcp_closed, _socket}, state) do
     {:stop, :normal, state}
   end
-  def handle_info(msg, state) do
+  def handle_info(_msg, state) do
     {:noreply, state}
   end
 

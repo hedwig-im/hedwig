@@ -83,7 +83,7 @@ defmodule Hedwig.Conn do
     {%Conn{conn | features: %Features{mechanisms: mechanisms}}, client}
   end
 
-  def authenticate({%Conn{transport: mod} = conn, client}) do
+  def authenticate({conn, client}) do
     Auth.authenticate(:plain, conn, client)
     reset_parser(conn)
     start_stream({conn, client})
@@ -105,7 +105,7 @@ defmodule Hedwig.Conn do
   def send_presence({%Conn{transport: mod} = conn, client}) do
     mod.send conn, Stanza.presence
     read_from_socket(conn, :wait_for_bind_result)
-    Logger.info "#{client.jid} successfully connected."
+    Logger.info IO.ANSI.escape "%{green}#{client.jid} successfully connected."
     {conn, client}
   end
 
@@ -116,9 +116,9 @@ defmodule Hedwig.Conn do
     {conn, client}
   end
 
-  def await({%Conn{transport: mod} = conn, client}) do
+  def await({conn, client}) do
     receive do
-      {:stanza, _conn, stanza} ->
+      {:stanza, conn, stanza} ->
         Logger.info IO.ANSI.escape "%{green}#{inspect stanza}\n"
         await({conn, client})
       after 10000 ->
@@ -131,9 +131,9 @@ defmodule Hedwig.Conn do
     mod.reset_parser(conn)
   end
 
-  defp read_from_socket(conn, message) do
+  defp read_from_socket(_conn, message) do
     receive do
-      {:stanza, conn, stanza} ->
+      {:stanza, _conn, stanza} ->
         stanza
     after @timeout ->
       throw {:timeout, message}

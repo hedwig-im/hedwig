@@ -10,7 +10,6 @@ defmodule Hedwig.Client do
   alias Hedwig.JID
   alias Hedwig.Conn
   alias Hedwig.Client
-  alias Hedwig.Stanza
 
   @type t :: %__MODULE__{}
   @derive [Access, Enumerable]
@@ -31,7 +30,7 @@ defmodule Hedwig.Client do
   Returns the client config for the given JID.
   """
   def client_for(jid) do
-    client = Enum.find Application.get_env(:hedwig, :clients), fn client ->
+    Enum.find Application.get_env(:hedwig, :clients), fn client ->
       client.jid == jid
     end
   end
