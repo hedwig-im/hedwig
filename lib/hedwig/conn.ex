@@ -131,7 +131,7 @@ defmodule Hedwig.Conn do
     mod.reset_parser(conn)
   end
 
-  defp read_from_socket(_conn, message) do
+  def read_from_socket(_conn, message) do
     receive do
       {:stanza, _conn, stanza} ->
         stanza
