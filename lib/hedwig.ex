@@ -6,10 +6,10 @@ defmodule Hedwig do
 
     clients = Application.get_env(:hedwig, :clients, [])
     children = for client <- clients, into: [] do
-      worker(Hedwig.Client, [client])
+      worker(Hedwig.Client, [client], id: String.to_atom(client.jid))
     end
 
-    opts = [strategy: :simple_one_for_one, name: Hedwig.Supervisor]
+    opts = [strategy: :one_for_one, name: Hedwig.Supervisor]
     Supervisor.start_link(children, opts)
   end
 end
