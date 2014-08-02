@@ -17,6 +17,7 @@ defmodule Hedwig.Transport do
   defmacro __using__(_opts) do
     quote location: :keep do
       @behaviour Hedwig.Transport
+      require Logger
       use GenServer
       alias unquote(__MODULE__)
       alias __MODULE__
