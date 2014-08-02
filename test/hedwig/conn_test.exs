@@ -2,7 +2,6 @@ defmodule Hedwig.ConnTest do
   use ExUnit.Case, async: true
   import ExUnit.CaptureIO
 
-  alias Hedwig.Conn
   alias Hedwig.Client
 
   test "it connects" do
