@@ -1,6 +1,18 @@
 defmodule Hedwig.Stanza do
+  @moduledoc ~S"""
+  Provides convenience functions for building XMPP stanzas.
+
+  ## Examples
+      iex> stanza = Hedwig.Stanza.start_tls
+      {:xmlel, "starttls", [{"xmlns", "urn:ietf:params:xml:ns:xmpp-tls"}], []}
+      iex> Hedwig.Stanza.to_xml(stanza)
+      "<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>"
+  """
   use Hedwig.XML
 
+  @doc """
+  Converts an `exml` record to an XML binary string.
+  """
   def to_xml(record), do: :exml.to_binary(record)
 
   def start_stream(server, xmlns \\ ns_jabber_client) do
@@ -77,6 +89,14 @@ defmodule Hedwig.Stanza do
       children: body)
   end
 
+  @doc """
+  Generates a presence stanza to join a MUC room.
+
+  ## Examples
+      iex> Hedwig.Stanza.join("lobby@muc.localhost", "hedwigbot")
+      {:xmlel, "presence", [{"to", "lobby@muc.localhost/hedwigbot"}],
+       [{:xmlel, "x", [{"xmlns", "http://jabber.org/protocol/muc"}], []}]}
+  """
   def join(room, username) do
     xmlel(name: "presence",
       attrs: [
@@ -95,6 +115,9 @@ defmodule Hedwig.Stanza do
     [xmlcdata(content: Base.encode64(payload))]
   end
 
+  @doc """
+  Generates a random hex string for use as an id for a stanza.
+  """
   def id do
     :crypto.rand_bytes(2) |> Base.encode16(case: :lower)
   end
