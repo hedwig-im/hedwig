@@ -105,7 +105,7 @@ defmodule Hedwig.Conn do
   def send_presence({%Conn{transport: mod} = conn, client}) do
     mod.send conn, Stanza.presence
     read_from_socket(conn, :wait_for_bind_result)
-    Logger.info "#{client.jid} successfully connected.\n"
+    Logger.info "#{client.jid} successfully connected."
     {conn, client}
   end
 
@@ -119,7 +119,8 @@ defmodule Hedwig.Conn do
   def await({conn, client}) do
     receive do
       {:stanza, conn, stanza} ->
-        Logger.info "Incoming stanza: #{inspect stanza}\n"
+        Logger.info "Incoming stanza: #{inspect stanza |> Stanza.to_xml}"
+        Logger.debug "Incoming stanza: #{inspect stanza}"
         await({conn, client})
       after 10000 ->
         :ok
