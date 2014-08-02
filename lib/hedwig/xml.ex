@@ -12,8 +12,6 @@ defmodule Hedwig.XML do
       Record.defrecordp :xmlcdata, content: []
       Record.defrecordp :xmlstreamstart, name: "", attrs: []
       Record.defrecordp :xmlstreamend, name: ""
-
-      def to_binary(data), do: :exml.to_binary(data)
     end
   end
 end
