@@ -32,7 +32,7 @@ defmodule Hedwig.Auth do
   end
 
   def success?(conn, client) do
-    stanza = Conn.read_from_socket(conn, :wait_for_auth_reply)
+    stanza = Conn.recv(conn, :wait_for_auth_reply)
     case xmlel(stanza, :name) do
       "success" ->
         {conn, client}

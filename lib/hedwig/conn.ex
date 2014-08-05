@@ -56,12 +56,12 @@ defmodule Hedwig.Conn do
 
   def start_stream({%Conn{transport: mod} = conn, client}) do
     mod.send(conn, Stanza.start_stream(client[:config][:server]))
-    read_from_socket(conn, :starting_stream)
+    recv(conn, :starting_stream)
     {conn, client}
   end
 
   def negotiate_features({conn, client}) do
-    stream_features = read_from_socket(conn, :wait_for_features)
+    stream_features = recv(conn, :wait_for_features)
     features = parse_stream_features(stream_features)
     {%Conn{conn | features: features}, client}
   end
@@ -70,7 +70,7 @@ defmodule Hedwig.Conn do
     case features.tls? do
       true ->
         mod.send(conn, Stanza.start_tls)
-        read_from_socket(conn, :wait_for_proceed)
+        recv(conn, :wait_for_proceed)
         mod.upgrade_to_tls({conn, client})
       false ->
         {conn, client}
@@ -78,7 +78,7 @@ defmodule Hedwig.Conn do
   end
 
   def negotiate_auth_mechanisms({conn, client}) do
-    stream_features = read_from_socket(conn, :wait_for_features)
+    stream_features = recv(conn, :wait_for_features)
     mechanisms = supported_auth_mechanisms(stream_features)
     {%Conn{conn | features: %Features{mechanisms: mechanisms}}, client}
   end
@@ -92,19 +92,19 @@ defmodule Hedwig.Conn do
 
   def bind({%Conn{transport: mod} = conn, client}) do
     mod.send conn, Stanza.bind(client.resource)
-    read_from_socket(conn, :wait_for_bind_result)
+    recv(conn, :wait_for_bind_result)
     {conn, client}
   end
 
   def session({%Conn{transport: mod} = conn, client}) do
     mod.send conn, Stanza.session
-    read_from_socket(conn, :wait_for_bind_result)
+    recv(conn, :wait_for_bind_result)
     {conn, client}
   end
 
   def send_presence({%Conn{transport: mod} = conn, client}) do
     mod.send conn, Stanza.presence
-    read_from_socket(conn, :wait_for_bind_result)
+    recv(conn, :wait_for_bind_result)
     Logger.info "#{client.jid} successfully connected."
     {conn, client}
   end
@@ -132,7 +132,7 @@ defmodule Hedwig.Conn do
     mod.reset_parser(conn)
   end
 
-  def read_from_socket(_conn, message) do
+  def recv(_conn, message) do
     receive do
       {:stanza, _conn, stanza} ->
         stanza
