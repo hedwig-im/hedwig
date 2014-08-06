@@ -62,8 +62,8 @@ defmodule Hedwig.Conn do
 
   def negotiate_features({conn, client}) do
     stream_features = recv(conn, :wait_for_features)
-    features = parse_stream_features(stream_features)
     {%Conn{conn | features: features}, client}
+    features = Features.parse_stream_features(stream_features)
   end
 
   def start_tls({%Conn{transport: mod, features: features} = conn, client}) do
@@ -79,8 +79,8 @@ defmodule Hedwig.Conn do
 
   def negotiate_auth_mechanisms({conn, client}) do
     stream_features = recv(conn, :wait_for_features)
-    mechanisms = supported_auth_mechanisms(stream_features)
     {%Conn{conn | features: %Features{mechanisms: mechanisms}}, client}
+    mechanisms = Features.supported_auth_mechanisms(stream_features)
   end
 
   def authenticate({conn, client}) do
@@ -138,38 +138,6 @@ defmodule Hedwig.Conn do
         stanza
     after @timeout ->
       throw {:timeout, message}
-    end
-  end
-
-  defp parse_stream_features(features) do
-    %Features{
-      compression?: supports?(features, "compression"),
-      tls?: supports?(features, "starttls"),
-      stream_management?: supports?(features, "sm")
-    }
-  end
-
-  defp supports?(features, "compression") do
-    case :exml_query.subelement(features, "compression") do
-      xml when Record.record?(xml, :xmlel) ->
-        methods = xmlel(xml, :children)
-        for method <- methods, into: [], do: :exml_query.cdata(method)
-      _ -> false
-    end
-  end
-  defp supports?(features, feature) do
-    case :exml_query.subelement(features, feature) do
-      :undefined -> false
-      _          -> true
-    end
-  end
-
-  defp supported_auth_mechanisms(features) do
-    case :exml_query.subelement(features, "mechanisms") do
-      xml when Record.record?(xml, :xmlel) ->
-        mechanisms = xmlel(xml, :children)
-        for mechanism <- mechanisms, into: [], do: :exml_query.cdata(mechanism)
-      [] -> []
     end
   end
 
