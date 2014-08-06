@@ -7,6 +7,7 @@ defmodule Hedwig.XML do
       use Hedwig.XMLNS
       require Record
       import unquote __MODULE__
+      alias Hedwig.Stanza
 
       Record.defrecordp :xmlel, name: "", attrs: [], children: []
       Record.defrecordp :xmlcdata, content: []

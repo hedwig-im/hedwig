@@ -7,7 +7,7 @@ defmodule Hedwig.ConnTest do
   test "it connects" do
     client = System.get_env("XMPP_JID")
     |> Client.client_for
-    |> Client.to_struct
+    |> Client.configure_client
 
     assert capture_io(:user, fn ->
       Client.start_link(client)

@@ -9,7 +9,7 @@ defmodule Hedwig.JID do
   def to_string(%JID{user: user, server: server, resource: ""}) do
     user <> "@" <> server
   end
-  def to_string(%{user: user, server: server, resource: resource}) do
+  def to_string(%JID{user: user, server: server, resource: resource}) do
     user <> "@" <> server <> "/" <> resource
   end
 

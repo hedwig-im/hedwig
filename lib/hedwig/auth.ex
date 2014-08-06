@@ -7,12 +7,13 @@ defmodule Hedwig.Auth do
   alias Hedwig.Client
   alias Hedwig.Stanza
 
-  def authenticate(:plain, %Conn{transport: mod} = conn, client) do
-    username = JID.parse(client.jid).user
-    password = Client.client_for(client.jid).password
+  def authenticate(:plain, %Conn{transport: mod, client: pid} = conn) do
+    jid = Client.get(pid, :jid)
+    username = JID.parse(jid).user
+    password = Client.client_for(jid).password
     payload = <<0>> <> username <> <<0>> <> password
     mod.send conn, Stanza.auth("PLAIN", payload)
-    success?(conn, client)
+    success?(conn)
   end
 
   def authenticate(:digest_md5, _conn, _client) do
@@ -31,13 +32,13 @@ defmodule Hedwig.Auth do
     raise "Not implemented"
   end
 
-  def success?(conn, client) do
+  def success?(conn) do
     stanza = Conn.recv(conn, :wait_for_auth_reply)
     case xmlel(stanza, :name) do
       "success" ->
-        {conn, client}
+        conn
       "failure" ->
-        throw {:auth_failed, conn, client}
+        throw {:auth_failed, conn}
     end
   end
 end

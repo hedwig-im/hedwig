@@ -11,6 +11,8 @@ defmodule Hedwig.Transports.TCP do
   @type t :: %__MODULE__{
                transport: module,
                pid:       pid,
+               config:    %{},
+               client:    pid,
                socket:    port,
                parser:    term,
                ssl?:      boolean,
@@ -18,6 +20,8 @@ defmodule Hedwig.Transports.TCP do
 
   defstruct transport: __MODULE__,
             pid:       nil,
+            config:    %{},
+            client:    nil,
             socket:    nil,
             parser:    nil,
             ssl?:      false,
@@ -54,10 +58,10 @@ defmodule Hedwig.Transports.TCP do
   @doc """
   Upgrades the connection to TLS.
   """
-  def upgrade_to_tls({%Conn{pid: pid} = conn, opts}) do
+  def upgrade_to_tls(%Conn{pid: pid} = conn) do
     GenServer.call(pid, {:upgrade_to_tls, []})
     conn = get_transport(conn)
-    Conn.start_stream({conn, opts})
+    Conn.start_stream(conn)
   end
 
   def use_zlib(%Conn{} = conn) do
@@ -72,12 +76,18 @@ defmodule Hedwig.Transports.TCP do
     GenServer.cast(pid, :reset_parser)
   end
 
-  def init([opts, conn]) do
-    host = String.to_char_list(opts[:server])
-    port = opts[:port]
+  def init([config, connection_pid]) do
+    host = String.to_char_list(config.server)
+    port = config.port
     {:ok, socket} = :gen_tcp.connect(host, port, [:binary, active: :once])
     {:ok, parser} = :exml_stream.new_parser
-    {:ok, %TCP{pid: conn, socket: socket, parser: parser}}
+    state = %TCP{
+      pid: connection_pid,
+      config: config,
+      client: config.client,
+      socket: socket,
+      parser: parser}
+    {:ok, state}
   end
 
   def handle_call(:get_transport, _from, state) do
@@ -85,7 +95,7 @@ defmodule Hedwig.Transports.TCP do
   end
 
   def handle_call({:upgrade_to_tls, opts}, _from, state) do
-    opts = Keyword.merge([reuse_sessions: true, verify: :verify_none], opts)
+    opts = Keyword.merge([reuse_sessions: true], opts)
     {:ok, socket} = :ssl.connect(state.socket, opts)
     {:ok, parser} = :exml_stream.new_parser
     {:reply, socket, %TCP{state | socket: socket, parser: parser, ssl?: true}}
@@ -115,7 +125,6 @@ defmodule Hedwig.Transports.TCP do
     {:ok, parser, stanzas} = :exml_stream.parse(state.parser, data)
     new_state = %TCP{state | parser: parser}
     for stanza <- stanzas do
-      # TODO: send an event to a handler
       Kernel.send(state.pid, {:stanza, transport(new_state), stanza})
     end
     {:noreply, new_state}
@@ -125,6 +134,8 @@ defmodule Hedwig.Transports.TCP do
     %Conn{
       transport: __MODULE__,
       pid:       self,
+      config:    state.config,
+      client:    state.client,
       socket:    state.socket,
       ssl?:      state.ssl?,
       compress?: state.compress?

@@ -4,26 +4,55 @@ defmodule Hedwig.Client do
   """
 
   use GenServer
+  use Hedwig.XML
 
   require Logger
 
   alias Hedwig.JID
   alias Hedwig.Conn
   alias Hedwig.Client
+  alias Hedwig.Transport
 
   @type t :: %__MODULE__{}
   @derive [Access, Enumerable]
   defstruct jid: "",
             nickname: "",
             resource: "",
-            conn: %Conn{},
-            config: [],
+            conn: nil,
+            config: %{},
             rooms: [],
-            event_handlers: []
+            scripts: [],
+            event_manager: nil
 
-  @spec start_link(client :: list) :: {:ok, pid}
-  def start_link(client) do
-    GenServer.start_link(__MODULE__, to_struct(client), [])
+  @spec start_link(config :: %{}) :: {:ok, client :: pid}
+  def start_link(config) do
+    {:ok, client} = GenServer.start_link(__MODULE__, config)
+    client |> start_event_manager |> connect
+    {:ok, client}
+  end
+
+  def start_event_manager(pid) do
+    GenServer.call(pid, :start_event_manager)
+    pid
+  end
+
+  @doc """
+  Starts the connection process.
+  """
+  def connect(pid), do: GenServer.cast(pid, :connect)
+
+  @doc """
+  Returns the client configuration.
+  """
+  def get(pid), do: GenServer.call(pid, :get)
+  def get(pid, key), do: GenServer.call(pid, {:get, key})
+
+  def handle_stanza(pid, stanza) do
+    GenServer.cast(pid, {:handle_stanza, stanza})
+  end
+
+  def reply(pid, stanza) do
+    GenServer.cast(pid, {:reply, stanza})
   end
 
   @doc """
@@ -35,30 +64,57 @@ defmodule Hedwig.Client do
     end
   end
 
-  def normalize_config(client) do
+  def configure_client(client) do
     %JID{server: server} = JID.parse(client.jid)
 
-    config = if client[:config], do: client[:config], else: []
-    |> Keyword.put_new(:server, server)
-    |> Keyword.put_new(:port, 5222)
-    |> Keyword.put_new(:require_tls?, false)
-    |> Keyword.put_new(:use_compression?, false)
-    |> Keyword.put_new(:use_stream_management?, false)
-    |> Keyword.put_new(:transport, :tcp)
+    config = if client[:config], do: client[:config], else: %{}
+    |> Map.put_new(:server, server)
+    |> Map.put_new(:port, 5222)
+    |> Map.put_new(:require_tls?, false)
+    |> Map.put_new(:use_compression?, false)
+    |> Map.put_new(:use_stream_management?, false)
+    |> Map.put_new(:transport, :tcp)
+    |> Map.put_new(:client, self)
 
-    Map.put(client, :config, config)
+    config = Map.put(config, :transport, Transport.module(config.transport))
+    client = Map.put(client, :config, config) |> Map.to_list
+
+    struct(Client, client)
   end
 
-  @doc """
-  Converts a map to a Client struct.
-  """
-  def to_struct(client) do
-    client = normalize_config(client)
-    struct(Client, Map.to_list(client))
+  def init(config) do
+    {:ok, configure_client(config)}
   end
 
-  def init(client) do
-    conn = spawn_link(Conn, :start, [client])
-    {:ok, %Client{conn: conn}}
+  def handle_call(:start_event_manager, _from, client) do
+    {:ok, manager} = GenEvent.start_link
+    for {script, opts} <- client.scripts do
+      opts = Map.merge(%{client: self}, opts)
+      GenEvent.add_handler(manager, script, opts, link: true)
+    end
+    new_state = %Client{client | event_manager: manager}
+    {:reply, new_state, new_state}
+  end
+
+  def handle_cast(:connect, %Client{config: config} = client) do
+    conn = spawn fn -> Conn.start(config) end
+    {:noreply, %Client{client | conn: conn}}
+  end
+
+  def handle_cast({:handle_stanza, stanza}, %Client{event_manager: pid} = client) do
+    GenEvent.notify(pid, stanza)
+    {:noreply, client}
+  end
+
+  def handle_cast({:reply, stanza}, %Client{conn: conn} = client) do
+    Kernel.send(conn, {:send, stanza})
+    {:noreply, client}
+  end
+
+  def handle_call(:get, _from, client) do
+    {:reply, client, client}
+  end
+  def handle_call({:get, key}, _from, client) do
+    {:reply, Map.get(client, key), client}
   end
 end

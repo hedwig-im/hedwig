@@ -16,16 +16,22 @@ defmodule Hedwig.Conn do
   alias Hedwig.Client
   alias Hedwig.Conn.Features
 
+  @type config :: %{}
+
   @type t :: %__MODULE__{
               transport: module,
+              config: config,
               pid: pid,
+              client: pid,
               socket: port,
               ssl?: boolean,
               compress?: boolean,
               features: Features.t}
 
   defstruct transport: nil,
+            config: %{},
             pid: nil,
+            client: nil,
             socket: nil,
             ssl?: false,
             compress?: false,
@@ -33,8 +39,12 @@ defmodule Hedwig.Conn do
 
   @timeout 1000
 
-  def start(%Client{} = client) do
-    client
+  @doc """
+  Starts a connection process.
+  """
+  @spec start(config :: config) :: no_return
+  def start(config) do
+    config
     |> connect
     |> start_stream
     |> negotiate_features
@@ -48,83 +58,86 @@ defmodule Hedwig.Conn do
     |> await
   end
 
-  def connect(%Client{} = client) do
-    mod = convert_transport(client[:config][:transport])
-    {:ok, conn} = mod.connect(client[:config])
-    {conn, client}
+  @spec connect(config :: config) :: t
+  def connect(%{transport: mod} = config) do
+    {:ok, conn} = mod.connect(config)
+    conn
   end
 
-  def start_stream({%Conn{transport: mod} = conn, client}) do
-    mod.send(conn, Stanza.start_stream(client[:config][:server]))
+  def start_stream(%Conn{transport: mod, config: config} = conn) do
+    mod.send(conn, Stanza.start_stream(config.server))
     recv(conn, :starting_stream)
-    {conn, client}
+    conn
   end
 
-  def negotiate_features({conn, client}) do
+  def negotiate_features(conn) do
     stream_features = recv(conn, :wait_for_features)
-    {%Conn{conn | features: features}, client}
     features = Features.parse_stream_features(stream_features)
+    %Conn{conn | features: features}
   end
 
-  def start_tls({%Conn{transport: mod, features: features} = conn, client}) do
+  def start_tls(%Conn{transport: mod, features: features} = conn) do
     case features.tls? do
       true ->
         mod.send(conn, Stanza.start_tls)
         recv(conn, :wait_for_proceed)
-        mod.upgrade_to_tls({conn, client})
+        mod.upgrade_to_tls(conn)
       false ->
-        {conn, client}
+        conn
     end
   end
 
-  def negotiate_auth_mechanisms({conn, client}) do
+  def negotiate_auth_mechanisms(conn) do
     stream_features = recv(conn, :wait_for_features)
-    {%Conn{conn | features: %Features{mechanisms: mechanisms}}, client}
     mechanisms = Features.supported_auth_mechanisms(stream_features)
+    %Conn{conn | features: %Features{mechanisms: mechanisms}}
   end
 
-  def authenticate({conn, client}) do
-    Auth.authenticate(:plain, conn, client)
+  def authenticate(conn) do
+    Auth.authenticate(:plain, conn)
     reset_parser(conn)
-    start_stream({conn, client})
-    {conn, client}
+    start_stream(conn)
+    conn
   end
 
-  def bind({%Conn{transport: mod} = conn, client}) do
-    mod.send conn, Stanza.bind(client.resource)
+  def bind(%Conn{transport: mod, client: client} = conn) do
+    mod.send conn, Stanza.bind(Client.get(client, :resource))
     recv(conn, :wait_for_bind_result)
-    {conn, client}
+    conn
   end
 
-  def session({%Conn{transport: mod} = conn, client}) do
+  def session(%Conn{transport: mod} = conn) do
     mod.send conn, Stanza.session
     recv(conn, :wait_for_bind_result)
-    {conn, client}
+    conn
   end
 
-  def send_presence({%Conn{transport: mod} = conn, client}) do
+  def send_presence(%Conn{transport: mod, client: pid} = conn) do
+    jid = Client.get(pid, :jid)
     mod.send conn, Stanza.presence
     recv(conn, :wait_for_bind_result)
-    Logger.info "#{client.jid} successfully connected."
-    {conn, client}
+    Logger.info "#{jid} successfully connected."
+    conn
   end
 
-  def join_rooms({%Conn{transport: mod} = conn, %Client{rooms: rooms} = client}) do
-    for room <- rooms do
+  def join_rooms(%Conn{transport: mod, client: pid} = conn) do
+    client = Client.get(pid)
+    for room <- client.rooms do
       mod.send(conn, Stanza.join(room, client.nickname))
     end
-    {conn, client}
+    conn
   end
 
-  def await({conn, client}) do
+  def await(%Conn{transport: mod, client: client} = conn) do
     receive do
       {:stanza, conn, stanza} ->
-        Logger.info "Incoming stanza: #{inspect stanza |> Stanza.to_xml}"
-        Logger.debug "Incoming stanza: #{inspect stanza}"
-        await({conn, client})
-      after 10000 ->
-        :ok
-        await({conn, client})
+        Client.handle_stanza(client, stanza)
+        await(conn)
+      {:send, stanza} ->
+        mod.send(conn, stanza)
+        await(conn)
+    after 10000 ->
+      await(conn)
     end
   end
 
