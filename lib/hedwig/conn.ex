@@ -140,11 +140,4 @@ defmodule Hedwig.Conn do
       throw {:timeout, message}
     end
   end
-
-  defp convert_transport(transport) do
-    case Atom.to_string(transport) do
-      "Elixir." <> _ -> transport
-      reference -> Module.concat(Hedwig.Transports, String.upcase(reference))
-    end
-  end
 end
