@@ -13,6 +13,10 @@ defmodule Hedwig.JID do
     user <> "@" <> server <> "/" <> resource
   end
 
+  def bare(%JID{user: user, server: server} = jid) do
+    JID.to_string(%JID{jid | resource: ""})
+  end
+
   @spec parse(jid :: binary) :: JID.t
   def parse(string) do
     case String.split(string, ["@", "/"]) do
