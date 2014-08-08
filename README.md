@@ -16,6 +16,8 @@ Example config:
 ```elixir
 use Mix.Config
 
+alias Hedwig.Scripts
+
 config :hedwig,
   clients: [
     %{
@@ -35,10 +37,7 @@ config :hedwig,
         "lobby@conference.capulet.lit"
       ],
       scripts: [
-        canned_replies: [],
-        hangout: [
-          hangout_url: System.get_env("HANGOUT_URL")
-        ]
+        {Scripts.Echo, %{}}
       ]
     },
     %{
@@ -50,10 +49,7 @@ config :hedwig,
         "lobby@conference.capulet.lit"
       ],
       scripts: [
-        canned_replies: [],
-        hangout: [
-          hangout_url: System.get_env("HANGOUT_URL")
-        ]
+        {Scripts.GoodMorning, %{}}
       ]
     }
   ]
