@@ -94,8 +94,8 @@ defmodule Hedwig.Client do
     |> Map.put(:pid, self)
 
     for {script, opts} <- client.scripts do
-      GenEvent.add_handler(manager, script, opts, link: true)
       opts = Map.merge(%{client: client_opts}, opts)
+      :ok = GenEvent.add_handler(manager, script, opts, link: true)
     end
 
     new_state = %Client{client | event_manager: manager}
