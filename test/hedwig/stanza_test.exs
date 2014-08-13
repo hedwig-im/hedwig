@@ -47,4 +47,9 @@ defmodule Hedwig.StanzaTest do
   test "presence" do
     assert Stanza.presence |> Stanza.to_xml == "<presence/>"
   end
+
+  test "message" do
+    assert Stanza.message("chat", "test@localhost", "Hello") |> Stanza.to_xml =~
+      ~r"<message id='(.*)' type='chat' to='test@localhost'><body>Hello</body></message>"
+  end
 end
