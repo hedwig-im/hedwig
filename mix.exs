@@ -10,8 +10,8 @@ defmodule Hedwig.Mixfile do
 
   def application do
     [
-      applications: [:crypto, :ssl, :exml],
-      mod: { Hedwig, [] }
+      applications: [:crypto, :ssl, :exml, :logger],
+      mod: {Hedwig, []}
     ]
   end
 
