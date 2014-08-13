@@ -108,6 +108,55 @@ defmodule Hedwig.Stanza do
       ])
   end
 
+  def chat(to, body), do: message("chat", to, body)
+  def normal(to, body), do: message("normal", to, body)
+  def groupchat(to, body), do: message("groupchat", to, body)
+
+  def message(type, to, message) do
+    xmlel(name: "message",
+      attrs: [
+        {"to", to},
+        {"type", type},
+        {"id", id}
+      ],
+      children: generate_body(message))
+  end
+
+  def generate_body(data) do
+    cond do
+      is_list(data) ->
+        data
+      is_tuple(data) ->
+        [data]
+      true ->
+        [body(data)]
+    end
+  end
+
+  def body(data) do
+    xmlel(name: "body",
+      children: [
+        :exml.escape_cdata(data)
+      ])
+  end
+
+  def xhtml_im(data) do
+    {:ok, data} = :exml.parse(data)
+    xmlel(name: "html",
+      attrs: [
+        {"xmlns", ns_xhtml_im}
+      ],
+      children: [
+        xmlel(name: "body",
+          attrs: [
+            {"xmlns", ns_xhtml}
+          ],
+          children: [
+            data
+          ])
+      ])
+  end
+
   def iq(to, type, body) do
   end
 
