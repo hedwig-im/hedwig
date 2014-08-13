@@ -2,10 +2,12 @@ defmodule Hedwig.Mixfile do
   use Mix.Project
 
   def project do
-    [ app: :hedwig,
+    [
+      app: :hedwig,
       version: "0.0.1",
       elixir: ">= 0.15.0-dev",
-      deps: deps ]
+      deps: deps
+    ]
   end
 
   def application do
