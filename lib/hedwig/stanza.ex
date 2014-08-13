@@ -13,7 +13,7 @@ defmodule Hedwig.Stanza do
   @doc """
   Converts an `exml` record to an XML binary string.
   """
-  def to_xml(record), do: :exml.to_binary(record)
+  def to_xml(record) when Record.record?(record), do: :exml.to_binary(record)
 
   def start_stream(server, xmlns \\ ns_jabber_client) do
     xmlstreamstart(name: "stream:stream",
