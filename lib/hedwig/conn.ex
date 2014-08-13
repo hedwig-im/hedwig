@@ -131,7 +131,7 @@ defmodule Hedwig.Conn do
   def await(%Conn{transport: mod, client: client} = conn) do
     receive do
       {:stanza, conn, stanza} ->
-        Client.handle_stanza(client, stanza)
+        Client.handle_stanza(client, Stanza.Parser.parse(stanza))
         await(conn)
       {:send, stanza} ->
         mod.send(conn, stanza)
