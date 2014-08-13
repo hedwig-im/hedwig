@@ -21,7 +21,7 @@ defmodule Hedwig.Client do
             conn: nil,
             config: %{},
             rooms: [],
-            scripts: [],
+            handlers: [],
             event_manager: nil
 
   @spec start_link(config :: %{}) :: {:ok, client :: pid}
@@ -93,9 +93,9 @@ defmodule Hedwig.Client do
     |> Map.take([:jid, :resource, :nickname])
     |> Map.put(:pid, self)
 
-    for {script, opts} <- client.scripts do
+    for {handler, opts} <- client.handlers do
       opts = Map.merge(%{client: client_opts}, opts)
-      :ok = GenEvent.add_handler(manager, script, opts, link: true)
+      :ok = GenEvent.add_handler(manager, handler, opts, link: true)
     end
 
     new_state = %Client{client | event_manager: manager}
@@ -108,6 +108,7 @@ defmodule Hedwig.Client do
   end
 
   def handle_cast({:handle_stanza, stanza}, %Client{event_manager: pid} = client) do
+    Logger.info "Incoming stanza: #{inspect stanza}\n"
     GenEvent.notify(pid, stanza)
     {:noreply, client}
   end

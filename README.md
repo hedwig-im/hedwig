@@ -16,7 +16,7 @@ Example config:
 ```elixir
 use Mix.Config
 
-alias Hedwig.Scripts
+alias Hedwig.Handlers
 
 config :hedwig,
   clients: [
@@ -36,8 +36,8 @@ config :hedwig,
       rooms: [
         "lobby@conference.capulet.lit"
       ],
-      scripts: [
-        {Scripts.Echo, %{}}
+      handlers: [
+        {Handlers.Echo, %{}}
       ]
     },
     %{
@@ -48,8 +48,8 @@ config :hedwig,
       rooms: [
         "lobby@conference.capulet.lit"
       ],
-      scripts: [
-        {Scripts.GoodMorning, %{}}
+      handlers: [
+        {Handlers.GoodMorning, %{}}
       ]
     }
   ]
