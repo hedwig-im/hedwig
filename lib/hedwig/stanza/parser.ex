@@ -33,6 +33,8 @@ defmodule Hedwig.Stanza.Parser do
     %IQ{}
   end
 
+  def parse(stanza), do: stanza
+
   def delayed?(xmlel(children: children)) do
     Enum.any? children, fn child ->
       elem(child, 1) == "delay"
