@@ -6,6 +6,7 @@ defmodule Hedwig.Stanzas.Message do
   @type jid :: JID.t
 
   @type t :: %__MODULE__{
+    client: pid,
     from: jid,
     to: jid,
     body: binary | list,
@@ -14,6 +15,7 @@ defmodule Hedwig.Stanzas.Message do
     delayed?: boolean}
 
   defstruct [
+    client: nil,
     from: nil,
     to: nil,
     body: "",

@@ -48,6 +48,7 @@ defmodule Hedwig.Client do
   def get(pid, key), do: GenServer.call(pid, {:get, key})
 
   def handle_stanza(pid, stanza) do
+    stanza = %{stanza | client: pid}
     GenServer.cast(pid, {:handle_stanza, stanza})
   end
 
