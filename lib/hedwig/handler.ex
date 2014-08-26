@@ -41,7 +41,18 @@ defmodule Hedwig.Handler do
   @doc """
   Send a reply via the client pid.
   """
-  def reply(client, message, body) do
-    Client.reply(client.pid, Stanza.message(message.type, JID.bare(message.from), body))
+  def reply(msg, body) do
+    client = msg.client
+    msg = Stanza.message(msg.type, JID.bare(msg.from), body)
+    Client.reply(client, msg)
+  end
+
+  def hear(regex, msg) do
+    Regex.match?(regex, msg.body)
+  end
+
+  def respond(regex, msg) do
+    matches = Regex.named_captures(regex, msg.body)
+    %{msg | matches: matches}
   end
 end

@@ -12,7 +12,8 @@ defmodule Hedwig.Stanzas.Message do
     body: binary | list,
     html: binary | list | nil,
     type: binary,
-    delayed?: boolean}
+    delayed?: boolean,
+    matches: list | %{} | nil }
 
   defstruct [
     client: nil,
@@ -21,5 +22,6 @@ defmodule Hedwig.Stanzas.Message do
     body: "",
     html: nil,
     type: "groupchat",
-    delayed?: false]
+    delayed?: false,
+    matches: nil]
 end

@@ -6,10 +6,10 @@ defmodule Hedwig.Handlers.Echo do
   """
   use Hedwig.Handler
 
-  def handle_event(%Message{from: from, delayed?: false} = message, %{client: client} = opts) do
-    if not from_self?(from, client) and not from_muc_room?(from) do
+  def handle_event(%Message{from: from, delayed?: false} = msg, opts) do
+    if not from_self?(from, opts.client) and not from_muc_room?(from) do
       to = JID.bare(from)
-      Client.reply(client.pid, Stanza.message(message.type, to, message.body))
+      reply(msg, msg.body)
     end
     {:ok, opts}
   end
