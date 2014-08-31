@@ -13,7 +13,7 @@ defmodule Hedwig.JID do
     user <> "@" <> server <> "/" <> resource
   end
 
-  def bare(%JID{user: user, server: server} = jid) do
+  def bare(%JID{} = jid) do
     JID.to_string(%JID{jid | resource: ""})
   end
 
