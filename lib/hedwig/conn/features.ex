@@ -21,7 +21,7 @@ defmodule Hedwig.Conn.Features do
 
   def supported_auth_mechanisms(features) do
     case :exml_query.subelement(features, "mechanisms") do
-      xml when Record.record?(xml, :xmlel) ->
+      xml when Record.is_record(xml, :xmlel) ->
         mechanisms = xmlel(xml, :children)
         for mechanism <- mechanisms, into: [], do: :exml_query.cdata(mechanism)
       [] -> []
@@ -30,7 +30,7 @@ defmodule Hedwig.Conn.Features do
 
   def supports?(features, "compression") do
     case :exml_query.subelement(features, "compression") do
-      xml when Record.record?(xml, :xmlel) ->
+      xml when Record.is_record(xml, :xmlel) ->
         methods = xmlel(xml, :children)
         for method <- methods, into: [], do: :exml_query.cdata(method)
       _ -> false
