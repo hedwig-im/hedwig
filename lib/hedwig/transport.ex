@@ -4,7 +4,6 @@ defmodule Hedwig.Transport do
   """
 
   alias Hedwig.Conn
-  alias Hedwig.Client
 
   @type conn   :: Conn.t
   @type opts   :: any
