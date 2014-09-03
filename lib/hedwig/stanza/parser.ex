@@ -29,9 +29,7 @@ defmodule Hedwig.Stanza.Parser do
     }
   end
 
-  def parse(xmlel(name: "iq") = stanza) do
-    %IQ{}
-  end
+  def parse(xmlel(name: "iq") = stanza), do: stanza
 
   def parse(stanza), do: stanza
 
@@ -41,3 +39,4 @@ defmodule Hedwig.Stanza.Parser do
     end
   end
 end
+
