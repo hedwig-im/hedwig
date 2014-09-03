@@ -52,7 +52,6 @@ defmodule Hedwig.Handler do
   end
 
   def respond(regex, msg) do
-    matches = Regex.named_captures(regex, msg.body)
-    %{msg | matches: matches}
+    Regex.named_captures(regex, msg.body)
   end
 end
