@@ -35,7 +35,7 @@ defmodule Hedwig.Stanza.Parser do
 
   def delayed?(xmlel(children: children)) do
     Enum.any? children, fn child ->
-      elem(child, 1) == "delay"
+      elem(child, 1) == "delay" || elem(child, 1) == "x" && XML.attr(child, "xmlns") == "jabber:x:delay"
     end
   end
 end
