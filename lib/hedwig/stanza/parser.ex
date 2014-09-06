@@ -13,25 +13,33 @@ defmodule Hedwig.Stanza.Parser do
 
   def parse(xmlel(name: "message") = stanza) do
     %Message{
-      to:   XML.attr(stanza, "to")   |> JID.parse,
-      from: XML.attr(stanza, "from") |> JID.parse,
-      type: XML.attr(stanza, "type"),
-      body: XML.subelement(stanza, "body") |> XML.cdata,
-      html: XML.subelement(stanza, "html"),
+      to:   to(stanza),
+      from: from(stanza),
+      type: type(stanza),
+      body: body(stanza),
+      html: html(stanza),
       delayed?: delayed?(stanza)}
   end
 
   def parse(xmlel(name: "presence") = stanza) do
     %Presence{
-      to:   XML.attr(stanza, "to")   |> JID.parse,
-      from: XML.attr(stanza, "from") |> JID.parse,
-      type: XML.attr(stanza, "type") || "available"
+      to:   to(stanza),
+      from: from(stanza),
+      type: type(stanza, "available")
     }
   end
 
   def parse(xmlel(name: "iq") = stanza), do: %IQ{}
 
   def parse(stanza), do: stanza
+
+  def to(stanza), do: XML.attr(stanza, "to") |> JID.parse
+  def from(stanza), do: XML.attr(stanza, "from") |> JID.parse
+
+  def type(stanza, default \\ nil), do: XML.attr(stanza, "type", default)
+
+  def body(stanza), do: XML.subelement(stanza, "body") |> XML.cdata
+  def html(stanza), do: XML.subelement(stanza, "html")
 
   def delayed?(xmlel(children: children)) do
     Enum.any? children, fn child ->

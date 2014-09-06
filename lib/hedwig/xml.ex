@@ -28,5 +28,6 @@ defmodule Hedwig.XML do
     :exml_query.subelement(element, name, default)
   end
 
+  def cdata(nil), do: ""
   def cdata(element), do: :exml_query.cdata(element)
 end
