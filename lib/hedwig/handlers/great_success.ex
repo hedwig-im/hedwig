@@ -11,13 +11,16 @@ defmodule Hedwig.Handlers.GreatSuccess do
     "https://www.youtube.com/watch?v=r13riaRKGo0"
   ]
 
-  def handle_event(%Message{delayed?: false} = msg, opts) do
+  def handle_event(%{delayed?: true}, opts), do: {:ok, opts}
+
+  def handle_event(%Message{} = msg, opts) do
     cond do
       hear ~r/great success(!)?/i, msg -> process msg
       true -> :ok
     end
     {:ok, opts}
   end
+
   def handle_event(_, opts), do: {:ok, opts}
 
   defp process(msg) do
