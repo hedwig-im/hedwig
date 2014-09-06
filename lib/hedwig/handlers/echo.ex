@@ -10,7 +10,6 @@ defmodule Hedwig.Handlers.Echo do
 
   def handle_event(%Message{from: from} = msg, opts) do
     if not from_self?(from, opts.client) and not from_muc_room?(from) do
-      to = JID.bare(from)
       reply(msg, msg.body)
     end
     {:ok, opts}
