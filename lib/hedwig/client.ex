@@ -103,6 +103,13 @@ defmodule Hedwig.Client do
     {:reply, new_state, new_state}
   end
 
+  def handle_call(:get, _from, client) do
+    {:reply, client, client}
+  end
+  def handle_call({:get, key}, _from, client) do
+    {:reply, Map.get(client, key), client}
+  end
+
   def handle_cast(:connect, %Client{config: config} = client) do
     conn = spawn fn -> Conn.start(config) end
     {:noreply, %Client{client | conn: conn}}
@@ -118,12 +125,5 @@ defmodule Hedwig.Client do
   def handle_cast({:reply, stanza}, %Client{conn: conn} = client) do
     Kernel.send(conn, {:send, stanza})
     {:noreply, client}
-  end
-
-  def handle_call(:get, _from, client) do
-    {:reply, client, client}
-  end
-  def handle_call({:get, key}, _from, client) do
-    {:reply, Map.get(client, key), client}
   end
 end
