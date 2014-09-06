@@ -116,7 +116,7 @@ defmodule Hedwig.Conn do
     jid = Client.get(pid, :jid)
     mod.send conn, Stanza.presence
     recv(conn, :wait_for_bind_result)
-    Logger.info "#{jid} successfully connected."
+    Logger.info fn -> "#{jid} successfully connected." end
     conn
   end
 

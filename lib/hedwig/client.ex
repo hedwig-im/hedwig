@@ -109,7 +109,8 @@ defmodule Hedwig.Client do
   end
 
   def handle_cast({:handle_stanza, stanza}, %Client{event_manager: pid} = client) do
-    Logger.info "Incoming stanza: #{inspect stanza}\n"
+    Logger.info fn -> "Incoming stanza: #{inspect stanza}" end
+
     GenEvent.notify(pid, stanza)
     {:noreply, client}
   end
