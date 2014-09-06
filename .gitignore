@@ -5,3 +5,4 @@ erl_crash.dump
 .envrc
 /config/test.exs
 /config/dev.exs
+/config/prod.exs
