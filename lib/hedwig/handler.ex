@@ -47,6 +47,12 @@ defmodule Hedwig.Handler do
     Client.reply(client, msg)
   end
 
+  def groupchat(msg, body) do
+    client = msg.client
+    msg = Stanza.message("groupchat", JID.bare(msg.to), body)
+    Client.reply(client, msg)
+  end
+
   def hear(regex, msg) do
     Regex.match?(regex, msg.body)
   end
