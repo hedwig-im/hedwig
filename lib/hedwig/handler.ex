@@ -36,7 +36,6 @@ defmodule Hedwig.Handler do
   """
   def merge_client_opts(client, opts) when is_map(opts) do
     %{client: Map.take(client, [:jid, :resource, :nickname])}
-    |> put_in([:client, :pid], self)
     |> Map.merge(opts)
   end
 
