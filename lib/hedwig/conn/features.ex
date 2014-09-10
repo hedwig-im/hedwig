@@ -6,10 +6,12 @@ defmodule Hedwig.Conn.Features do
   use Hedwig.XML
 
   @type t :: %__MODULE__{}
-  defstruct tls?:               false,
-            compression?:       false,
-            stream_management?: false,
-            mechanisms:         []
+  defstruct [
+    tls?: false,
+    compression?: false,
+    stream_management?: false,
+    mechanisms: []
+  ]
 
   def parse_stream_features(features) do
     %__MODULE__{

@@ -16,14 +16,16 @@ defmodule Hedwig.Client do
 
   @type t :: %__MODULE__{}
   @derive [Access, Enumerable]
-  defstruct jid: "",
-            nickname: "",
-            resource: "",
-            conn: nil,
-            config: %{},
-            rooms: [],
-            handlers: [],
-            event_manager: nil
+  defstruct [
+    jid: "",
+    nickname: "",
+    resource: "",
+    conn: nil,
+    config: %{},
+    rooms: [],
+    handlers: [],
+    event_manager: nil
+  ]
 
   @spec start_link(config :: %{}) :: {:ok, client :: pid}
   def start_link(config) do

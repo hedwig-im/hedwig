@@ -9,23 +9,26 @@ defmodule Hedwig.Transports.TCP do
   alias Hedwig.Stanza
 
   @type t :: %__MODULE__{
-               transport: module,
-               pid:       pid,
-               config:    %{},
-               client:    pid,
-               socket:    port,
-               parser:    term,
-               ssl?:      boolean,
-               compress?: boolean}
+    transport: module,
+    pid: pid,
+    config: %{},
+    client: pid,
+    socket: port,
+    parser: term,
+    ssl?: boolean,
+    compress?: boolean
+  }
 
-  defstruct transport: __MODULE__,
-            pid:       nil,
-            config:    %{},
-            client:    nil,
-            socket:    nil,
-            parser:    nil,
-            ssl?:      false,
-            compress?: false
+  defstruct [
+    transport: __MODULE__,
+    pid: nil,
+    config: %{},
+    client: nil,
+    socket: nil,
+    parser: nil,
+    ssl?: false,
+    compress?: false
+  ]
 
   @doc """
   Open a socket connection to the XMPP server.

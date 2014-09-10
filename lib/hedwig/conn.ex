@@ -19,23 +19,26 @@ defmodule Hedwig.Conn do
   @type config :: %{}
 
   @type t :: %__MODULE__{
-              transport: module,
-              config: config,
-              pid: pid,
-              client: pid,
-              socket: port,
-              ssl?: boolean,
-              compress?: boolean,
-              features: Features.t}
+    transport: module,
+    config: config,
+    pid: pid,
+    client: pid,
+    socket: port,
+    ssl?: boolean,
+    compress?: boolean,
+    features: Features.t
+  }
 
-  defstruct transport: nil,
-            config: %{},
-            pid: nil,
-            client: nil,
-            socket: nil,
-            ssl?: false,
-            compress?: false,
-            features: %Features{}
+  defstruct [
+    transport: nil,
+    config: %{},
+    pid: nil,
+    client: nil,
+    socket: nil,
+    ssl?: false,
+    compress?: false,
+    features: %Features{}
+  ]
 
   @timeout 1000
 
