@@ -79,9 +79,7 @@ defmodule Hedwig.Client do
   Returns the client config for the given JID.
   """
   def client_for(jid) do
-    Enum.find Application.get_env(:hedwig, :clients), fn client ->
-      client.jid == jid
-    end
+    Enum.find Application.get_env(:hedwig, :clients), &(&1.jid == jid)
   end
 
   def configure_client(client) do
