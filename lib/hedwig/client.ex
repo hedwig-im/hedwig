@@ -37,13 +37,16 @@ defmodule Hedwig.Client do
     {:ok, client}
   end
 
+  @doc """
+  Starts a GenEvent manager.
+  """
   def start_event_manager(pid) do
     GenServer.call(pid, :start_event_manager)
     pid
   end
 
   @doc """
-  Start all event handlers for the client.
+  Start all GenEvent handlers for the client.
   """
   def start_event_handlers(pid) do
     GenServer.call(pid, :start_event_handlers)
@@ -68,6 +71,9 @@ defmodule Hedwig.Client do
   def get(pid), do: GenServer.call(pid, :get)
   def get(pid, key), do: GenServer.call(pid, {:get, key})
 
+  @doc """
+  Notifies the event manager of an incoming stanza.
+  """
   def handle_stanza(pid, stanza) do
     stanza = %{stanza | client: pid}
     GenServer.cast(pid, {:handle_stanza, stanza})
@@ -84,6 +90,9 @@ defmodule Hedwig.Client do
     Enum.find Application.get_env(:hedwig, :clients), &(&1.jid == jid)
   end
 
+  @doc """
+  Normalizes client configuration with sane defaults.
+  """
   def configure_client(client) do
     %JID{server: server} = JID.parse(client.jid)
 
