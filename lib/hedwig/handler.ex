@@ -21,6 +21,26 @@ defmodule Hedwig.Handler do
   end
 
   @doc """
+  Gets opts for the given handler from the client config.
+  """
+  def get_opts(client, handler) when is_atom(handler) do
+    {_handler, opts} = Client.client_for(client.jid)
+    |> Map.get(:handlers)
+    |> List.keyfind(handler, 0, %{})
+
+    merge_client_opts(client, opts)
+  end
+
+  @doc """
+  Merge client options with handler options.
+  """
+  def merge_client_opts(client, opts) when is_map(opts) do
+    %{client: Map.take(client, [:jid, :resource, :nickname])}
+    |> put_in([:client, :pid], self)
+    |> Map.merge(opts)
+  end
+
+  @doc """
   It's best to ignore messages you receive back from yourself to avoid
   recursive handling.
   """

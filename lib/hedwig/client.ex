@@ -11,6 +11,7 @@ defmodule Hedwig.Client do
   alias Hedwig.JID
   alias Hedwig.Conn
   alias Hedwig.Client
+  alias Hedwig.Handler
   alias Hedwig.Transport
 
   @type t :: %__MODULE__{}
@@ -29,6 +30,7 @@ defmodule Hedwig.Client do
     {:ok, client} = GenServer.start_link(__MODULE__, config, name: String.to_atom(config.jid))
     client
     |> start_event_manager
+    |> start_event_handlers
     |> connect
     {:ok, client}
   end
@@ -36,6 +38,21 @@ defmodule Hedwig.Client do
   def start_event_manager(pid) do
     GenServer.call(pid, :start_event_manager)
     pid
+  end
+
+  @doc """
+  Start all event handlers for the client.
+  """
+  def start_event_handlers(pid) do
+    GenServer.call(pid, :start_event_handlers)
+    pid
+  end
+
+  @doc """
+  Adds a monitored handler.
+  """
+  def add_mon_handler(client, {handler, opts}) do
+    :ok = GenEvent.add_mon_handler(client.event_manager, handler, opts)
   end
 
   @doc """
@@ -91,18 +108,16 @@ defmodule Hedwig.Client do
 
   def handle_call(:start_event_manager, _from, client) do
     {:ok, manager} = GenEvent.start_link
-
-    client_opts = client
-    |> Map.take([:jid, :resource, :nickname])
-    |> Map.put(:pid, self)
-
-    for {handler, opts} <- client.handlers do
-      opts = Map.merge(%{client: client_opts}, opts)
-      :ok = GenEvent.add_mon_handler(manager, handler, opts)
-    end
-
     new_state = %Client{client | event_manager: manager}
     {:reply, new_state, new_state}
+  end
+
+  def handle_call(:start_event_handlers, _from, client) do
+    for {handler, opts} <- client.handlers do
+      opts = Handler.merge_client_opts(client, opts)
+      add_mon_handler(client, {handler, opts})
+    end
+    {:reply, client, client}
   end
 
   def handle_call(:get, _from, client) do
@@ -126,6 +141,12 @@ defmodule Hedwig.Client do
 
   def handle_cast({:reply, stanza}, %Client{conn: conn} = client) do
     Kernel.send(conn, {:send, stanza})
+    {:noreply, client}
+  end
+
+  def handle_info({:gen_event_EXIT, handler, reason}, client) do
+    opts = Handler.get_opts(client, handler)
+    Client.add_mon_handler(client, {handler, opts})
     {:noreply, client}
   end
 end
