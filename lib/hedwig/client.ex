@@ -144,7 +144,7 @@ defmodule Hedwig.Client do
     {:noreply, client}
   end
 
-  def handle_info({:gen_event_EXIT, handler, reason}, client) do
+  def handle_info({:gen_event_EXIT, handler, _reason}, client) do
     opts = Handler.get_opts(client, handler)
     Client.add_mon_handler(client, {handler, opts})
     {:noreply, client}
