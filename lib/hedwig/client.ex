@@ -118,6 +118,7 @@ defmodule Hedwig.Client do
   def from_self?(%JID{resource: resource} = from, client) do
     JID.bare(from) == JID.parse(client.jid) or resource == client.nickname
   end
+  def from_self?(_, _), do: true
 
   @doc """
   If the resource is blank, the message is from the MUC room and not a user.
@@ -128,6 +129,7 @@ defmodule Hedwig.Client do
   def from_muc_room?(%JID{resource: resource}) do
     resource == ""
   end
+  def from_muc_room?(_), do: true
 
   def init(config) do
     {:ok, configure_client(config)}
