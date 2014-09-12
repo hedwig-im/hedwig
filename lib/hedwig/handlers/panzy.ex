@@ -1,6 +1,10 @@
 defmodule Hedwig.Handlers.Panzy do
   @moduledoc """
-  Says 'Panzy!' whenever someone says 'hard'.
+  Says 'Panzy!' whenever someone is being a whiner.
+  """
+
+  @usage """
+  <text> (tired|too hard|to hard|upset|bored) - Replies with 'Panzy!'
   """
 
   use Hedwig.Handler

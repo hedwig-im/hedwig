@@ -17,6 +17,8 @@ defmodule Hedwig.Handler do
 
       require Logger
       import unquote __MODULE__
+
+      def usage, do: @usage
     end
   end
 

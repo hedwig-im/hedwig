@@ -4,6 +4,9 @@ defmodule Hedwig.Handlers.Echo do
 
   This script simply echoes the same message back.
   """
+
+  @usage nil
+
   use Hedwig.Handler
 
   def handle_event(%{delayed?: true}, opts), do: {:ok, opts}
