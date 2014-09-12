@@ -8,10 +8,8 @@ defmodule Hedwig.Handlers.Echo do
 
   def handle_event(%{delayed?: true}, opts), do: {:ok, opts}
 
-  def handle_event(%Message{from: from} = msg, opts) do
-    if not from_self?(from, opts.client) and not from_muc_room?(from) do
-      reply(msg, msg.body)
-    end
+  def handle_event(%Message{} = msg, opts) do
+    reply(msg, msg.body)
     {:ok, opts}
   end
 
