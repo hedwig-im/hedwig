@@ -34,7 +34,7 @@ defmodule Hedwig.Transports.TCP do
   Open a socket connection to the XMPP server.
   """
   def connect(conn) do
-    {:ok, pid} = GenServer.start(__MODULE__, [conn, self])
+    {:ok, pid} = GenServer.start_link(__MODULE__, [conn, self])
     {:ok, GenServer.call(pid, :get_transport)}
   end
 

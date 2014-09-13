@@ -157,7 +157,7 @@ defmodule Hedwig.Client do
   end
 
   def handle_cast(:connect, %Client{config: config} = client) do
-    conn = spawn fn -> Conn.start(config) end
+    conn = spawn_link fn -> Conn.start(config) end
     {:noreply, %Client{client | conn: conn}}
   end
 
