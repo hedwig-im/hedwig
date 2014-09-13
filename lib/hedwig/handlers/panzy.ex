@@ -9,8 +9,6 @@ defmodule Hedwig.Handlers.Panzy do
 
   use Hedwig.Handler
 
-  def handle_event(%{delayed?: true}, opts), do: {:ok, opts}
-
   def handle_event(%Message{} = msg, opts) do
     cond do
       hear ~r/tired|too hard|to hard|upset|bored/i, msg ->

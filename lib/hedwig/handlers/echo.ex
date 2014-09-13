@@ -9,8 +9,6 @@ defmodule Hedwig.Handlers.Echo do
 
   use Hedwig.Handler
 
-  def handle_event(%{delayed?: true}, opts), do: {:ok, opts}
-
   def handle_event(%Message{} = msg, opts) do
     reply(msg, msg.body)
     {:ok, opts}
