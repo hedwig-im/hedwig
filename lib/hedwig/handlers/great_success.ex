@@ -1,6 +1,13 @@
 defmodule Hedwig.Handlers.GreatSuccess do
   @moduledoc """
   Borat, Great Success!
+
+  Replies with a random link to a Borat image when a message contains
+  'great success'.
+  """
+
+  @usage """
+  <text> (great success) - Replies with a random link to a Borat image.
   """
 
   use Hedwig.Handler
