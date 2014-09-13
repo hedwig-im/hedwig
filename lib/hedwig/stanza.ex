@@ -144,8 +144,11 @@ defmodule Hedwig.Stanza do
       ])
   end
 
-  def xhtml_im(data) do
+  def xhtml_im(data) when is_binary(data) do
     {:ok, data} = :exml.parse(data)
+    xhtml_im(data)
+  end
+  def xhtml_im(data) do
     xmlel(name: "html",
       attrs: [
         {"xmlns", ns_xhtml_im}
