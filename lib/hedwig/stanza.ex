@@ -104,7 +104,11 @@ defmodule Hedwig.Stanza do
       ],
       children: [
         xmlel(name: "x",
-          attrs: [{"xmlns", ns_muc}])
+          attrs: [{"xmlns", ns_muc}],
+          children: [
+            xmlel(name: "history",
+              attrs: [{"maxstanzas", "0"}])
+          ])
       ])
   end
 
