@@ -180,5 +180,12 @@ defmodule Hedwig.Client do
     Client.add_mon_handler(client, {handler, opts})
     {:noreply, client}
   end
+
+  def handle_info(msg, client) do
+    Logger.info fn ->
+      "Unexpected message received: #{inspect msg}"
+    end
+    {:noreply, client}
+  end
 end
 
