@@ -15,5 +15,7 @@ defmodule Hedwig.JidTest do
     assert JID.parse(string) == %JID{user: "jdoe", server: "example.com"}
     string = "jdoe@example.com/library"
     assert JID.parse(string) == %JID{user: "jdoe", server: "example.com", resource: "library"}
+    string = "jdoe@example.com/jdoe@example.com/resource"
+    assert JID.parse(string) == %JID{user: "jdoe", server: "example.com", resource: "jdoe@example.com/resource"}
   end
 end

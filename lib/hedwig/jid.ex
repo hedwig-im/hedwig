@@ -19,7 +19,7 @@ defmodule Hedwig.JID do
 
   @spec parse(jid :: binary) :: JID.t
   def parse(string) do
-    case String.split(string, ["@", "/"]) do
+    case String.split(string, ["@", "/"], parts: 3) do
       [user, server, resource] ->
         %JID{user: user, server: server, resource: resource}
       [user, server] ->
