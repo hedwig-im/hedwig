@@ -36,7 +36,7 @@ defmodule Hedwig.Stanza.Parser do
   def to(stanza), do: XML.attr(stanza, "to") |> JID.parse
   def from(stanza), do: XML.attr(stanza, "from") |> JID.parse
 
-  def type(stanza, default \\ nil), do: XML.attr(stanza, "type", default)
+  def type(stanza, default \\ "normal"), do: XML.attr(stanza, "type", default)
 
   def body(stanza), do: XML.subelement(stanza, "body") |> XML.cdata
   def html(stanza), do: XML.subelement(stanza, "html")
