@@ -135,12 +135,12 @@ defmodule Hedwig.Conn do
     receive do
       {:stanza, conn, stanza} ->
         Client.handle_stanza(client, Stanza.Parser.parse(stanza))
-        await(conn)
+        Conn.await(conn)
       {:send, stanza} ->
         mod.send(conn, stanza)
-        await(conn)
+        Conn.await(conn)
     after 10000 ->
-      await(conn)
+      Conn.await(conn)
     end
   end
 
