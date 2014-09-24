@@ -10,12 +10,12 @@ defmodule Hedwig.Client do
 
   alias Hedwig.JID
   alias Hedwig.Conn
+  alias Hedwig.Config
   alias Hedwig.Client
   alias Hedwig.Handler
   alias Hedwig.Transport
 
   @type t :: %__MODULE__{}
-  @derive [Access, Enumerable]
   defstruct [
     jid: "",
     nickname: "",
@@ -91,27 +91,6 @@ defmodule Hedwig.Client do
   end
 
   @doc """
-  Normalizes client configuration with sane defaults.
-  """
-  def configure_client(client) do
-    %JID{server: server} = JID.parse(client.jid)
-
-    config = if client[:config], do: client[:config], else: %{}
-    |> Map.put_new(:server, server)
-    |> Map.put_new(:port, 5222)
-    |> Map.put_new(:require_tls?, false)
-    |> Map.put_new(:use_compression?, false)
-    |> Map.put_new(:use_stream_management?, false)
-    |> Map.put_new(:transport, :tcp)
-    |> Map.put_new(:client, self)
-
-    config = Map.put(config, :transport, Transport.module(config.transport))
-    client = Map.put(client, :config, config) |> Map.to_list
-
-    struct(Client, client)
-  end
-
-  @doc """
   It's best to ignore messages you receive back from yourself to avoid
   recursive handling.
   """
@@ -132,7 +111,7 @@ defmodule Hedwig.Client do
   def from_muc_room?(_), do: true
 
   def init(config) do
-    {:ok, configure_client(config)}
+    {:ok, Config.normalize(config)}
   end
 
   def handle_call(:start_event_manager, _from, client) do
