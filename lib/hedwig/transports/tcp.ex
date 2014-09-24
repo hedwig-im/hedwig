@@ -144,6 +144,7 @@ defmodule Hedwig.Transports.TCP do
 
   defp handle_data(_socket, data, state) do
     {:ok, parser, stanzas} = :exml_stream.parse(state.parser, data)
+    Logger.debug fn -> "Incoming stanza: #{inspect data}" end
     new_state = %TCP{state | parser: parser}
     for stanza <- stanzas do
       Kernel.send(state.pid, {:stanza, transport(new_state), stanza})
