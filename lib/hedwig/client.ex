@@ -13,7 +13,6 @@ defmodule Hedwig.Client do
   alias Hedwig.Config
   alias Hedwig.Client
   alias Hedwig.Handler
-  alias Hedwig.Transport
 
   @type t :: %__MODULE__{}
   defstruct [
