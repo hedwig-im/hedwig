@@ -14,7 +14,7 @@ defmodule Hedwig.Config do
     |> Map.put_new(:use_compression?, false)
     |> Map.put_new(:use_stream_management?, false)
     |> Map.put_new(:transport, :tcp)
-    |> Map.put_new(:client, self)
+    |> Map.put_new(:client, self())
     |> put_transport
 
     struct(Client, Map.put(client, :config, config))
