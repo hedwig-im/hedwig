@@ -63,8 +63,8 @@ defmodule Hedwig.Conn do
 
   @spec connect(config :: config) :: t
   def connect(%{transport: mod} = config) do
-    {:ok, conn} = mod.connect(config)
-    conn
+    {:ok, conn} = mod.start(config)
+    wait_for_socket(conn)
   end
 
   def start_stream(%Conn{transport: mod, config: config} = conn) do
@@ -154,6 +154,16 @@ defmodule Hedwig.Conn do
         stanza
     after @timeout ->
       throw {:timeout, message}
+    end
+  end
+
+  defp wait_for_socket(%Conn{} = conn) do
+    Logger.info fn -> "Waiting for socket" end
+    receive do
+      {:connected, socket} ->
+        %Conn{conn | socket: socket}
+      _ ->
+        wait_for_socket(conn)
     end
   end
 end

@@ -80,16 +80,14 @@ defmodule Hedwig.Transports.TCP do
   end
 
   def init([config, connection_pid]) do
-    host = String.to_char_list(config.server)
-    port = config.port
-    {:ok, socket} = :gen_tcp.connect(host, port, [:binary, active: :once])
+    Kernel.send(self(), :connect)
     {:ok, parser} = :exml_stream.new_parser
     state = %TCP{
       pid: connection_pid,
       config: config,
       client: config.client,
-      socket: socket,
-      parser: parser}
+      parser: parser
+    }
     {:ok, state}
   end
 
@@ -107,6 +105,19 @@ defmodule Hedwig.Transports.TCP do
   def handle_cast(:reset_parser, %TCP{parser: parser} = state) do
     {:ok, parser} = :exml_stream.reset_parser(parser)
     {:noreply, %TCP{state | parser: parser}}
+  end
+
+  def handle_info(:connect, state) do
+    host = String.to_char_list(state.config.server)
+    port = state.config.port
+    case :gen_tcp.connect(host, port, [:binary, active: :once]) do
+      {:ok, socket} ->
+        Kernel.send(state.pid, {:connected, socket})
+        {:noreply, %TCP{state | socket: socket}}
+      _ ->
+        Kernel.send(self(), :connect)
+        {:noreply, state}
+    end
   end
 
   def handle_info({:tcp, socket, data}, state) do
