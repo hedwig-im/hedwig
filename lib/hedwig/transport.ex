@@ -23,7 +23,7 @@ defmodule Hedwig.Transport do
     end
   end
 
-  defcallback connect(conn) :: conn
+  defcallback start(conn) :: conn
   defcallback send(conn, data) :: conn
   defcallback connected?(conn) :: boolean
   defcallback upgrade_to_tls({conn, list})
