@@ -54,6 +54,7 @@ defmodule Hedwig.Transports.TCP do
   @doc """
   Checks if the connection is alive.
   """
+  def connected?(%Conn{socket: nil}), do: false
   def connected?(%Conn{socket: socket}) do
     Process.alive?(socket)
   end
