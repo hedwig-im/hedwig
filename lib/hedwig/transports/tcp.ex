@@ -129,8 +129,15 @@ defmodule Hedwig.Transports.TCP do
     handle_data(socket, data, state)
   end
   def handle_info({:tcp_closed, _socket}, state) do
-    {:stop, :normal, state}
+    Logger.error "Socket closed"
+    {:stop, :shutdown, state}
   end
+
+  def handle_info({:ssl_closed, _socket}, state) do
+    Logger.error "Socket closed"
+    {:stop, :shutdown, state}
+  end
+
   def handle_info(_msg, state) do
     {:noreply, state}
   end
