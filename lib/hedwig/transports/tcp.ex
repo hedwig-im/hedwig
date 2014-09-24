@@ -80,6 +80,10 @@ defmodule Hedwig.Transports.TCP do
     GenServer.cast(pid, :reset_parser)
   end
 
+  def stop(%Conn{pid: pid}) do
+    GenServer.cast(pid, :stop)
+  end
+
   def init([config, connection_pid]) do
     Kernel.send(self(), :connect)
     {:ok, parser} = :exml_stream.new_parser
@@ -101,6 +105,10 @@ defmodule Hedwig.Transports.TCP do
     {:ok, socket} = :ssl.connect(state.socket, opts)
     {:ok, parser} = :exml_stream.new_parser
     {:reply, socket, %TCP{state | socket: socket, parser: parser, ssl?: true}}
+  end
+
+  def handle_call(:stop, _from, state) do
+    {:stop, :normal, state}
   end
 
   def handle_cast(:reset_parser, %TCP{parser: parser} = state) do
