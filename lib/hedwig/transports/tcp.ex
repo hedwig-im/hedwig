@@ -125,10 +125,12 @@ defmodule Hedwig.Transports.TCP do
     :inet.setopts(socket, active: :once)
     handle_data(socket, data, state)
   end
+
   def handle_info({:ssl, socket, data}, state) do
     :ssl.setopts(socket, active: :once)
     handle_data(socket, data, state)
   end
+
   def handle_info({:tcp_closed, _socket}, state) do
     Logger.error "Socket closed"
     {:stop, :shutdown, state}
