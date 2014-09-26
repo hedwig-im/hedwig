@@ -7,14 +7,14 @@ config :hedwig,
       password: "iL0v3JuL13t"
       nickname: "loverboy",
       resource: "chamber",
-      config: [ # This is only necessary if you need to override the defaults.
+      config: %{ # This is only necessary if you need to override the defaults.
         server: "im.capulet.lit",
         port: 9222, # Default port is 5222
         require_tls?: true,
         use_compression?: false,
         use_stream_management?: false,
         transport: :tcp
-      ],
+      },
       rooms: [
         "lobby@conference.capulet.lit"
       ]
