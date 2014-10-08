@@ -4,14 +4,11 @@ defmodule Hedwig.ConnTest do
 
   alias Hedwig.Client
 
+  # TODO: Figure out how to really test this better.
   test "it connects" do
-    client = System.get_env("XMPP_JID")
-    |> Client.client_for
-    |> Client.configure_client
-
+    client = Client.client_for(System.get_env("XMPP_JID"))
     assert capture_io(:user, fn ->
-      Client.start_link(client)
       :timer.sleep(500)
-    end) =~ ~r/#{client.jid} successfully connected/
+    end) =~ ~r/#{client.jid} successfully connected/i
   end
 end
