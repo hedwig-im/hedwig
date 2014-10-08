@@ -27,6 +27,9 @@ defmodule Hedwig.Config do
     JID.parse(jid).server
   end
 
+  @doc """
+  Sets the connection transport module.
+  """
   defp put_transport(config) do
     Map.put(config, :transport, Transport.module(config.transport))
   end
