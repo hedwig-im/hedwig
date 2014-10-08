@@ -10,6 +10,13 @@ defmodule Hedwig.JidTest do
     assert JID.to_string(jid) == "jdoe@example.com/library"
   end
 
+  test "bare returns a JID without a resource" do
+    jid = %JID{user: "jdoe", server: "example.com", resource: "library"}
+    assert JID.bare(jid) == "jdoe@example.com"
+    assert JID.bare("jdoe@example.com/library") == "jdoe@example.com"
+    assert JID.bare("jdoe@example.com") == "jdoe@example.com"
+  end
+
   test "it converts binaries into structs" do
     string = "jdoe@example.com"
     assert JID.parse(string) == %JID{user: "jdoe", server: "example.com"}
