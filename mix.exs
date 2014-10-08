@@ -33,7 +33,7 @@ defmodule Hedwig.Mixfile do
     [
       files: ["lib", "priv", "mix.exs", "README*", "readme*", "LICENSE*", "license*"],
       contributors: ["Sonny Scroggin"],
-      licences: ["MIT"],
+      licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/scrogson/hedwig"}
     ]
   end
