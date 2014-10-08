@@ -1,12 +1,18 @@
 defmodule Hedwig.Mixfile do
   use Mix.Project
 
+  @description """
+  XMPP Client/Bot Framework
+  """
+
   def project do
     [
       app: :hedwig,
-      version: "0.0.2",
+      version: "0.0.3",
       elixir: "~> 1.0",
-      deps: deps
+      deps: deps,
+      description: @description,
+      package: package
     ]
   end
 
@@ -20,6 +26,15 @@ defmodule Hedwig.Mixfile do
   defp deps do
     [
       {:exml, github: "paulgray/exml"}
+    ]
+  end
+
+  defp package do
+    [
+      files: ["lib", "priv", "mix.exs", "README*", "readme*", "LICENSE*", "license*"],
+      contributors: ["Sonny Scroggin"],
+      licences: ["MIT"],
+      links: %{"GitHub" => "https://github.com/scrogson/hedwig"}
     ]
   end
 end
