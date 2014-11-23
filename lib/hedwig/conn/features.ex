@@ -7,15 +7,19 @@ defmodule Hedwig.Conn.Features do
 
   @type t :: %__MODULE__{}
   defstruct [
-    tls?: false,
+    amp?: false,
     compression?: false,
+    registration?: false,
     stream_management?: false,
+    tls?: false,
     mechanisms: []
   ]
 
   def parse_stream_features(features) do
     %__MODULE__{
+      amp?: supports?(features, "amp"),
       compression?: supports?(features, "compression"),
+      registration?: supports?(features, "register"),
       tls?: supports?(features, "starttls"),
       stream_management?: supports?(features, "sm")
     }
