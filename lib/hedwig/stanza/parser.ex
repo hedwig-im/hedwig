@@ -25,7 +25,7 @@ defmodule Hedwig.Stanza.Parser do
     %Presence{
       to:   to(stanza),
       from: from(stanza),
-      type: type(stanza, "available")
+      type: type(stanza, nil)
     }
   end
 
