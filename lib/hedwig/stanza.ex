@@ -94,6 +94,10 @@ defmodule Hedwig.Stanza do
     iq("get", xmlel(name: "query", attrs: [{"xmlns", ns_roster}]))
   end
 
+  def get_vcard(to) do
+    iq(to, "get", xmlel(name: "vCard", attrs: [{"xmlns", ns_vcard}]))
+  end
+
   end
 
   @doc """
