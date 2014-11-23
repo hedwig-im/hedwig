@@ -160,6 +160,12 @@ defmodule Hedwig.Client do
     {:noreply, client}
   end
 
+  def handle_info({:stop, reason}, %Client{conn: conn} = client) do
+    Kernel.send(conn, {:send, Hedwig.Stanza.presence("unavailable")})
+    Kernel.send(conn, {:send, Hedwig.Stanza.end_stream})
+    {:stop, reason, client}
+  end
+
   def handle_info(msg, client) do
     Logger.info fn ->
       "Unexpected message received: #{inspect msg}"
