@@ -22,7 +22,7 @@ defmodule Hedwig.Stanzas.Message do
     to: nil,
     body: "",
     html: nil,
-    type: "groupchat",
+    type: "normal",
     delayed?: false,
     matches: nil
   ]
