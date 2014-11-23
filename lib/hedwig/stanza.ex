@@ -82,12 +82,14 @@ defmodule Hedwig.Stanza do
   end
 
   def iq(type, body) do
-    xmlel(name: "iq",
-      attrs: [
-        {"type", type},
-        {"id", id}
-      ],
-      children: body)
+    xmlel(name: "iq", attrs: [{"type", type}, {"id", id}], children: body)
+  end
+
+  def iq(to, type, body) do
+    iq = iq(type, body)
+    xmlel(iq, attrs: [{"to", to}|xmlel(iq, :attrs)])
+  end
+
   end
 
   @doc """
@@ -165,7 +167,6 @@ defmodule Hedwig.Stanza do
       ])
   end
 
-  def iq(to, type, body) do
   end
 
   def base64_cdata(payload) do
