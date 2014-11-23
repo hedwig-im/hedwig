@@ -181,7 +181,8 @@ defmodule Hedwig.Stanza do
       attrs: [
         {"to", to},
         {"type", type},
-        {"id", id}
+        {"id", id},
+        {"xml:lang", "en"}
       ],
       children: generate_body(message))
   end
