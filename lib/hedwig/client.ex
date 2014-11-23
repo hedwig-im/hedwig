@@ -17,6 +17,7 @@ defmodule Hedwig.Client do
   @type t :: %__MODULE__{}
   defstruct [
     jid: "",
+    password: "",
     nickname: "",
     resource: "",
     conn: nil,
