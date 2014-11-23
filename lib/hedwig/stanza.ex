@@ -47,13 +47,14 @@ defmodule Hedwig.Stanza do
       ])
   end
 
+  def auth(mechanism), do: auth(mechanism, [])
   def auth(mechanism, body) do
     xmlel(name: "auth",
       attrs: [
         {"xmlns", ns_sasl},
         {"mechanism", mechanism}
       ],
-      children: base64_cdata(body))
+      children: body)
   end
 
   def bind(resource) do

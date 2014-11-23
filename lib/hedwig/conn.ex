@@ -91,7 +91,7 @@ defmodule Hedwig.Conn do
   end
 
   def authenticate(conn) do
-    Auth.authenticate(:plain, conn)
+    Auth.authenticate!(conn)
     reset_parser(conn)
     start_stream(conn)
     conn
