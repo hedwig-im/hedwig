@@ -1,20 +1,35 @@
 defmodule Hedwig.Stanza do
-  @moduledoc ~S"""
-  Provides convenience functions for building XMPP stanzas.
 
-  ## Examples
-      iex> stanza = Hedwig.Stanza.start_tls
-      {:xmlel, "starttls", [{"xmlns", "urn:ietf:params:xml:ns:xmpp-tls"}], []}
-      iex> Hedwig.Stanza.to_xml(stanza)
-      "<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>"
+  @moduledoc """
+  Provides convenience functions for building XMPP stanzas.
   """
+
   use Hedwig.XML
 
   @doc """
   Converts an `exml` record to an XML binary string.
   """
   def to_xml(record) when Record.is_record(record), do: :exml.to_binary(record)
+  @doc """
+  Starts an XML stream.
 
+  ## Example
+
+      iex> stanza = Hedwig.Stanza.start_stream("im.capulet.lit")
+      {:xmlstreamstart, "stream:stream",
+       [{"to", "im.capulet.lit"}, {"version", "1.0"}, {"xml:lang", "en"},
+         {"xmlns", "jabber:client"},
+         {"xmlns:stream", "http://etherx.jabber.org/streams"}]}
+
+      iex> Hedwig.Stanza.to_xml(stanza)
+      "<stream:stream
+         xmlns:stream='http://etherx.jabber.org/streams'
+         version='1.0'
+         xmlns='jabber:client'
+         to='im.capulet.lit'
+         xml:lang='en'
+         xmlns:xml='http://www.w3.org/XML/1998/namespace'>"
+  """
   def start_stream(server, xmlns \\ ns_jabber_client) do
     xmlstreamstart(name: "stream:stream",
       attrs: [
@@ -26,10 +41,26 @@ defmodule Hedwig.Stanza do
       ])
   end
 
-  def end_stream do
-    xmlstreamend(name: "stream:stream")
-  end
+  @doc """
+  Ends the XML stream
 
+  ## Example
+      iex> stanza = Hedwig.Stanza.end_steam
+      {:xmlel, "stream:stream", [], []}
+      iex> Hedwig.Stanza.to_xml(stanza)
+      "</stream:stream>"
+  """
+  def end_stream, do: xmlstreamend(name: "stream:stream")
+
+  @doc """
+  Generates the XML to start TLS.
+
+  ## Example
+      iex> stanza = Hedwig.Stanza.start_tls
+      {:xmlel, "starttls", [{"xmlns", "urn:ietf:params:xml:ns:xmpp-tls"}], []}
+      iex> Hedwig.Stanza.to_xml(stanza)
+      "<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>"
+  """
   def start_tls do
     xmlel(name: "starttls",
       attrs: [
