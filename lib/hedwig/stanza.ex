@@ -102,9 +102,7 @@ defmodule Hedwig.Stanza do
 
   def bind(resource) do
     body = xmlel(name: "bind",
-      attrs: [
-        {"xmlns", ns_bind},
-      ],
+      attrs: [{"xmlns", ns_bind}],
       children: [
         xmlel(name: "resource",
           children: xmlcdata(content: resource))
@@ -113,11 +111,7 @@ defmodule Hedwig.Stanza do
   end
 
   def session do
-    body = xmlel(name: "session",
-      attrs: [
-        {"xmlns", ns_session}
-      ])
-    iq("set", body)
+    iq("set", xmlel(name: "session", attrs: [{"xmlns", ns_session}]))
   end
 
   def presence do
