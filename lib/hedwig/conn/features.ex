@@ -20,8 +20,9 @@ defmodule Hedwig.Conn.Features do
       amp?: supports?(features, "amp"),
       compression?: supports?(features, "compression"),
       registration?: supports?(features, "register"),
+      stream_management?: supports?(features, "sm"),
       tls?: supports?(features, "starttls"),
-      stream_management?: supports?(features, "sm")
+      mechanisms: supported_auth_mechanisms(features)
     }
   end
 
