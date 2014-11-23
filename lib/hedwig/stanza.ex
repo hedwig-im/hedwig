@@ -223,6 +223,8 @@ defmodule Hedwig.Stanza do
       ])
   end
 
+  def cdata(payload) do
+    [xmlcdata(content: payload)]
   end
 
   def base64_cdata(payload) do
