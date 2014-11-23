@@ -46,13 +46,13 @@ defmodule Hedwig.Handler do
   """
   def reply(msg, body) do
     client = msg.client
-    msg = Stanza.message(msg.type, JID.bare(msg.from), body)
+    msg = Stanza.message(JID.bare(msg.from), msg.type, body)
     Client.reply(client, msg)
   end
 
   def groupchat(msg, body) do
     client = msg.client
-    msg = Stanza.message("groupchat", JID.bare(msg.to), body)
+    msg = Stanza.message(JID.bare(msg.to), "groupchat", body)
     Client.reply(client, msg)
   end
 

@@ -170,11 +170,14 @@ defmodule Hedwig.Stanza do
       ])
   end
 
-  def chat(to, body), do: message("chat", to, body)
-  def normal(to, body), do: message("normal", to, body)
-  def groupchat(to, body), do: message("groupchat", to, body)
+  def chat(to, body), do: message(to, "chat", body)
+  def normal(to, body), do: message(to, "normal", body)
+  def groupchat(to, body), do: message(to, "groupchat", body)
 
-  def message(type, to, message) do
+  def message(msg) when is_map(msg) do
+    message(msg["to"], msg["type"], msg["body"])
+  end
+  def message(to, type, message) do
     xmlel(name: "message",
       attrs: [
         {"to", to},
