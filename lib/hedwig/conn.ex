@@ -52,7 +52,7 @@ defmodule Hedwig.Conn do
     |> start_stream
     |> negotiate_features
     |> start_tls
-    |> negotiate_auth_mechanisms
+    |> negotiate_features
     |> authenticate
     |> bind
     |> session
@@ -88,12 +88,6 @@ defmodule Hedwig.Conn do
       false ->
         conn
     end
-  end
-
-  def negotiate_auth_mechanisms(conn) do
-    stream_features = recv(conn, :wait_for_features)
-    mechanisms = Features.supported_auth_mechanisms(stream_features)
-    %Conn{conn | features: %Features{mechanisms: mechanisms}}
   end
 
   def authenticate(conn) do
