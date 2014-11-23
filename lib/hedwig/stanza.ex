@@ -98,6 +98,12 @@ defmodule Hedwig.Stanza do
     iq(to, "get", xmlel(name: "vCard", attrs: [{"xmlns", ns_vcard}]))
   end
 
+  def disco_info(to) do
+    iq(to, "get", xmlel(name: "query", attrs: [{"xmlns", ns_disco_info}]))
+  end
+
+  def disco_items(to) do
+    iq(to, "get", xmlel(name: "query", attrs: [{"xmlns", ns_disco_items}]))
   end
 
   @doc """
