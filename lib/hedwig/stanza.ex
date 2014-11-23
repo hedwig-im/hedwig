@@ -6,10 +6,22 @@ defmodule Hedwig.Stanza do
 
   use Hedwig.XML
 
+  alias Hedwig.JID
+  alias Hedwig.Stanzas.Presence
+
   @doc """
   Converts an `exml` record to an XML binary string.
   """
   def to_xml(record) when Record.is_record(record), do: :exml.to_binary(record)
+  def to_xml(%Presence{} = pres) do
+    xmlel(name: "presence",
+      attrs: [
+        {"to", JID.bare(pres.to)},
+        {"type", pres.type}
+      ]
+    ) |> to_xml
+  end
+
   @doc """
   Starts an XML stream.
 
