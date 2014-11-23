@@ -118,6 +118,10 @@ defmodule Hedwig.Stanza do
     xmlel(name: "presence")
   end
 
+  def presence(type) do
+    xmlel(name: "presence", attrs: [{"type", type}])
+  end
+
   def iq(type, body) do
     xmlel(name: "iq", attrs: [{"type", type}, {"id", id}], children: body)
   end
