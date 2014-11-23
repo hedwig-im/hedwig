@@ -90,6 +90,10 @@ defmodule Hedwig.Stanza do
     xmlel(iq, attrs: [{"to", to}|xmlel(iq, :attrs)])
   end
 
+  def get_roster do
+    iq("get", xmlel(name: "query", attrs: [{"xmlns", ns_roster}]))
+  end
+
   end
 
   @doc """
