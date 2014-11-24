@@ -4,8 +4,12 @@ defmodule Hedwig.JidTest do
   alias Hedwig.JID
 
   test "it converts structs to binaries" do
+    jid = %JID{server: "example.com"}
+    assert JID.to_string(jid) == "example.com"
+
     jid = %JID{user: "jdoe", server: "example.com"}
     assert JID.to_string(jid) == "jdoe@example.com"
+
     jid = %JID{user: "jdoe", server: "example.com", resource: "library"}
     assert JID.to_string(jid) == "jdoe@example.com/library"
   end
@@ -20,9 +24,14 @@ defmodule Hedwig.JidTest do
   test "it converts binaries into structs" do
     string = "jdoe@example.com"
     assert JID.parse(string) == %JID{user: "jdoe", server: "example.com"}
+
     string = "jdoe@example.com/library"
     assert JID.parse(string) == %JID{user: "jdoe", server: "example.com", resource: "library"}
+
     string = "jdoe@example.com/jdoe@example.com/resource"
     assert JID.parse(string) == %JID{user: "jdoe", server: "example.com", resource: "jdoe@example.com/resource"}
+
+    string = "example.com"
+    assert JID.parse(string) == %JID{user: "", server: "example.com", resource: ""}
   end
 end

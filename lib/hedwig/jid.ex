@@ -33,8 +33,12 @@ defmodule Hedwig.JID do
 
       iex> Hedwig.JID.to_string(%Hedwig.JID{user: "romeo", server: "capulet.lit"})
       "romeo@capulet.lit"
+
+      iex> Hedwig.JID.to_string(%Hedwig.JID{server: "capulet.lit"})
+      "capulet.lit"
   """
   @spec to_string(jid :: JID.t) :: binary
+  def to_string(%JID{user: "", server: server, resource: ""}), do: server
   def to_string(%JID{user: user, server: server, resource: ""}) do
     user <> "@" <> server
   end
@@ -75,6 +79,8 @@ defmodule Hedwig.JID do
         %JID{user: user, server: server, resource: resource}
       [user, server] ->
         %JID{user: user, server: server}
+      [server] ->
+        %JID{server: server}
     end
   end
 end
