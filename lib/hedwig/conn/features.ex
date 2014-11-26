@@ -31,7 +31,7 @@ defmodule Hedwig.Conn.Features do
       xml when Record.is_record(xml, :xmlel) ->
         mechanisms = xmlel(xml, :children)
         for mechanism <- mechanisms, into: [], do: :exml_query.cdata(mechanism)
-      [] -> []
+      :undefined -> []
     end
   end
 
