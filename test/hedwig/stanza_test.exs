@@ -29,8 +29,8 @@ defmodule Hedwig.StanzaTest do
   end
 
   test "auth" do
-    base_64_payload = <<0>> <> "username" <> <<0>> <> "password"
-    assert Stanza.auth("PLAIN", base_64_payload) |> Stanza.to_xml ==
+    data = <<0>> <> "username" <> <<0>> <> "password"
+    assert Stanza.auth("PLAIN", Stanza.base64_cdata(data)) |> Stanza.to_xml ==
       "<auth mechanism='PLAIN' xmlns='#{ns_sasl}'>AHVzZXJuYW1lAHBhc3N3b3Jk</auth>"
   end
 
@@ -49,7 +49,7 @@ defmodule Hedwig.StanzaTest do
   end
 
   test "message" do
-    assert Stanza.message("chat", "test@localhost", "Hello") |> Stanza.to_xml =~
-      ~r"<message id='(.*)' type='chat' to='test@localhost'><body>Hello</body></message>"
+    assert Stanza.message("test@localhost", "chat", "Hello") |> Stanza.to_xml =~
+      ~r"<message xml:lang='en' id='(.*)' type='chat' to='test@localhost'><body>Hello</body></message>"
   end
 end
