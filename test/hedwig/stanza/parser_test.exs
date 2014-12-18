@@ -22,6 +22,8 @@ defmodule Hedwig.Stanza.ParserTest do
     assert parsed.id == "b0e3"
     assert parsed.to == %Hedwig.JID{user: "scrogson", server: "im.test.dev", resource: "issues"}
     assert parsed.from == %Hedwig.JID{user: "", server: "im.test.dev", resource: ""}
-    assert parsed.payload [%{name: "query"}]
+    [payload] = parsed.payload
+    assert %{name: "query", xmlns: "http://jabber.org/protocol/disco#items"} = payload
+    assert Enum.count(payload.payload) == 2
   end
 end
