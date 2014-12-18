@@ -163,7 +163,9 @@ defmodule Hedwig.Stanza do
       {:xmlel, "presence", [{"to", "lobby@muc.localhost/hedwigbot"}],
        [{:xmlel, "x", [{"xmlns", "http://jabber.org/protocol/muc"}], []}]}
   """
-  def join(room, username) do
+  def join(room, username), do: join(:no_history, room, username)
+
+  def join(:no_history, room, username) do
     xmlel(name: "presence",
       attrs: [
         {"to", "#{room}/#{username}"}
