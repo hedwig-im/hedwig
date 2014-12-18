@@ -28,24 +28,24 @@ defmodule Hedwig.JID do
   Returns a string representation from a JID struct.
 
   ## Examples
-      iex> Hedwig.JID.to_string(%Hedwig.JID{user: "romeo", server: "capulet.lit", resource: "chamber"})
+      iex> to_string(%Hedwig.JID{user: "romeo", server: "capulet.lit", resource: "chamber"})
       "romeo@capulet.lit/chamber"
 
-      iex> Hedwig.JID.to_string(%Hedwig.JID{user: "romeo", server: "capulet.lit"})
+      iex> to_string(%Hedwig.JID{user: "romeo", server: "capulet.lit"})
       "romeo@capulet.lit"
 
-      iex> Hedwig.JID.to_string(%Hedwig.JID{server: "capulet.lit"})
+      iex> to_string(%Hedwig.JID{server: "capulet.lit"})
       "capulet.lit"
   """
-  @spec to_string(jid :: JID.t) :: binary
-  def to_string(%JID{user: "", server: server, resource: ""}), do: server
-  def to_string(%JID{user: user, server: server, resource: ""}) do
-    user <> "@" <> server
+  defimpl String.Chars, for: JID do
+    def to_string(%JID{user: "", server: server, resource: ""}), do: server
+    def to_string(%JID{user: user, server: server, resource: ""}) do
+      user <> "@" <> server
+    end
+    def to_string(%JID{user: user, server: server, resource: resource}) do
+      user <> "@" <> server <> "/" <> resource
+    end
   end
-  def to_string(%JID{user: user, server: server, resource: resource}) do
-    user <> "@" <> server <> "/" <> resource
-  end
-
 
   @doc """
   Returns a binary JID without a resource.
@@ -59,7 +59,7 @@ defmodule Hedwig.JID do
   """
   @spec bare(jid :: binary | JID.t) :: binary
   def bare(jid) when is_binary(jid), do: parse(jid) |> bare
-  def bare(%JID{} = jid), do: JID.to_string(%JID{jid | resource: ""})
+  def bare(%JID{} = jid), do: to_string(%JID{jid | resource: ""})
 
 
   @doc """
