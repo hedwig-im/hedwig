@@ -6,24 +6,28 @@ defmodule Hedwig.Stanzas.Message do
   @type jid :: JID.t
 
   @type t :: %__MODULE__{
-    client: pid,
-    from: jid,
+    id: binary,
     to: jid,
+    from: jid,
+    type: binary,
     body: binary | list,
     html: binary | list | nil,
-    type: binary,
+    payload: list,
     delayed?: boolean,
+    client: pid,
     matches: list | %{} | nil
   }
 
   defstruct [
-    client: nil,
-    from: nil,
+    id: "",
     to: nil,
+    from: nil,
+    type: "normal",
     body: "",
     html: nil,
-    type: "normal",
+    payload: [],
     delayed?: false,
+    client: nil,
     matches: nil
   ]
 end
