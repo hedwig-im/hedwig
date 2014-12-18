@@ -6,9 +6,6 @@ defmodule Hedwig.Stanza do
 
   use Hedwig.XML
 
-  alias Hedwig.JID
-  alias Hedwig.Stanzas.Presence
-
   @doc """
   Converts an `exml` record to an XML binary string.
   """
