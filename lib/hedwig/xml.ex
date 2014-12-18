@@ -9,6 +9,9 @@ defmodule Hedwig.XML do
       import unquote __MODULE__
       alias unquote __MODULE__
       alias Hedwig.Stanza
+      alias Hedwig.Stanzas.IQ
+      alias Hedwig.Stanzas.Message
+      alias Hedwig.Stanzas.Presence
 
       Record.defrecordp :xmlel, name: "", attrs: [], children: []
       Record.defrecordp :xmlcdata, content: []
