@@ -13,11 +13,22 @@ defmodule Hedwig.Stanza do
   Converts an `exml` record to an XML binary string.
   """
   def to_xml(record) when Record.is_record(record), do: :exml.to_binary(record)
-  def to_xml(%Presence{} = pres) do
+
+  def to_xml(%IQ{} = stanza) do
+    xmlel(name: "iq",
+      attrs: [
+        {"to", to_string(stanza.to)},
+        {"type", stanza.type},
+        {"id", stanza.id}
+      ]
+    ) |> to_xml
+  end
+
+  def to_xml(%Presence{} = stanza) do
     xmlel(name: "presence",
       attrs: [
-        {"to", JID.bare(pres.to)},
-        {"type", pres.type}
+        {"to", to_string(stanza.to)},
+        {"type", stanza.type}
       ]
     ) |> to_xml
   end
