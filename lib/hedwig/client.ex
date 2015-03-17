@@ -140,12 +140,15 @@ defmodule Hedwig.Client do
     {:noreply, %Client{client | conn: conn}}
   end
 
-  def handle_cast({:handle_stanza, stanza}, %Client{event_manager: pid} = client) do
+  def handle_cast({:handle_stanza, stanza}, %Client{event_manager: pid, config: %{ignore_from_self?: ignore}} = client) do
     Logger.info fn -> "Incoming stanza: #{inspect stanza}" end
 
-    unless from_self?(stanza.from, client) do
+    drop = if from_self?(stanza.from, client) && ignore == true, do: true, else: false
+
+    unless drop do
       GenEvent.notify(pid, stanza)
     end
+
     {:noreply, client}
   end
 
