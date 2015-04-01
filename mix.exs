@@ -8,7 +8,7 @@ defmodule Hedwig.Mixfile do
   def project do
     [
       app: :hedwig,
-      version: "0.0.3",
+      version: "0.0.4",
       elixir: "~> 1.0",
       deps: deps,
       description: @description,
