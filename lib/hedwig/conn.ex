@@ -1,6 +1,6 @@
 defmodule Hedwig.Conn do
   @moduledoc """
-  The Hedwing connection.
+  The Hedwig connection.
 
   This module defines a struct and the main functions for working
   with XMPP connections.
