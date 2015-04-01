@@ -4,12 +4,9 @@
 
 ![Hedwig](https://raw.githubusercontent.com/scrogson/hedwig/master/hedwig.png)
 
-This is very much a work in progress as I learn Erlang/Elixir and OTP
-principles.
-
 ## Usage
 
-I'm still working out all the details. Ultimately you will be able to configure multiple clients/bots to connect to an XMPP server and specify handlers for incoming `message`, `presence`, or `iq` stanzas.
+Configure multiple clients/bots to connect to an XMPP server. Specify handlers for incoming `message`, `presence`, or `iq` stanzas.
 
 ## Config
 
@@ -101,7 +98,7 @@ end
 
 The MIT License (MIT)
 
-Copyright (c) 2014 Sonny Scroggin
+Copyright (c) 2015 Sonny Scroggin
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
