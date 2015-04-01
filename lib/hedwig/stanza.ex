@@ -40,15 +40,8 @@ defmodule Hedwig.Stanza do
        [{"to", "im.capulet.lit"}, {"version", "1.0"}, {"xml:lang", "en"},
          {"xmlns", "jabber:client"},
          {"xmlns:stream", "http://etherx.jabber.org/streams"}]}
-
       iex> Hedwig.Stanza.to_xml(stanza)
-      "<stream:stream
-         xmlns:stream='http://etherx.jabber.org/streams'
-         version='1.0'
-         xmlns='jabber:client'
-         to='im.capulet.lit'
-         xml:lang='en'
-         xmlns:xml='http://www.w3.org/XML/1998/namespace'>"
+      "<stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:client' xml:lang='en' version='1.0' to='im.capulet.lit'>"
   """
   def start_stream(server, xmlns \\ ns_jabber_client) do
     xmlstreamstart(name: "stream:stream",
@@ -65,8 +58,8 @@ defmodule Hedwig.Stanza do
   Ends the XML stream
 
   ## Example
-      iex> stanza = Hedwig.Stanza.end_steam
-      {:xmlel, "stream:stream", [], []}
+      iex> stanza = Hedwig.Stanza.end_stream
+      {:xmlstreamend, "stream:stream"}
       iex> Hedwig.Stanza.to_xml(stanza)
       "</stream:stream>"
   """
@@ -161,7 +154,8 @@ defmodule Hedwig.Stanza do
   ## Examples
       iex> Hedwig.Stanza.join("lobby@muc.localhost", "hedwigbot")
       {:xmlel, "presence", [{"to", "lobby@muc.localhost/hedwigbot"}],
-       [{:xmlel, "x", [{"xmlns", "http://jabber.org/protocol/muc"}], []}]}
+       [{:xmlel, "x", [{"xmlns", "http://jabber.org/protocol/muc"}],
+       [{:xmlel, "history", [{"maxstanzas", "0"}], []}]}]}
   """
   def join(room, username), do: join(:no_history, room, username)
 

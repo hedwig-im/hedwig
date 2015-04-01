@@ -4,6 +4,8 @@ defmodule Hedwig.StanzaTest do
 
   alias Hedwig.Stanza
 
+  doctest Hedwig.Stanza
+
   test "start_stream with default xmlns" do
     assert Stanza.start_stream("im.wonderland.lit") |> Stanza.to_xml ==
       "<stream:stream xmlns:stream='#{ns_xmpp}' xmlns='jabber:client' xml:lang='en' version='1.0' to='im.wonderland.lit'>"
