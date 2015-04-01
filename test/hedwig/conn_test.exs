@@ -4,7 +4,7 @@ defmodule Hedwig.ConnTest do
 
   alias Hedwig.Client
 
-  setup client do
+  setup do
     {:ok, %{
       jid:      System.get_env("TEST_XMPP_JID"),
       password: System.get_env("TEST_XMPP_PASS"),
@@ -14,7 +14,7 @@ defmodule Hedwig.ConnTest do
   end
 
   test "it connects", client do
-    {:ok, pid} = Client.start_link(client)
+    {:ok, _pid} = Client.start_link(client)
     assert capture_io(:user, fn ->
       :timer.sleep(300)
     end) =~ ~r/#{client.jid} successfully connected/i

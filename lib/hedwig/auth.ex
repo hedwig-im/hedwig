@@ -26,7 +26,7 @@ defmodule Hedwig.Auth do
     authenticate_with(mechanism, conn)
     case success?(conn) do
       {:ok, conn} -> conn
-      {:error, conn} -> raise Hedwig.Auth.Error, mechanism
+      {:error, _conn} -> raise Hedwig.Auth.Error, mechanism
     end
   end
 

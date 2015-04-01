@@ -20,7 +20,7 @@ defmodule Hedwig.Stanza.Parser do
     |> struct([payload: parse_payload(children)])
   end
 
-  def parse(xmlel(name: "iq", attrs: attrs, children: children) = stanza) do
+  def parse(xmlel(name: "iq", attrs: attrs, children: children)) do
     struct(IQ, parse_attrs(attrs))
     |> struct([payload: parse_payload(children)])
   end
