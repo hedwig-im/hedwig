@@ -143,7 +143,7 @@ defmodule Hedwig.Client do
   def handle_cast({:handle_stanza, stanza}, %Client{event_manager: pid, config: %{ignore_from_self?: ignore}} = client) do
     Logger.info fn -> "Incoming stanza: #{inspect stanza}" end
 
-    drop = if from_self?(stanza.from, client) && ignore == true, do: true, else: false
+    drop = from_self?(stanza.from, client) && ignore
 
     unless drop do
       GenEvent.notify(pid, stanza)
