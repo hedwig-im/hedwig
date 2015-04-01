@@ -22,7 +22,7 @@ defmodule Hedwig.Handlers.Help do
   defp process_help(msg, nickname) do
     help = Client.get(msg.client, :handlers)
     |> Enum.filter(fn {mod, _opts} -> not is_nil(mod.usage) end)
-    |> Enum.map_join "---\n", fn {mod, _opts} ->
+    |> Enum.map_join "", fn {mod, _opts} ->
       replace_nickname(mod.usage, nickname)
     end
     reply(msg, Stanza.body(help))
