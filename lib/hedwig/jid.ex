@@ -66,10 +66,10 @@ defmodule Hedwig.JID do
   Parses a binary string JID into a JID struct.
 
   ## Examples
-      iex> Hedwig.JID.parse("romeo@capulet.lit")
+      iex> Hedwig.JID.parse("romeo@capulet.lit/chamber")
       %Hedwig.JID{user: "romeo", server: "capulet.lit", resource: "chamber"}
 
-      iex> Hedwig.JID.bare("romeo@capulet.lit")
+      iex> Hedwig.JID.parse("romeo@capulet.lit")
       %Hedwig.JID{user: "romeo", server: "capulet.lit", resource: ""}
   """
   @spec parse(jid :: binary) :: JID.t

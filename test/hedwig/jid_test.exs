@@ -3,6 +3,8 @@ defmodule Hedwig.JidTest do
 
   alias Hedwig.JID
 
+  doctest Hedwig.JID
+
   test "String.Chars protocol converts structs to binaries" do
     jid = %JID{server: "example.com"}
     assert to_string(jid) == "example.com"
