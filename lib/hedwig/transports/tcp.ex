@@ -1,6 +1,6 @@
 defmodule Hedwig.Transports.TCP do
   @moduledoc """
-  XMPP Socket connection
+  TCP Socket connection
   """
 
   use Hedwig.Transport
