@@ -52,7 +52,6 @@ defmodule Hedwig.Conn do
     |> start_stream
     |> negotiate_features
     |> start_tls
-    |> negotiate_features
     |> authenticate
     |> bind
     |> session
@@ -84,7 +83,10 @@ defmodule Hedwig.Conn do
       true ->
         mod.send(conn, Stanza.start_tls)
         recv(conn, :wait_for_proceed)
-        mod.upgrade_to_tls(conn)
+
+        conn
+        |> mod.upgrade_to_tls()
+        |> negotiate_features()
       false ->
         conn
     end
