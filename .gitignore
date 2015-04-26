@@ -7,3 +7,5 @@ erl_crash.dump
 /config/dev.exs
 /config/prod.exs
 /doc
+/mnesia
+/log

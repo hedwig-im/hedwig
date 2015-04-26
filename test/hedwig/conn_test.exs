@@ -1,22 +1,28 @@
 defmodule Hedwig.ConnTest do
-  use ExUnit.Case, async: true
-  import ExUnit.CaptureIO
 
-  alias Hedwig.Client
+  use ExUnit.Case, async: true
+  use UserHelper
 
   setup do
-    {:ok, %{
-      jid:      System.get_env("TEST_XMPP_JID"),
-      password: System.get_env("TEST_XMPP_PASS"),
-      nickname: System.get_env("TEST_XMPP_NICK"),
-      resource: System.get_env("TEST_XMPP_RESOURCE") || "hedwig",
-     }}
+    capture_log fn -> :ejabberd.start end
+
+    bob = setup_user("bob")
+
+    on_exit fn ->
+      capture_log fn ->
+        teardown_user("bob")
+      end
+      File.rm_rf("mnesia")
+    end
+
+    {:ok, bob: bob}
   end
 
-  test "it connects", client do
-    {:ok, _pid} = Client.start_link(client)
-    assert capture_io(:user, fn ->
+  test "it connects", %{bob: bob} do
+    output = capture_log fn ->
+      {:ok, _pid} = Hedwig.Client.start_link(bob)
       :timer.sleep(300)
-    end) =~ ~r/#{client.jid} successfully connected/i
+    end
+    assert output =~ ~r/#{bob.jid} successfully connected/i
   end
 end
