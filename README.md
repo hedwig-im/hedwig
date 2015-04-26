@@ -2,6 +2,8 @@
 
 > XMPP Client/Bot Framework for Elixir
 
+[![Build Status](https://travis-ci.org/scrogson/hedwig.svg?branch=master)](https://travis-ci.org/scrogson/hedwig)
+
 ![Hedwig](https://raw.githubusercontent.com/scrogson/hedwig/master/hedwig.png)
 
 ## Usage
