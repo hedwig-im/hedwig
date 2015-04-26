@@ -1,5 +1,18 @@
 use Mix.Config
 
-config :logger, level: :info
+config :sasl,
+  sasl_error_logger: false
 
-import_config "#{Mix.env}.exs"
+config :logger, :console,
+  level: :debug
+
+config :hedwig,
+  clients: []
+
+config :ejabberd,
+  file: "config/ejabberd.yml",
+  log_path: 'logs/ejabberd.log'
+
+config :mnesia,
+  dir: 'mnesia'
+
