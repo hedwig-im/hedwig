@@ -8,6 +8,23 @@
 
 ## Usage
 
+Add the dependencies to you `mix.exs` file.
+
+```elixir
+defp deps do
+	[{:hedwig, "~> 0.1.0"},
+   {:exml, github: "paulgray/exml"}]
+end
+```
+
+Update your applications to include both projects.
+
+```elixir
+def applications do
+	[applications: [:hedwig, :exml]]
+end
+```
+
 Configure multiple clients/bots to connect to an XMPP server. Specify handlers for incoming `message`, `presence`, or `iq` stanzas.
 
 ## Config
