@@ -12,7 +12,7 @@ Add the dependencies to you `mix.exs` file.
 
 ```elixir
 defp deps do
-	[{:hedwig, "~> 0.1.0"},
+  [{:hedwig, "~> 0.1.0"},
    {:exml, github: "paulgray/exml"}]
 end
 ```
@@ -21,7 +21,7 @@ Update your applications to include both projects.
 
 ```elixir
 def applications do
-	[applications: [:hedwig, :exml]]
+  [applications: [:hedwig, :exml]]
 end
 ```
 
