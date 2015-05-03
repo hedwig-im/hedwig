@@ -1,4 +1,7 @@
 defmodule Hedwig.Auth do
+  @moduledoc """
+  Handles XMPP authentication mechanisms.
+  """
 
   use Hedwig.XML
 
@@ -16,6 +19,11 @@ defmodule Hedwig.Auth do
     end
   end
 
+  @doc """
+  Authenticates the client using the configured preferred mechanism.
+
+  If the preferred mechanism is not supported it will choose PLAIN.
+  """
   def authenticate!(conn) do
     preferred  = conn.config.preferred_auth_mechanisms
     mechanisms = conn.features.mechanisms
