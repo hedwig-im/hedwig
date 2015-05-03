@@ -1,7 +1,8 @@
 defmodule Hedwig.XML do
   @moduledoc """
-  Provides functions and records for exml library.
+  Provides functions for building XML stanzas with the `exml` library.
   """
+
   defmacro __using__(_opts) do
     quote do
       use Hedwig.XMLNS
