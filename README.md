@@ -38,7 +38,7 @@ config :hedwig,
   clients: [
     %{
       jid: "romeo@capulet.lit",
-      password: "iL0v3JuL13t"
+      password: "iL0v3JuL13t",
       nickname: "loverboy",
       resource: "chamber",
       config: %{ # This is only necessary if you need to override the defaults.
