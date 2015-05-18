@@ -13,6 +13,7 @@ defmodule Hedwig.Client do
   alias Hedwig.Config
   alias Hedwig.Client
   alias Hedwig.Handler
+  alias Hedwig.Helpers
 
   @type t :: %__MODULE__{}
   defstruct [
@@ -90,25 +91,6 @@ defmodule Hedwig.Client do
     Enum.find Application.get_env(:hedwig, :clients), &(&1.jid == jid)
   end
 
-  @doc """
-  It's best to ignore messages you receive back from yourself to avoid
-  recursive handling.
-  """
-  def from_self?(%JID{resource: resource} = from, client) do
-    JID.bare(from) == JID.parse(client.jid) or resource == client.nickname
-  end
-  def from_self?(_, _), do: true
-
-  @doc """
-  If the resource is blank, the message is from the MUC room and not a user.
-
-  This happens when you join a room and the room has a topic set. The room
-  will send you a message stanza to notify you of the room topic.
-  """
-  def from_muc_room?(%JID{resource: resource}) do
-    resource == ""
-  end
-  def from_muc_room?(_), do: true
 
   def init(config) do
     {:ok, Config.normalize(config)}
@@ -143,7 +125,7 @@ defmodule Hedwig.Client do
   def handle_cast({:handle_stanza, stanza}, %Client{event_manager: pid, config: %{ignore_from_self?: ignore}} = client) do
     Logger.info fn -> "Incoming stanza: #{inspect stanza}" end
 
-    drop = from_self?(stanza.from, client) && ignore
+    drop = Helpers.from_self?(stanza.from, client) && ignore
 
     unless drop do
       GenEvent.notify(pid, stanza)
