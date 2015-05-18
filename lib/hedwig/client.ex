@@ -16,6 +16,7 @@ defmodule Hedwig.Client do
   alias Hedwig.Helpers
 
   @type t :: %__MODULE__{}
+
   defstruct [
     jid: "",
     password: "",
@@ -27,6 +28,10 @@ defmodule Hedwig.Client do
     handlers: [],
     event_manager: nil
   ]
+
+  ## Public API
+
+  def start(config), do: start_link(config)
 
   @spec start_link(config :: %{}) :: {:ok, client :: pid}
   def start_link(config) do
@@ -91,6 +96,7 @@ defmodule Hedwig.Client do
     Enum.find Application.get_env(:hedwig, :clients), &(&1.jid == jid)
   end
 
+  ## GenServer API
 
   def init(config) do
     {:ok, Config.normalize(config)}
