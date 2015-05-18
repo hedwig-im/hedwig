@@ -29,7 +29,7 @@ defmodule Hedwig.Client do
 
   @spec start_link(config :: %{}) :: {:ok, client :: pid}
   def start_link(config) do
-    {:ok, client} = GenServer.start_link(__MODULE__, config, name: String.to_atom(config.jid))
+    {:ok, client} = GenServer.start_link(__MODULE__, config)
     client
     |> start_event_manager
     |> start_event_handlers
