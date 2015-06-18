@@ -42,11 +42,10 @@ defmodule Hedwig.Handler do
   end
 
   @doc """
-  Send a reply via the client pid.
+  Send a message reply via the client pid.
   """
-  def reply(msg, body) do
-    client = msg.client
-    msg = Stanza.message(JID.bare(msg.from), msg.type, body)
+  def reply(%Message{client: client, from: from, type: type}, body) do
+    msg = Stanza.message(JID.bare(from), type, body)
     Client.reply(client, msg)
   end
 
