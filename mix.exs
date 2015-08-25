@@ -22,11 +22,11 @@ defmodule Hedwig.Mixfile do
     [{:exml, github: "paulgray/exml"},
 
      # Test dependencies
-     {:ejabberd, github: "processone/ejabberd", tag: "15.04", only: :test},
+     {:ejabberd, github: "processone/ejabberd", tag: "15.07", only: :test},
 
      # Docs dependencies
      {:earmark, "~> 0.1", only: :dev},
-     {:ex_doc, "~> 0.7", only: :dev}]
+     {:ex_doc, "~> 0.8", only: :dev}]
   end
 
   defp package do
