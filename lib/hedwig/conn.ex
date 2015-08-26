@@ -137,7 +137,7 @@ defmodule Hedwig.Conn do
       {:send, stanza} ->
         mod.send(conn, stanza)
         Conn.await(conn)
-    after 10000 ->
+    after 10_000 ->
       Conn.await(conn)
     end
   end
