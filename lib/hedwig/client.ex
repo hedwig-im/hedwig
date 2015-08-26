@@ -8,7 +8,6 @@ defmodule Hedwig.Client do
 
   require Logger
 
-  alias Hedwig.JID
   alias Hedwig.Conn
   alias Hedwig.Config
   alias Hedwig.Client
@@ -30,8 +29,6 @@ defmodule Hedwig.Client do
   ]
 
   ## Public API
-
-  def start(config), do: start_link(config)
 
   @spec start_link(config :: %{}) :: {:ok, client :: pid}
   def start_link(config) do
@@ -77,6 +74,7 @@ defmodule Hedwig.Client do
   def get(pid), do: GenServer.call(pid, :get)
   def get(pid, key), do: GenServer.call(pid, {:get, key})
 
+
   @doc """
   Notifies the event manager of an incoming stanza.
   """
@@ -87,13 +85,6 @@ defmodule Hedwig.Client do
 
   def reply(pid, stanza) do
     GenServer.cast(pid, {:reply, stanza})
-  end
-
-  @doc """
-  Returns the client config for the given JID.
-  """
-  def client_for(jid) do
-    Enum.find Application.get_env(:hedwig, :clients), &(&1.jid == jid)
   end
 
   ## GenServer API
@@ -142,6 +133,11 @@ defmodule Hedwig.Client do
 
   def handle_cast({:reply, stanza}, %Client{conn: conn} = client) do
     Kernel.send(conn, {:send, stanza})
+    {:noreply, client}
+  end
+
+  def handle_info(:register, %Client{jid: jid} = client) do
+    true = Hedwig.Registry.register(jid)
     {:noreply, client}
   end
 

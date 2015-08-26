@@ -100,8 +100,10 @@ defmodule Hedwig.Conn do
   end
 
   def bind(%Conn{transport: mod, client: client} = conn) do
-    mod.send conn, Stanza.bind(Client.get(client, :resource))
+    config = Client.get(client)
+    mod.send conn, Stanza.bind(config.resource)
     recv(conn, :wait_for_bind_result)
+    send client, :register
     conn
   end
 
