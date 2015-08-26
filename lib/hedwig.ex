@@ -1,15 +1,47 @@
 defmodule Hedwig do
+  @moduledoc """
+    Hedwig.start_client(%{
+      jid: "chatops@im.bluebox.dev",
+      password: "password",
+      nickname: "chatops",
+      rooms: ["lobby@conference.im.bluebox.dev"],
+      handlers: [{Hedwig.Handlers.Help, %{}}, {Hedwig.Handlers.Panzy, %{}}]
+    })
+  """
+
   use Application
 
+  @doc false
   def start(_type, _args) do
-    import Supervisor.Spec, warn: false
+    Hedwig.Supervisor.start_link()
+  end
 
-    clients = Application.get_env(:hedwig, :clients, [])
-    children = for client <- clients, into: [] do
-      worker(Hedwig.Client, [client], id: make_ref())
-    end
+  @doc """
+  Starts a client with the given configuration.
+  """
+  def start_client(config) do
+    Supervisor.start_child(Hedwig.Client.Supervisor, [config])
+  end
 
-    opts = [strategy: :one_for_one, name: Hedwig.Supervisor]
-    Supervisor.start_link(children, opts)
+  @doc """
+  Stops a client with the given PID.
+  """
+  def stop_client(pid) do
+    Supervisor.terminate_child(Hedwig.Client.Supervisor, pid)
+  end
+
+  @doc """
+  List all clients.
+  """
+  def which_clients do
+    Supervisor.which_children(Hedwig.Client.Supervisor)
+  end
+
+  @doc """
+  Find a client PID by JID through the `Hedwig.Registry`.
+  """
+  def whereis(jid) do
+    Hedwig.Registry.whereis(jid)
   end
 end
+
