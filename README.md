@@ -3,6 +3,7 @@
 > XMPP Client/Bot Framework for Elixir
 
 [![Build Status](https://travis-ci.org/scrogson/hedwig.svg?branch=master)](https://travis-ci.org/scrogson/hedwig)
+[![Coverage Status](https://coveralls.io/repos/scrogson/hedwig/badge.svg?branch=master&service=github)](https://coveralls.io/github/scrogson/hedwig?branch=master)
 
 ![Hedwig](https://raw.githubusercontent.com/scrogson/hedwig/master/hedwig.png)
 
