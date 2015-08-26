@@ -149,6 +149,20 @@ defmodule Hedwig.Stanza do
   end
 
   @doc """
+  Generates a stanza to join a pubsub node. (XEP-0060)
+  
+  """
+  def subscribe(to, node, jid) do
+    iq(to, "set", xmlel(
+          name: "pubsub",
+          attrs: [{"xmlns", ns_pubsub}],
+          children: [
+            xmlel(name: "subscribe", attrs: [{"node", node}, {"jid", jid}])
+          ])
+    )
+  end
+
+  @doc """
   Generates a presence stanza to join a MUC room.
 
   ## Examples
