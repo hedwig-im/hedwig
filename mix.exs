@@ -14,15 +14,16 @@ defmodule Hedwig.Mixfile do
   end
 
   def application do
-    [applications: [:crypto, :ssl, :exml, :logger],
+    [applications: [:crypto, :ssl, :exml, :logger, :gproc],
      mod: {Hedwig, []}]
   end
 
   defp deps do
     [{:exml, github: "paulgray/exml"},
+     {:gproc, "~> 0.3"},
 
      # Test dependencies
-     {:ejabberd, github: "processone/ejabberd", tag: "15.07", only: :test},
+     {:ejabberd, github: "processone/ejabberd", tag: "15.07", only: [:test, :dev]},
 
      # Docs dependencies
      {:earmark, "~> 0.1", only: :dev},

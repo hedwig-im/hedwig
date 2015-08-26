@@ -5,6 +5,7 @@
   "esip": {:git, "https://github.com/processone/p1_sip", "d662d3fe7f6288b444ea321d854de0bd6d40e022", []},
   "ex_doc": {:hex, :ex_doc, "0.8.4"},
   "exml": {:git, "git://github.com/paulgray/exml.git", "8170a55b9582a6f6cca81843047984307dbddd10", []},
+  "gproc": {:hex, :gproc, "0.3.1"},
   "p1_cache_tab": {:git, "https://github.com/processone/cache_tab", "f7ea12b0ba962a3d2f9a406d2954cf7de4e27230", []},
   "p1_iconv": {:git, "https://github.com/processone/eiconv", "8b7542b1aaf0a851f335e464956956985af6d9a2", []},
   "p1_logger": {:git, "https://github.com/processone/p1_logger", "3e19507fd5606a73694917158767ecb3f5704e3f", []},
