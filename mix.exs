@@ -10,7 +10,8 @@ defmodule Hedwig.Mixfile do
      name: "Hedwig",
      description: "XMPP Client/Bot Framework",
      source_url: "https://github.com/scrogson/hedwig",
-     homepage_url: "https://github.com/scrogson/hedwig"]
+     homepage_url: "https://github.com/scrogson/hedwig",
+     test_coverage: [tool: ExCoveralls]]
   end
 
   def application do
@@ -24,6 +25,7 @@ defmodule Hedwig.Mixfile do
 
      # Test dependencies
      {:ejabberd, github: "processone/ejabberd", tag: "15.07", only: [:test, :dev]},
+     {:excoveralls, "~> 0.3", only: :test},
 
      # Docs dependencies
      {:earmark, "~> 0.1", only: :dev},
