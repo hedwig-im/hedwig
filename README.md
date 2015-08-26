@@ -40,8 +40,8 @@ romeo = %{
   handlers: [{Hedwig.Handlers.Panzy, %{}}]
 }
 
-# Start a client for Romeo. This client will be supervised and restarted if it
-crashes abnormally.
+# Start a client for Romeo. This client will be supervised
+# and restarted if it crashes abnormally.
 {:ok, pid} = Hedwig.start_client(romeo)
 
 # Get the pid of the client by the JID
