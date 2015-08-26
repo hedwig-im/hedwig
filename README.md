@@ -28,52 +28,51 @@ end
 
 Configure multiple clients/bots to connect to an XMPP server. Specify handlers for incoming `message`, `presence`, or `iq` stanzas.
 
-## Config
+## Configuring Clients
 
 ```elixir
-use Mix.Config
+romeo = %{
+  jid: "romeo@capulet.lit",
+  password: "iL0v3JuL13t",
+  nickname: "loverboy",
+  resource: "chamber",
+  rooms: ["lobby@conference.capulet.lit"],
+  handlers: [{Hedwig.Handlers.Panzy, %{}}]
+}
 
-alias Hedwig.Handlers
+# Start a client for Romeo. This client will be supervised and restarted if it
+crashes abnormally.
+{:ok, pid} = Hedwig.start_client(romeo)
 
-config :hedwig,
-  clients: [
-    %{
-      jid: "romeo@capulet.lit",
-      password: "iL0v3JuL13t",
-      nickname: "loverboy",
-      resource: "chamber",
-      config: %{ # This is only necessary if you need to override the defaults.
-        server: "im.capulet.lit",
-        port: 9222, # Default port is 5222
-        require_tls?: true,
-        use_compression?: false,
-        use_stream_management?: false,
-        transport: :tcp
-      },
-      rooms: [
-        "lobby@conference.capulet.lit"
-      ],
-      handlers: [
-        {Handlers.Echo, %{}}
-      ]
-    },
-    %{
-      jid: "juliet@capulet.lit",
-      password: "R0m30!"
-      nickname: "romeosgirl",
-      resource: "balcony",
-      rooms: [
-        "lobby@conference.capulet.lit"
-      ],
-      handlers: [
-        {Handlers.Help, %{}},
-        {Handlers.GreatSuccess, %{}}
-      ]
-    }
-  ]
+# Get the pid of the client by the JID
+pid = Hedwig.whereis("romeo@capulet.lit")
+
+# Stop the client.
+Hedwig.stop_client(pid)
 ```
 
-## Handler Example
+## Setting a client's server configuration
+
+If you need to override the default server configuration, you can add the
+`:config` key to the client map:
+
+```elixir
+config: %{
+  server: "im.capulet.lit", # default: inferred by the JID
+  port: 9222, # default: 5222
+  require_tls?: true, # default: false
+  ignore_from_self?: false, # defaults to true
+},
+```
+
+## Building Handlers
+
+Handlers are `GenEvent` handlers that will process incoming stanzas.
+
+All that's needed is to `use Hedwig.Handler` and define `handle_event/2`
+functions to process incoming `Message`, `Presence`, or `IQ` stanzas.
+
+Here is an example:
 
 ```elixir
 defmodule Hedwig.Handlers.GreatSuccess do
@@ -113,6 +112,22 @@ defmodule Hedwig.Handlers.GreatSuccess do
   end
 end
 ```
+
+## NOTE: Always create a default handle_event function
+
+If you do not create a default `handle_event/2` function, your event handler
+will surely crash. So be sure to add a default at the bottom.
+
+```elixir
+def handle_event(_, opts), do: {:ok, opts}
+```
+
+## @usage
+
+The `@usage` module attribute works nicely with `Hedwig.Handlers.Help`. If you
+install the help handler, your bot will listen for `<your-bots-nickname> help`
+and respond with a message containing all of the installed handlers `@usage`
+text.
 
 ## License
 
