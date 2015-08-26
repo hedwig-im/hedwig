@@ -8,11 +8,7 @@ defmodule UserHelper do
     end
   end
 
-  def setup_user(username) do
-    {host, password} = {"localhost", "pass1234"}
-
-    :ejabberd_admin.register(username, host, password)
-
+  def build_user(username, host \\ "localhost", password \\ "pass1234") do
     %{jid:      username <> "@" <> host,
       password: password,
       nickname: username,
@@ -20,8 +16,14 @@ defmodule UserHelper do
       config: %{port: 5223}}
   end
 
-  def teardown_user(username) do
-    :ejabberd_admin.unregister(username, "localhost")
+  def setup_user(username, host \\ "localhost", password \\ "pass1234") do
+    user = build_user(username, host, password)
+    :ejabberd_admin.register(username, host, password)
+    user
+  end
+
+  def teardown_user(username, host \\ "localhost") do
+    :ejabberd_admin.unregister(username, host)
   end
 
   def capture_log(fun) do
