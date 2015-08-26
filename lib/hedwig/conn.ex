@@ -109,14 +109,14 @@ defmodule Hedwig.Conn do
 
   def session(%Conn{transport: mod} = conn) do
     mod.send conn, Stanza.session
-    recv(conn, :wait_for_bind_result)
+    recv(conn, :wait_for_session_result)
     conn
   end
 
   def send_presence(%Conn{transport: mod, client: pid} = conn) do
     jid = Client.get(pid, :jid)
     mod.send conn, Stanza.presence
-    recv(conn, :wait_for_bind_result)
+    recv(conn, :wait_for_presence_result)
     Logger.info fn -> "#{jid} successfully connected." end
     conn
   end
