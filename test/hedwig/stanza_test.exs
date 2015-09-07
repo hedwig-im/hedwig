@@ -25,6 +25,16 @@ defmodule Hedwig.StanzaTest do
       "<starttls xmlns='#{ns_tls}'/>"
   end
 
+  test "get_inband_register" do
+    assert Stanza.get_inband_register |> Stanza.to_xml =~
+      ~r"<iq id='(.*)' type='get'><query xmlns='jabber:iq:register'/></iq>"
+  end
+
+  test "set_inband_register" do
+    assert Stanza.set_inband_register("username", "password") |> Stanza.to_xml =~
+      ~r"<iq id='(.*)' type='set'><query xmlns='jabber:iq:register'><username>username</username><password>password</password></query></iq>"
+  end
+
   test "compress" do
     assert Stanza.compress("zlib") |> Stanza.to_xml ==
       "<compress xmlns='#{ns_compress}'><method>zlib</method></compress>"
