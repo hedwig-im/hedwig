@@ -136,6 +136,21 @@ defmodule Hedwig.Stanza do
     iq("get", xmlel(name: "query", attrs: [{"xmlns", ns_roster}]))
   end
 
+  def get_inband_register do
+    iq("get", xmlel(name: "query", attrs: [{"xmlns", ns_inband_register}]))
+  end
+
+  def set_inband_register(username, password) do
+    iq("set", xmlel(
+      name: "query",
+      attrs: [{"xmlns", ns_inband_register}],
+      children: [
+        xmlel(name: "username", children: :exml.escape_cdata(username)),
+        xmlel(name: "password", children: :exml.escape_cdata(password))
+      ]
+    ))
+  end
+
   def get_vcard(to) do
     iq(to, "get", xmlel(name: "vCard", attrs: [{"xmlns", ns_vcard}]))
   end
