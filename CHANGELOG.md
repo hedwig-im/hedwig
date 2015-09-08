@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.2.0 (2015-08-09)
+
+- Improvements
+
+  - `Hedwig.whereis/1` can be used to return the `pid` of a client by the `jid`
+  - Clients are now supervised via `:simple_one_for_one` and can be
+    started/stopped via `Hedwig.start_client/1` and `Hedwig.stop_client/1`
+  - Supports inband registration via `Stanza.set_inband_register/2`
+  - Supports subscribing to a PubSub node via `Stanza.subscribe/3`
+
+- Backwards Incompatible Changes
+
+  - Clients are no longer configured via `config.exs`. Instead you must now manage
+    starting/stopping clients via `Hedwig.start_client/1` and `Hedwig.stop_client/1`
+
+Release Diff: https://github.com/scrogson/hedwig/compare/v0.1.0...v0.2.0
+
 ## v0.1.0 (2015-01-04)
 
 - Bug Fixes
