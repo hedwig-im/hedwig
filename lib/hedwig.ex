@@ -1,12 +1,21 @@
 defmodule Hedwig do
   @moduledoc """
-    Hedwig.start_client(%{
-      jid: "chatops@im.bluebox.dev",
-      password: "password",
-      nickname: "chatops",
-      rooms: ["lobby@conference.im.bluebox.dev"],
-      handlers: [{Hedwig.Handlers.Help, %{}}, {Hedwig.Handlers.Panzy, %{}}]
-    })
+  Hedwig Application
+
+  ## Starting a client
+
+      Hedwig.start_client(%{
+        jid: "alice@wonderland.lit",
+        password: "password",
+        nickname: "alice",
+        rooms: ["lobby@conference.wonderland.lit"],
+        handlers: [{Hedwig.Handlers.Help, %{}}, {Hedwig.Handlers.Panzy, %{}}]
+      })
+
+  ## Stopping a client
+
+      pid = Hedwig.whereis("alice@wonderland.lit")
+      Hedwig.stop_client(pid)
   """
 
   use Application
