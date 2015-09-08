@@ -62,7 +62,7 @@ config: %{
   port: 9222, # default: 5222
   require_tls?: true, # default: false
   ignore_from_self?: false, # defaults to true
-},
+}
 ```
 
 ## Building Handlers
