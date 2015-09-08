@@ -35,6 +35,11 @@ defmodule Hedwig.StanzaTest do
       ~r"<iq id='(.*)' type='set'><query xmlns='jabber:iq:register'><username>username</username><password>password</password></query></iq>"
   end
 
+  test "subscribe" do
+    assert Stanza.subscribe("pubsub.wonderland.lit", "posts", "alice@wonderland.lit") |> Stanza.to_xml =~
+      ~r"<iq id='(.*)' type='set' to='pubsub.wonderland.lit'><pubsub xmlns='http://jabber.org/protocol/pubsub'><subscribe jid='alice@wonderland.lit' node='posts'/></pubsub></iq>"
+  end
+
   test "compress" do
     assert Stanza.compress("zlib") |> Stanza.to_xml ==
       "<compress xmlns='#{ns_compress}'><method>zlib</method></compress>"
