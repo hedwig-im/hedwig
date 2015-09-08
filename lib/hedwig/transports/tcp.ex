@@ -7,6 +7,7 @@ defmodule Hedwig.Transports.TCP do
 
   alias Hedwig.Conn
   alias Hedwig.Stanza
+  alias Hedwig.Client
 
   @type t :: %__MODULE__{
     transport: module,
@@ -153,7 +154,7 @@ defmodule Hedwig.Transports.TCP do
     {:noreply, state}
   end
 
-  defp handle_data(_socket, data, state) do
+  defp handle_data(_socket, data, state) when data != "</stream:stream>" do
     {:ok, parser, stanzas} = :exml_stream.parse(state.parser, data)
     Logger.debug fn -> "Incoming stanza: #{inspect data}" end
     new_state = %TCP{state | parser: parser}
@@ -161,6 +162,14 @@ defmodule Hedwig.Transports.TCP do
       Kernel.send(state.pid, {:stanza, transport(new_state), stanza})
     end
     {:noreply, new_state}
+  end
+
+  @doc """
+  Gaurd for closing idle stream. xmpp.org XEP-0190
+  """
+  defp handle_data(_socket, data, state) when data == "</stream:stream>" do
+    Logger.warn fn -> "Incoming close idle stream: #{inspect data}" end
+    Client.handle_info({:stop, "Idle stream shutdown."}, Client.get(state.client))
   end
 
   defp transport(%TCP{} = state) do
