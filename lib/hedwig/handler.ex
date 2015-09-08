@@ -26,10 +26,7 @@ defmodule Hedwig.Handler do
   Gets opts for the given handler from the client config.
   """
   def get_opts(client, handler) when is_atom(handler) do
-    {_handler, opts} = Client.client_for(client.jid)
-    |> Map.get(:handlers)
-    |> List.keyfind(handler, 0, %{})
-
+    {_handler, opts} = client.handlers |> List.keyfind(handler, 0, %{})
     merge_client_opts(client, opts)
   end
 
