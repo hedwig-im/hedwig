@@ -65,6 +65,10 @@ defmodule Hedwig.StanzaTest do
     assert Stanza.presence |> Stanza.to_xml == "<presence/>"
   end
 
+  test "presence/2" do
+    assert Stanza.presence("room@muc.localhost/nick", "unavailable") |> Stanza.to_xml == "<presence to='room@muc.localhost/nick' type='unavailable'/>"
+  end
+
   test "message" do
     assert Stanza.message("test@localhost", "chat", "Hello") |> Stanza.to_xml =~
       ~r"<message xml:lang='en' id='(.*)' type='chat' to='test@localhost'><body>Hello</body></message>"

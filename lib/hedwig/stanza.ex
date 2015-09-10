@@ -123,6 +123,13 @@ defmodule Hedwig.Stanza do
     xmlel(name: "presence", attrs: [{"type", type}])
   end
 
+  @doc """
+  Returns a presence stanza to a given jid, of a given type.
+  """
+  def presence(to, type) do
+    xmlel(name: "presence", attrs: [{"type", type}, {"to", to}])
+  end
+
   def iq(type, body) do
     xmlel(name: "iq", attrs: [{"type", type}, {"id", id}], children: body)
   end
