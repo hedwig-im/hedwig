@@ -33,4 +33,3 @@ defmodule Hedwig.Config do
     Map.put(config, :transport, Transport.module(config.transport))
   end
 end
-

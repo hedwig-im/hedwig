@@ -81,4 +81,3 @@ defmodule Hedwig.Auth do
     end
   end
 end
-

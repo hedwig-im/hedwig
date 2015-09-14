@@ -160,4 +160,3 @@ defmodule Hedwig.Client do
     {:noreply, client}
   end
 end
-

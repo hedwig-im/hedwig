@@ -17,4 +17,3 @@ defmodule Hedwig.Registry do
     :gproc.whereis_name({:n, :l, jid})
   end
 end
-

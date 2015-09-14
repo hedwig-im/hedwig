@@ -53,4 +53,3 @@ defmodule Hedwig do
     Hedwig.Registry.whereis(jid)
   end
 end
-

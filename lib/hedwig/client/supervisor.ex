@@ -12,4 +12,3 @@ defmodule Hedwig.Client.Supervisor do
     supervise([worker(Hedwig.Client, [])], opts)
   end
 end
-

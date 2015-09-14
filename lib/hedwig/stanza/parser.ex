@@ -72,4 +72,3 @@ defmodule Hedwig.Stanza.Parser do
     end
   end
 end
-

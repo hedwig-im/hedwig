@@ -10,4 +10,3 @@ defmodule Hedwig.RegistryTest do
     assert pid == self()
   end
 end
-

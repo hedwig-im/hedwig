@@ -84,4 +84,3 @@ defmodule Hedwig.JID do
     end
   end
 end
-
