@@ -35,7 +35,7 @@ defmodule Hedwig.Stanza do
 
   ## Example
 
-      iex> stanza = Hedwig.Stanza.start_stream("im.capulet.lit")
+      iex> stanza = Hedwig.Stanza.start_stream("im.capulet.lit", false)
       {:xmlstreamstart, "stream:stream",
        [{"to", "im.capulet.lit"}, {"version", "1.0"}, {"xml:lang", "en"},
          {"xmlns", "jabber:client"},
@@ -43,7 +43,8 @@ defmodule Hedwig.Stanza do
       iex> Hedwig.Stanza.to_xml(stanza)
       "<stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:client' xml:lang='en' version='1.0' to='im.capulet.lit'>"
   """
-  def start_stream(server, xmlns \\ ns_jabber_client) do
+  def start_stream(server, strip_subdomain, xmlns \\ ns_jabber_client) do
+    if strip_subdomain, do: [_, server] = String.split(server, ".", parts: 2)
     xmlstreamstart(name: "stream:stream",
       attrs: [
         {"to", server},

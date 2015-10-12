@@ -7,12 +7,17 @@ defmodule Hedwig.StanzaTest do
   doctest Hedwig.Stanza
 
   test "start_stream with default xmlns" do
-    assert Stanza.start_stream("im.wonderland.lit") |> Stanza.to_xml ==
+    assert Stanza.start_stream("im.wonderland.lit", false) |> Stanza.to_xml ==
       "<stream:stream xmlns:stream='#{ns_xmpp}' xmlns='jabber:client' xml:lang='en' version='1.0' to='im.wonderland.lit'>"
   end
 
+  test "start_stream with strip_subdomain set to true" do
+    assert Stanza.start_stream("im.wonderland.lit", true) |> Stanza.to_xml ==
+      "<stream:stream xmlns:stream='#{ns_xmpp}' xmlns='jabber:client' xml:lang='en' version='1.0' to='wonderland.lit'>"
+  end
+
   test "start_stream with 'jabber:server' xmlns" do
-    assert Stanza.start_stream("im.wonderland.lit", ns_jabber_server) |> Stanza.to_xml ==
+    assert Stanza.start_stream("im.wonderland.lit", false, ns_jabber_server) |> Stanza.to_xml ==
       "<stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:server' xml:lang='en' version='1.0' to='im.wonderland.lit'>"
   end
 
