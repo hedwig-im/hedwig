@@ -67,7 +67,7 @@ defmodule Hedwig.Conn do
   end
 
   def start_stream(%Conn{transport: mod, config: config} = conn) do
-    mod.send(conn, Stanza.start_stream(config.server))
+    mod.send(conn, Stanza.start_stream(config.server, config.strip_subdomain))
     recv(conn, :starting_stream)
     conn
   end

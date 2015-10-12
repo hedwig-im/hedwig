@@ -9,6 +9,7 @@ defmodule Hedwig.Config do
   def normalize(client) do
     config = (client[:config] || %{})
     |> Map.put_new(:server, server_from_jid(client.jid))
+    |> Map.put_new(:strip_subdomain, false)
     |> Map.put_new(:port, 5222)
     |> Map.put_new(:require_tls?, false)
     |> Map.put_new(:use_compression?, false)
