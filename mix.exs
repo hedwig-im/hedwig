@@ -24,12 +24,12 @@ defmodule Hedwig.Mixfile do
      {:gproc, "~> 0.3"},
 
      # Test dependencies
-     {:ejabberd, github: "processone/ejabberd", tag: "15.07", only: [:test, :dev]},
+     {:ejabberd, github: "processone/ejabberd", tag: "15.09", only: [:test, :dev]},
      {:excoveralls, "~> 0.3", only: :test},
 
-     # Docs dependencies
+     # Dev dependencies
      {:earmark, "~> 0.1", only: :dev},
-     {:ex_doc, "~> 0.8", only: :dev}]
+     {:ex_doc, "~> 0.10", only: :dev}]
   end
 
   defp package do
