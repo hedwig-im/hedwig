@@ -1,4 +1,19 @@
 defmodule Hedwig.Config do
+  @moduledoc """
+  Handles configuration for a Hedwig client.
+
+  Configuration is very flexible to allow customization of how clients connect
+  to XMPP servers. The different configuration options are as follows:
+
+  * `:server` - Specifies the host to connect to.
+    This is inferred by the JID automatically.
+  * `:port` - Set the port to connect to. Default is 5222.
+  * `:require_tls?` - Specify whether you require TLS. Defaults to `false`.
+  * `:preferred_auth_mechanisms` - A list of preferred authentication mechanisms.
+  * `:ignore_from_self?` - Filters out messages sent from your JID. Defaults to `true`.
+    Set this to `false` if you need to process your own messages.
+  """
+
   alias Hedwig.JID
   alias Hedwig.Client
   alias Hedwig.Transport
