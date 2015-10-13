@@ -66,8 +66,10 @@ defmodule Hedwig.Conn do
     wait_for_socket(conn)
   end
 
-  def start_stream(%Conn{transport: mod, config: config} = conn) do
-    mod.send(conn, Stanza.start_stream(config.server))
+  def start_stream(%Conn{transport: mod, config: %{client: pid}} = conn) do
+    %Hedwig.JID{server: server} = Client.get(pid, :jid) |> Hedwig.JID.parse()
+
+    mod.send(conn, Stanza.start_stream(server))
     recv(conn, :starting_stream)
     conn
   end
