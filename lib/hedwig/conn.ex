@@ -40,7 +40,7 @@ defmodule Hedwig.Conn do
     features: %Features{}
   ]
 
-  @timeout 1000
+  @timeout 30_000
 
   @doc """
   Starts a connection process.
