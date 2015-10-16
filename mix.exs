@@ -34,7 +34,7 @@ defmodule Hedwig.Mixfile do
 
   defp package do
     [files: ["lib", "priv", "mix.exs", "README*", "readme*", "LICENSE*", "license*"],
-     contributors: ["Sonny Scroggin"],
+     maintainers: ["Sonny Scroggin"],
      licenses: ["MIT"],
      links: %{
        "GitHub" => "https://github.com/scrogson/hedwig",
