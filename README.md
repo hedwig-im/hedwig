@@ -13,7 +13,7 @@ Add the dependencies to you `mix.exs` file.
 
 ```elixir
 defp deps do
-  [{:hedwig, "~> 0.2.0"},
+  [{:hedwig, "~> 0.3.0"},
    {:exml, github: "paulgray/exml"}]
 end
 ```
