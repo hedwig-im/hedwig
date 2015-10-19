@@ -11,7 +11,7 @@ defmodule Hedwig.Handlers.Panzy do
 
   def handle_event(%Message{} = msg, opts) do
     cond do
-      hear ~r/tired|too hard|to hard|upset|bored/i, msg ->
+      hear ~r/tired|too? hard|upset|bored/i, msg ->
         panzy!(msg)
       true ->
         :ok
