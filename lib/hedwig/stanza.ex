@@ -208,6 +208,22 @@ defmodule Hedwig.Stanza do
       ])
   end
 
+  def join(:history, room, username, opts \\ %{}) do
+    maxstanzas = Map.get(opts, :maxstanzas, 1000)
+    xmlel(name: "presence",
+      attrs: [
+        {"to", "#{room}/#{username}"}
+      ],
+      children: [
+        xmlel(name: "x",
+          attrs: [{"xmlns", ns_muc}],
+          children: [
+            xmlel(name: "history",
+              attrs: [{"maxstanzas", to_string(maxstanzas)}])
+          ])
+      ])
+  end
+
   def chat(to, body), do: message(to, "chat", body)
   def normal(to, body), do: message(to, "normal", body)
   def groupchat(to, body), do: message(to, "groupchat", body)
