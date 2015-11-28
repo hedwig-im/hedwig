@@ -17,7 +17,7 @@ defmodule Hedwig.Adapters.Connection do
   defcallback connect(Keyword.t) :: {:ok, pid} | {:error, term}
 
   @doc """
-  Executes the connect in the given module, ensuring the repository's
+  Executes the connect in the given module, ensuring the robot's
   `after_connect/1` is invoked in the process.
   """
   def connect(module, opts) do
