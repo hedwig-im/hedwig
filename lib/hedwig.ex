@@ -22,34 +22,34 @@ defmodule Hedwig do
 
   @doc false
   def start(_type, _args) do
-    Hedwig.Supervisor.start_link()
+    Hedwig.Supervisor.start_link
   end
 
   @doc """
-  Starts a client with the given configuration.
+  Starts a robot with the given configuration.
   """
-  def start_client(config) do
-    Supervisor.start_child(Hedwig.Client.Supervisor, [config])
+  def start_robot(robot, opts \\ []) do
+    Supervisor.start_child(Hedwig.Robot.Supervisor, [robot, opts])
   end
 
   @doc """
-  Stops a client with the given PID.
+  Stops a robot with the given PID.
   """
-  def stop_client(pid) do
-    Supervisor.terminate_child(Hedwig.Client.Supervisor, pid)
+  def stop_robot(pid) do
+    Supervisor.terminate_child(Hedwig.Robot.Supervisor, pid)
   end
 
   @doc """
-  List all clients.
+  List all robots.
   """
-  def which_clients do
-    Supervisor.which_children(Hedwig.Client.Supervisor)
+  def which_robots do
+    Supervisor.which_children(Hedwig.Robot.Supervisor)
   end
 
   @doc """
-  Find a client PID by JID through the `Hedwig.Registry`.
+  Find a robot PID by name through the `Hedwig.Registry`.
   """
-  def whereis(jid) do
-    Hedwig.Registry.whereis(jid)
+  def whereis(name) do
+    Hedwig.Registry.whereis(name)
   end
 end

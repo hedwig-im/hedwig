@@ -2,6 +2,9 @@ defmodule Hedwig.Adapter do
   @moduledoc """
   """
 
+  defstruct conn: nil,
+            robot: nil
+
   @doc false
   defmacro __using__(adapter) do
     quote do
@@ -17,7 +20,7 @@ defmodule Hedwig.Adapter do
       @doc false
       def start_link(robot, opts) do
         {:ok, _} = Application.ensure_all_started(@adapter)
-        Hedwig.Adapter.start_link(@conn, @adapter, robot, opts)
+        Hedwig.Adapter.start_link({__MODULE__, @conn, @adapter}, opts)
       end
 
       @doc false
@@ -29,14 +32,32 @@ defmodule Hedwig.Adapter do
         after
           timeout -> exit(:timeout)
         end
-        Application.stop(@adapter)
         :ok
+      end
+
+      def send(pid, msg) do
+        GenServer.call(pid, {:send, msg})
+      end
+
+      def init({robot, opts}) do
+        {:ok, pid} = Hedwig.Adapters.Connection.connect(@conn, opts)
+        {:ok, %Hedwig.Adapter{conn: pid, robot: robot}}
+      end
+
+      def handle_call({:send, msg}, _from, %{conn: conn} = state) do
+        __MODULE__.send(conn, msg)
+        {:reply, :ok, state}
+      end
+
+      def handle_info(msg, %{robot: robot} = state) do
+        Kernel.send(robot, msg)
+        {:noreply, state}
       end
     end
   end
 
   @doc false
-  def start_link(conn, adapter, _robot, opts) do
+  def start_link({module, conn, adapter}, opts) do
     unless Code.ensure_loaded?(conn) do
       raise """
       could not find #{inspect conn}.
@@ -51,19 +72,6 @@ defmodule Hedwig.Adapter do
       """
     end
 
-    conn.connect(opts)
+    GenServer.start_link(module, {self, opts})
   end
-
-  @type robot   :: Hedwig.Robot.t
-  @type options :: Keyword.t
-
-  #@callback send(pid, envelop)
-
-  @doc """
-  The callback invoked in case the adapter needs to inject code.
-  """
-  @macrocallback __before_compile__(Macro.Env.t) :: Macro.t
-
-  @callback start_link(robot, options) ::
-            {:ok, pid} | {:error, {:already_started, pid}} | {:error, term}
 end

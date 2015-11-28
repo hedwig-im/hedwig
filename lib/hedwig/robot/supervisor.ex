@@ -6,9 +6,8 @@ defmodule Hedwig.Robot.Supervisor do
   @doc """
   Starts the robot supervisor.
   """
-  def start_link(robot, otp_app, adapter, opts) do
-    name = {:via, :gproc, {:n, :l, {:supervisor, opts[:jid]}}}
-    Supervisor.start_link(__MODULE__, {robot, otp_app, adapter, opts}, [name: name])
+  def start_link(opts \\ []) do
+    Supervisor.start_link(__MODULE__, :ok, opts)
   end
 
   def config(robot, otp_app, opts) do
@@ -42,8 +41,8 @@ defmodule Hedwig.Robot.Supervisor do
     {otp_app, adapter, config}
   end
 
-  def init({robot, otp_app, adapter, opts}) do
-    opts = config(robot, otp_app, opts) |> Keyword.delete(:name)
-    supervise([supervisor(adapter, [robot, opts])], strategy: :one_for_one)
+  def init(:ok) do
+    opts = [strategy: :simple_one_for_one, restart: :transient]
+    supervise([worker(Hedwig.Robot, [])], opts)
   end
 end
