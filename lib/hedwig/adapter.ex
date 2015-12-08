@@ -2,11 +2,13 @@ defmodule Hedwig.Adapter do
   @moduledoc """
   """
 
+  use Behaviour
+
   defstruct conn: nil,
             robot: nil
 
   @doc false
-  defmacro __using__(adapter) do
+  defmacro __using__(adapter \\ :undefined) do
     quote do
       @behaviour Hedwig.Adapter
       @conn __MODULE__.Connection
@@ -19,7 +21,6 @@ defmodule Hedwig.Adapter do
 
       @doc false
       def start_link(robot, opts) do
-        {:ok, _} = Application.ensure_all_started(@adapter)
         Hedwig.Adapter.start_link({__MODULE__, @conn, @adapter}, opts)
       end
 
@@ -35,24 +36,12 @@ defmodule Hedwig.Adapter do
         :ok
       end
 
-      def send(pid, msg) do
-        GenServer.call(pid, {:send, msg})
-      end
-
       def init({robot, opts}) do
         {:ok, pid} = Hedwig.Adapters.Connection.connect(@conn, opts)
         {:ok, %Hedwig.Adapter{conn: pid, robot: robot}}
       end
 
-      def handle_call({:send, msg}, _from, %{conn: conn} = state) do
-        __MODULE__.send(conn, msg)
-        {:reply, :ok, state}
-      end
-
-      def handle_info(msg, %{robot: robot} = state) do
-        Kernel.send(robot, msg)
-        {:noreply, state}
-      end
+      defoverridable [__before_compile__: 1]
     end
   end
 
@@ -74,4 +63,6 @@ defmodule Hedwig.Adapter do
 
     GenServer.start_link(module, {self, opts})
   end
+
+  @callback send(pid, term) :: term
 end
