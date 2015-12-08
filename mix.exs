@@ -15,7 +15,7 @@ defmodule Hedwig.Mixfile do
   end
 
   def application do
-    [applications: [:logger, :gproc],
+    [applications: [:crypto, :ssl, :logger, :gproc],
      mod: {Hedwig, []}]
   end
 
