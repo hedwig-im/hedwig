@@ -5,6 +5,7 @@ defmodule Hedwig.Responder do
   defmacro __using__(opts) do
     quote do
       import unquote(__MODULE__)
+      import Kernel, except: [send: 2]
 
       Module.register_attribute __MODULE__, :hear, accumulate: true
       Module.register_attribute __MODULE__, :respond, accumulate: true
@@ -14,6 +15,36 @@ defmodule Hedwig.Responder do
     end
   end
 
+  @doc """
+  Sends a message via the underlying adapter.
+  """
+  def send(%Hedwig.Message{adapter: {mod, pid}} = msg, text) do
+    mod.send(pid, %{msg | text: text})
+  end
+
+  @doc """
+  Send a reply message via the underlying adapter.
+  """
+  def reply(%Hedwig.Message{adapter: {mod, pid}} = msg, text) do
+    mod.reply(pid, %{msg | text: text})
+  end
+
+  @doc """
+  Send an emote message via the underlying adapter.
+  """
+  def emote(%Hedwig.Message{adapter: {mod, pid}} = msg, text) do
+    mod.emote(pid, %{msg | text: text})
+  end
+
+  @doc """
+  Returns a random item from a list.
+  """
+  def random(list) when is_list(list) do
+    :random.seed(:os.timestamp)
+    Enum.random(list)
+  end
+
+  @doc false
   def run(msg, responders) do
     Enum.map(responders, &run_aysnc(msg, &1))
   end
