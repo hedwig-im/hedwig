@@ -15,11 +15,7 @@ defmodule Hedwig.Responder do
   end
 
   def run(msg, responders) do
-    responders
-    |> Enum.map(&run_aysnc(msg, &1))
-    |> Enum.map(&Task.await/1)
-    |> Enum.reject(&is_nil(&1))
-    |> List.first
+    Enum.map(responders, &run_aysnc(msg, &1))
   end
 
   defp run_aysnc(%{text: text} = msg, {regex, mod, fun, opts}) do
