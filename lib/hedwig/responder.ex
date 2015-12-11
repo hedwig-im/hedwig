@@ -95,6 +95,7 @@ defmodule Hedwig.Responder do
   defp source({:sigil_r, _, [{:<<>>, _, [source]}, _]}),
     do: String.to_atom("__" <> source <> "__")
 
+  @doc false
   def respond_pattern(pattern, robot) do
     pattern
     |> Regex.source
