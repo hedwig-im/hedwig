@@ -11,7 +11,7 @@ defmodule Hedwig.Message do
   @type room    :: binary
   @type text    :: binary
   @type type    :: binary
-  @type user    :: binary
+  @type user    :: map
 
   @type t :: %__MODULE__{
     adapter: adapter,
@@ -33,5 +33,5 @@ defmodule Hedwig.Message do
             room:    nil,
             text:    nil,
             type:    nil,
-            user:    nil
+            user:    %{}
 end
