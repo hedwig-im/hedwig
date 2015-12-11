@@ -1,15 +1,13 @@
 defmodule Hedwig.Responders.Help do
   use Hedwig.Responder
 
-  @usage """
-  hedwig: help - Displays the usage for all installed responders.
-  """
-  respond ~r/help/, msg do
-    usage =
-      msg.robot.opts[:responders]
-      |> Enum.map_join("\n", fn {mod, _opts} ->
-        mod.usage(msg.robot.name)
-      end)
-    %{msg | text: usage}
+  respond ~r/help/, %{robot: robot} = msg do
+   reply msg, all_usage(robot)
+  end
+
+  defp all_usage(%{name: name, opts: opts}) do
+    Enum.map_join(opts[:responders], "\r", fn {mod, _opts} ->
+      mod.usage(name)
+    end)
   end
 end
