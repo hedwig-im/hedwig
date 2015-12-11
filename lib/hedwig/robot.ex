@@ -1,12 +1,8 @@
 defmodule Hedwig.Robot do
   @moduledoc """
-  Robots receive messages from a chat source (XMPP, IRC, etc), and
+  Robots receive messages from a chat source (XMPP, IRC, Console, etc), and
   dispatch them to matching responders.
   """
-
-  @type name :: binary
-  @type store :: pid
-  @type adapter :: module
 
   defstruct adapter: nil,
             aka: nil,
@@ -17,19 +13,15 @@ defmodule Hedwig.Robot do
 
   defmacro __using__(opts) do
     quote bind_quoted: [opts: opts] do
-      @behaviour GenServer
+      use GenServer
+      require Logger
 
       {otp_app, adapter, config} = Hedwig.Robot.Supervisor.parse_config(__MODULE__, opts)
-      @otp_app otp_app
       @adapter adapter
-      @config  config
-      @name config[:name]
-      @aka config[:aka]
-
       @before_compile adapter
-
-      require Logger
+      @config  config
       @log_level config[:log_level] || :debug
+      @otp_app otp_app
 
       def start_link(opts \\ []) do
         Hedwig.Robot.start_link(__MODULE__, opts)
@@ -39,23 +31,17 @@ defmodule Hedwig.Robot do
         Hedwig.stop_robot(robot)
       end
 
-      def send(robot, msg) do
-        GenServer.call(robot, {:send, msg})
-      end
-
       def config(opts \\ []) do
         Hedwig.Robot.Supervisor.config(__MODULE__, @otp_app, opts)
       end
 
-      def log(message) do
+      def log(msg) do
         Logger.unquote(@log_level)(fn ->
-          "#{inspect message}"
+          "#{inspect msg}"
         end, [])
       end
 
-      def __adapter__ do
-        @adapter
-      end
+      def __adapter__, do: @adapter
 
       def init({robot, opts}) do
         opts = Keyword.merge(robot.config, opts)
@@ -65,36 +51,28 @@ defmodule Hedwig.Robot do
         {aka, opts} = Keyword.pop(opts, :aka)
         {name, opts} = Keyword.pop(opts, :name)
 
-        state = %Hedwig.Robot{
-          adapter: adapter,
-          aka: aka,
-          brain: brain,
-          name: name,
-          opts: opts
-        }
+        GenServer.cast(self, :install_responders)
 
-        Kernel.send(self, :install_responders)
-
+        state = %Hedwig.Robot{adapter: adapter, aka: aka, brain: brain,
+                              name: name, opts: opts}
         {:ok, state}
       end
 
-      def handle_call({:send, msg}, _from, %{adapter: pid} = state) do
-        @adapter.send(pid, msg)
-        {:reply, :ok, state}
+      def handle_cast(%Hedwig.Message{} = msg, %{responders: responders} = state) do
+        Hedwig.Responder.run(%{msg | robot: state}, responders)
+        {:noreply, state}
       end
 
-      def handle_call({:run_responders, msg}, {from, _}, %{responders: responders} = state) do
-        reply = %{msg | robot: state} |> Hedwig.Responder.run(responders)
-        Kernel.send(from, {:reply, reply})
-        {:reply, :ok, state}
-      end
-
-      def handle_info(:install_responders, %{opts: opts} = state) do
+      def handle_cast(:install_responders, %{opts: opts} = state) do
         responders =
           Enum.reduce opts[:responders], [], fn {mod, opts}, acc ->
             mod.install(state, opts) ++ acc
           end
         {:noreply, %{state | responders: responders}}
+      end
+
+      def handle_info(msg, state) do
+        {:noreply, state}
       end
 
       def terminate(_reason, _state) do
@@ -105,7 +83,7 @@ defmodule Hedwig.Robot do
         {:ok, state}
       end
 
-      defoverridable terminate: 2, code_change: 3
+      defoverridable terminate: 2, code_change: 3, handle_info: 2
     end
   end
 
@@ -113,7 +91,7 @@ defmodule Hedwig.Robot do
     GenServer.start_link(robot, {robot, opts})
   end
 
-  def handle_message(robot, msg) do
-    GenServer.call(robot, {:run_responders, msg})
+  def handle_message(robot, %Hedwig.Message{} = msg) do
+    GenServer.cast(robot, msg)
   end
 end
