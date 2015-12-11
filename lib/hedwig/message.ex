@@ -4,7 +4,8 @@ defmodule Hedwig.Message do
   """
 
   @type adapter :: {module, term}
-  @type matches :: List.t | Map.t
+  @type matches :: list | map
+  @type private :: map
   @type ref     :: reference
   @type robot   :: Hedwig.Robot.t
   @type room    :: binary
@@ -15,6 +16,7 @@ defmodule Hedwig.Message do
   @type t :: %__MODULE__{
     adapter: adapter,
     matches: matches,
+    private: private,
     ref:     ref,
     robot:   robot,
     room:    room,
@@ -25,6 +27,7 @@ defmodule Hedwig.Message do
 
   defstruct adapter: nil,
             matches: nil,
+            private: %{},
             ref:     nil,
             robot:   nil,
             room:    nil,
