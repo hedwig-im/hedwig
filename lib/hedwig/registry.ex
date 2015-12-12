@@ -2,18 +2,34 @@ defmodule Hedwig.Registry do
   @moduledoc false
 
   @doc """
-  Registers a `jid` for the current process.
+  Registers a `name` for the current process.
   """
-  def register(jid) do
-    true = :gproc.reg({:n, :l, jid})
+  def register_name(name) do
+    true = :gproc.reg({:n, :l, name})
   end
 
   @doc """
-  Looks up the client pid for `jid`.
-
-  Returns `pid` in case a client exists, `:undefined` otherwise.
+  Registers a `property` for the current process.
   """
-  def whereis(jid) do
-    :gproc.whereis_name({:n, :l, jid})
+  def register_property(property) do
+    true = :gproc.reg({:p, :l, property})
+  end
+
+  @doc """
+  Looks up the robot pid for `name`.
+
+  Returns `pid` in case a robot exists, `:undefined` otherwise.
+  """
+  def whereis_name(name) do
+    :gproc.whereis_name({:n, :l, name})
+  end
+
+  @doc """
+  Looks up the robot pid for the given `property`.
+
+  Returns `pid` in case a robot exists, `:undefined` otherwise.
+  """
+  def whereis_property(property) do
+    :gproc.whereis_name({:p, :l, property})
   end
 end
