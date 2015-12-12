@@ -15,15 +15,9 @@ defmodule Hedwig.Responders.GreatSuccess do
   ]
 
   @usage """
-  <text> (great success) - Replies with a random link to a Borat image.
+  great success - Displays a random Borat image.
   """
   hear ~r/great success(!)?/i, msg do
-    link = Task.async(fn ->
-      :random.seed(:os.timestamp)
-      Enum.shuffle(@links) |> List.first
-    end)
-    |> Task.await
-
-    %{msg | text: link}
+    reply msg, random(@links)
   end
 end

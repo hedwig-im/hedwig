@@ -5,23 +5,20 @@ defmodule Hedwig.Responders.Panzy do
   use Hedwig.Responder
 
   @usage """
-  <text> (tired|too hard|to hard|upset|bored) - Replies with 'Panzy!'
+  (tired|too? hard|upset|bored) - Replies with 'Panzy!'
   """
-  hear ~r/tired|too? hard|upset|bored/i, msg do
-    %{msg | text: "Panzy!"}
+  hear ~r/(tired|too? hard|upset|bored)/i, msg do
+    reply msg, "Panzy!"
+  end
+
+  hear ~r/i like (.*)/i, msg do
+    emote msg, "likes #{msg.matches[1]} too!"
   end
 
   @usage """
-  tell me about <subject>
-  """
-  hear ~r/tell me about (?<subject>.*)/i, msg do
-    %{msg | text: "#{msg.matches["subject"]} are cool"}
-  end
-
-  @usage """
-  hey
+  hedwig: hey - Replies with 'sup?'
   """
   respond ~r/hey/i, msg do
-    %{msg | text: "sup?"}
+    reply msg, "sup?"
   end
 end
