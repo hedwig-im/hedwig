@@ -34,7 +34,7 @@ defmodule Hedwig.Adapters.Connection do
     if function_exported?(robot, :after_connect, 1) do
       try do
         Task.async(fn -> robot.after_connect(conn) end)
-        |> Task.await(opts[:timeout])
+        |> Task.await(opts[:timeout] || 5_000)
       catch
         :exit, {:timeout, [Task, :await, [%Task{pid: task_pid}, _]]} ->
           shutdown(task_pid, :brutal_kill)
