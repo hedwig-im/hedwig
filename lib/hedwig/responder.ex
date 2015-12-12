@@ -115,6 +115,7 @@ defmodule Hedwig.Responder do
     quote do
       def usage(name) do
         @usage
+        |> Enum.map(&String.strip/1)
         |> Enum.map(&(String.replace(&1, "hedwig", name)))
         |> Enum.reverse
       end
