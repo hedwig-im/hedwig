@@ -65,6 +65,16 @@ defmodule Hedwig.Robot do
         {:reply, :ok, state}
       end
 
+      def handle_cast({:register_name, name}, state) do
+        Hedwig.Registry.register_name(name)
+        {:noreply, state}
+      end
+
+      def handle_cast({:register_property, property}, state) do
+        Hedwig.Registry.register_property(property)
+        {:noreply, state}
+      end
+
       def handle_cast(%Hedwig.Message{} = msg, %{responders: responders} = state) do
         Hedwig.Responder.run(%{msg | robot: state}, responders)
         {:noreply, state}
@@ -104,5 +114,13 @@ defmodule Hedwig.Robot do
 
   def after_connect(robot, timeout \\ 5000) do
     GenServer.call(robot, :after_connect, timeout)
+  end
+
+  def register_name(robot, name) do
+    GenServer.cast(robot, {:register_name, name})
+  end
+
+  def register_property(robot, property) do
+    GenServer.cast(robot, {:register_property, property})
   end
 end
