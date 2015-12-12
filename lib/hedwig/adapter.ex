@@ -5,6 +5,7 @@ defmodule Hedwig.Adapter do
   use Behaviour
 
   defstruct conn: nil,
+            opts: nil,
             robot: nil
 
   @doc false
@@ -38,7 +39,7 @@ defmodule Hedwig.Adapter do
 
       def init({robot, opts}) do
         {:ok, pid} = Hedwig.Adapters.Connection.connect(@conn, opts)
-        {:ok, %Hedwig.Adapter{conn: pid, robot: robot}}
+        {:ok, %Hedwig.Adapter{conn: pid, opts: opts, robot: robot}}
       end
 
       defoverridable [__before_compile__: 1]
