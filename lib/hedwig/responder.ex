@@ -1,5 +1,23 @@
 defmodule Hedwig.Responder do
   @moduledoc """
+  Base module for building responders.
+
+  A responder is a module which setups up handlers for hearing and responding
+  to incoming messages.
+
+  ## Hearing & Responding
+
+  Hedwig can hear messages said in a room or respond to messages directly
+  addressed to it. Both methods take a regular expression, the message and a block
+  to execute when there is a match. For example:
+
+      hear ~/(hi|hello)/i, msg do
+        # your code here
+      end
+
+      respond ~/help/i, msg do
+        # your code here
+      end
   """
 
   defmacro __using__(opts) do
