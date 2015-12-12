@@ -66,4 +66,6 @@ defmodule Hedwig.Adapter do
   end
 
   @callback send(pid, term) :: term
+  @callback reply(pid, term) :: term
+  @callback emote(pid, term) :: term
 end
