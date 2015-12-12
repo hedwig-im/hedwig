@@ -14,40 +14,15 @@ defmodule Hedwig.Adapters.Connection do
   Should return a process which is linked to
   the caller process or an error.
   """
-  defcallback connect(Keyword.t) :: {:ok, pid} | {:error, term}
+  @callback connect(Keyword.t) :: {:ok, pid} | {:error, term}
 
   @doc """
-  Executes the connect in the given module, ensuring the robot's
-  `after_connect/1` is invoked in the process.
+  Executes the connect in the given module.
   """
   def connect(module, opts) do
     case module.connect(opts) do
-      {:ok, conn} ->
-        after_connect(conn, opts)
-      {:error, _} = error ->
-        error
-    end
-  end
-
-  defp after_connect(conn, opts) do
-    robot = opts[:robot]
-    if function_exported?(robot, :after_connect, 1) do
-      try do
-        Task.async(fn -> robot.after_connect(conn) end)
-        |> Task.await(opts[:timeout] || 5_000)
-      catch
-        :exit, {:timeout, [Task, :await, [%Task{pid: task_pid}, _]]} ->
-          shutdown(task_pid, :brutal_kill)
-          shutdown(conn, :brutal_kill)
-          {:error, :timeout}
-        :exit, {reason, {Task, :await, _}} ->
-          shutdown(conn, :brutal_kill)
-          {:error, reason}
-      else
-        _ -> {:ok, conn}
-      end
-    else
-      {:ok, conn}
+      {:ok, _}    = conn  -> conn
+      {:error, _} = error -> error
     end
   end
 

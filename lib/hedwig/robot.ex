@@ -58,6 +58,13 @@ defmodule Hedwig.Robot do
         {:ok, state}
       end
 
+      def handle_call(:after_connect, _from, state) do
+        if function_exported?(__MODULE__, :after_connect, 1) do
+          __MODULE__.after_connect(state)
+        end
+        {:reply, :ok, state}
+      end
+
       def handle_cast(%Hedwig.Message{} = msg, %{responders: responders} = state) do
         Hedwig.Responder.run(%{msg | robot: state}, responders)
         {:noreply, state}
@@ -93,5 +100,9 @@ defmodule Hedwig.Robot do
 
   def handle_message(robot, %Hedwig.Message{} = msg) do
     GenServer.cast(robot, msg)
+  end
+
+  def after_connect(robot, timeout \\ 5000) do
+    GenServer.call(robot, :after_connect, timeout)
   end
 end
