@@ -7,39 +7,53 @@
 
 ![Hedwig](https://raw.githubusercontent.com/hedwig-im/hedwig/master/hedwig.png)
 
+Hedwig is a chat bot, highly inspired by GitHub's [Hubot](https://hubot.github.com/).
+
 Hedwig was designed for 2 use-cases:
 
-  1. Single, stand-alone application.
-  2. Included into an OTP application.
+  1. A single, stand-alone OTP application.
+  2. Included as a dependency of other OTP applications.
 
 You can spawn multiple bots at run-time with different configurations.
 
+## Adapters
+
+- [XMPP](https://github.com/hedwig-im/hedwig_xmpp)
+- [Slack](https://github.com/hedwig-im/hedwig_slack)
+
 ## Usage
 
-The following is an exampe for using the [XMPP](https://github.com/hedwig-im/hedwig_xmpp)
-adapter:
+Hedwig ships with a console adapter to get you up and running quickly. It's
+great for testing how your bot will respond to the messages it receives.
 
-Add the dependencies to you `mix.exs` file.
+To add Hedwig to an existing Elixir application, add `:hedwig` to your list of
+dependencies in your `mix.exs` file:
 
 ```elixir
 defp deps do
-  [{:hedwig, "~> 0.4.0"},
-   {:hedwig_xmpp, ">= 0.0.0"},
-   {:exml, github: "esl/exml"}]
+  [{:hedwig, "~> 0.4.0"}]
 end
 ```
 
-Update your applications to include the adapter.
+Update your applications list to include `:hedwig`. This will ensure that the
+Hedwig application, along with it's supervision tree is started when you start
+your application.
 
 ```elixir
 def applications do
-  [applications: [:hedwig_xmpp]]
+  [applications: [:hedwig]]
 end
 ```
 
 ## Create a robot module
 
-This can be named anything you want. You need to have one module per adapter:
+Run the following mix task to generate a robot module in you application:
+
+```
+mix hedwig.gen.robot
+```
+
+This will create a file in `lib/my_app/robot.ex`.
 
 ```elixir
 defmodule MyApp.Robot do
@@ -56,15 +70,9 @@ adapter can inject functionality into your module if needed.
 # config/config.exs
 
 config :my_app, MyApp.Robot,
-  adapter: Hedwig.Adapters.XMPP,
-  jid: "romeo@capulet.lit",
-  password: "iL0v3JuL13t",
-  resource: "chamber",
-  name: "romeo",
-  aka: "loverboy",
-  rooms: [
-    {"lobby@conference.capulet.lit", []}
-  ],
+  adapter: Hedwig.Adapters.Console,
+  name: "hedwig",
+  aka: "/",
   responders: [
     {Hedwig.Handlers.Help, []},
     {Hedwig.Handlers.Panzy, []}
@@ -76,14 +84,52 @@ config :my_app, MyApp.Robot,
 You can start your bot as part of your application's supervision tree or by
 using the supervision tree provided by Hedwig.
 
+### Starting as part of your supervision tree:
+
 ```elixir
+# add this to the list of your supervisor's children
+worker(MyApp.Robot, [])
+```
+
+### Trying out the console adapter:
+
+```
+mix run --no-halt
+
+Hedwig Console - press Ctrl+C to exit.
+
+The console adapter is useful for quickly verifying how your
+bot will respond based on the current installed responders.
+
+scrogson> alfred help
+alfred> alfred help <query> - Displays all help commands that match <query>.
+alfred help - Displays all of the help commands that alfred knows about.
+alfred: hey - Replies with 'sup?'
+(tired|too? hard|upset|bored) - Replies with 'Panzy!'
+great success - Displays a random Borat image.
+ship it - Display a motivation squirrel
+scrogson>
+```
+
+### Starting bots manually:
+
+```elixir
+# Start the bot via the module. The configuration options will be read in from
+# config.exs
 {:ok, pid} = Hedwig.start_robot(MyApp.Robot)
 
-# Get the pid of the client by name
-pid = Hedwig.whereis("romeo")
+# You can also pass in a list of options that will override the configuration
+# provided in config.exs (except for the adapter as that is compiled into the
+# module).
+{:ok, pid} = Hedwig.start_robot(MyApp.Robot, [name: "jeeves"])
 
-# Stop the client.
-Hedwig.stop_client(pid)
+# Get the pid of the robot by name
+pid = Hedwig.whereis("hedwig")
+# Stop the robot.
+Hedwig.stop_robot(pid)
+
+pid = Hedwig.whereis("jeeves")
+Hedwig.stop_robot(pid)
 ```
 
 ## Building Responders
@@ -97,7 +143,7 @@ the block when a message matches.
 Here is an example:
 
 ```elixir
-defmodule Hedwig.Handlers.GreatSuccess do
+defmodule Hedwig.Responders.GreatSuccess do
   @moduledoc """
   Borat, Great Success!
 
@@ -114,7 +160,7 @@ defmodule Hedwig.Handlers.GreatSuccess do
   ]
 
   @usage """
-  <text> (great success) - Replies with a random link to a Borat image.
+  <text> (great success) - Replies with a random Borat image.
   """
   hear ~r/great success(!)?/i, msg do
     reply msg, random(@links)
