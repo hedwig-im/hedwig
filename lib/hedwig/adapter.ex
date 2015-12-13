@@ -4,10 +4,6 @@ defmodule Hedwig.Adapter do
 
   use Behaviour
 
-  defstruct conn: nil,
-            opts: nil,
-            robot: nil
-
   @doc false
   defmacro __using__(adapter \\ :undefined) do
     quote do
@@ -39,10 +35,10 @@ defmodule Hedwig.Adapter do
 
       def init({robot, opts}) do
         {:ok, pid} = Hedwig.Adapters.Connection.connect(@conn, opts)
-        {:ok, %Hedwig.Adapter{conn: pid, opts: opts, robot: robot}}
+        {:ok, %{conn: pid, opts: opts, robot: robot}}
       end
 
-      defoverridable [__before_compile__: 1]
+      defoverridable [init: 1, __before_compile__: 1]
     end
   end
 
