@@ -74,8 +74,9 @@ config :my_app, MyApp.Robot,
   name: "hedwig",
   aka: "/",
   responders: [
-    {Hedwig.Handlers.Help, []},
-    {Hedwig.Handlers.Panzy, []}
+    {Hedwig.Responders.Help, []},
+    {Hedwig.Responders.Panzy, []},
+    {Hedwig.Responders.ShipIt, []}
   ]
 ```
 
