@@ -1,5 +1,7 @@
 defmodule Hedwig.Robot do
   @moduledoc """
+  Hedwig is a chat bot, highly inspired by GitHub's [Hubot](https://hubot.github.com/).
+
   Robots receive messages from a chat source (XMPP, IRC, Console, etc), and
   dispatch them to matching responders.
   """
@@ -24,7 +26,7 @@ defmodule Hedwig.Robot do
       @otp_app otp_app
 
       def start_link(opts \\ []) do
-        Hedwig.Robot.start_link(__MODULE__, opts)
+        Hedwig.start_robot(__MODULE__, opts)
       end
 
       def stop(robot) do
