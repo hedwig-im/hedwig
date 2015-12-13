@@ -56,8 +56,7 @@ defmodule Hedwig.Adapters.Console do
 
     def connect(opts) do
       {user, 0} = System.cmd("whoami", [])
-
-      IO.puts [IO.ANSI.clear, IO.ANSI.home]
+      clear_screen()
       display_banner()
       Task.start_link(__MODULE__, :loop, [self, String.strip(user), opts[:name]])
     end
@@ -65,14 +64,15 @@ defmodule Hedwig.Adapters.Console do
     def loop(owner, user, name) do
       user
       |> prompt
+      |> IO.ANSI.format
       |> IO.gets
       |> String.strip
-      |> call_adapter(owner, name)
+      |> send_to_adapter(owner, name)
 
       loop(owner, user, name)
     end
 
-    defp call_adapter(text, owner, name) do
+    defp send_to_adapter(text, owner, name) do
       send(owner, {:message, text})
       await(name)
     end
@@ -88,21 +88,31 @@ defmodule Hedwig.Adapters.Console do
 
     ## IO
 
+    defp print(message) do
+      message |> IO.ANSI.format |> IO.puts
+    end
+
     defp prompt(name) do
-      import IO.ANSI
-      [white, bright, name, "> ", normal, default_color]
+      [:white, :bright, name, "> ", :normal, :default_color]
+    end
+
+    defp clear_screen do
+      print [:clear, :home]
     end
 
     defp handle_result(nil, _name), do: nil
     defp handle_result(msg, name) do
-      import IO.ANSI
-      IO.puts prompt(name) ++ [yellow, msg.text, default_color]
+      print prompt(name) ++ [:yellow, msg.text, :default_color]
     end
 
     defp display_banner do
-      IO.puts "Hedwig Console - press Ctrl+C to exit.\r\n"
-      IO.puts "The console adapter is useful for quickly verifying how your\r"
-      IO.puts "bot will respond based on the current installed responders.\r\n"
+      print """
+      Hedwig Console - press Ctrl+C to exit.
+
+      The console adapter is useful for quickly verifying how your
+      bot will respond based on the current installed responders
+
+      """
     end
   end
 end
