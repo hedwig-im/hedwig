@@ -19,7 +19,7 @@ You can spawn multiple bots at run-time with different configurations.
 ## Adapters
 
 - [XMPP](https://github.com/hedwig-im/hedwig_xmpp)
-- [Slack](https://github.com/hedwig-im/hedwig_slack)
+- [Slack](https://github.com/hedwig-im/hedwig_slack) (Not yet implemented)
 
 ## Usage
 
@@ -47,21 +47,45 @@ end
 
 ## Create a robot module
 
-Run the following mix task to generate a robot module in you application:
+Run the following mix task and follow the prompts to generate a robot module
+in your application:
 
 ```
-mix hedwig.gen.robot
-```
+$ mix hedwig.gen.robot
 
-This will create a file in `lib/my_app/robot.ex`.
+Welcome to the Hedwig Robot Generator!
+
+Let's get started.
+
+What would you like to name your bot?: alfred
+
+Available adapters
+
+1. Hedwig.Adapters.Console
+
+Please select an adapter: 1
+
+* creating lib/alfred
+* creating lib/alfred/robot.ex
+* updating config/config.exs
+
+Don't forget to add your new robot to your supervision tree
+(typically in lib/alfred.ex):
+
+    worker(Alfred.Robot, [])
+```
 
 ```elixir
-defmodule MyApp.Robot do
-  use Hedwig.Robot, otp_app: :my_app
+defmodule Alfred.Robot do
+  use Alfred.Robot, otp_app: :alfred
 end
 ```
 
-## Configure the module
+## Configuration
+
+The generator will automatically generate a default configuration in
+`config/config.exs`. You will need to customize it further depending on the
+adapter you will use.
 
 This is mainly to setup the module to be compiled along with the adapter. An
 adapter can inject functionality into your module if needed.
@@ -69,13 +93,14 @@ adapter can inject functionality into your module if needed.
 ```elixir
 # config/config.exs
 
-config :my_app, MyApp.Robot,
+config :alfred, Alfred.Robot,
   adapter: Hedwig.Adapters.Console,
-  name: "hedwig",
+  name: "alfred",
   aka: "/",
   responders: [
     {Hedwig.Responders.Help, []},
     {Hedwig.Responders.Panzy, []},
+    {Hedwig.Responders.GreatSuccess, []},
     {Hedwig.Responders.ShipIt, []}
   ]
 ```
@@ -89,7 +114,7 @@ using the supervision tree provided by Hedwig.
 
 ```elixir
 # add this to the list of your supervisor's children
-worker(MyApp.Robot, [])
+worker(Alfred.Robot, [])
 ```
 
 ### Trying out the console adapter:
@@ -117,15 +142,15 @@ scrogson>
 ```elixir
 # Start the bot via the module. The configuration options will be read in from
 # config.exs
-{:ok, pid} = Hedwig.start_robot(MyApp.Robot)
+{:ok, pid} = Hedwig.start_robot(Alfred..Robot)
 
 # You can also pass in a list of options that will override the configuration
 # provided in config.exs (except for the adapter as that is compiled into the
 # module).
-{:ok, pid} = Hedwig.start_robot(MyApp.Robot, [name: "jeeves"])
+{:ok, pid} = Hedwig.start_robot(Alfred.Robot, [name: "jeeves"])
 
 # Get the pid of the robot by name
-pid = Hedwig.whereis("hedwig")
+pid = Hedwig.whereis("alfred")
 # Stop the robot.
 Hedwig.stop_robot(pid)
 
