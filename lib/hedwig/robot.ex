@@ -62,10 +62,13 @@ defmodule Hedwig.Robot do
         {:ok, adapter} = @adapter.start_link(robot, opts)
         {:ok, brain} = Hedwig.Brain.start_link
 
-        {aka, opts} = Keyword.pop(opts, :aka)
+        {aka, opts}  = Keyword.pop(opts, :aka)
         {name, opts} = Keyword.pop(opts, :name)
+        responders   = Keyword.get(opts, :responders, [])
 
-        GenServer.cast(self, :install_responders)
+        unless responders == [] do
+          GenServer.cast(self, :install_responders)
+        end
 
         state = %Hedwig.Robot{adapter: adapter, aka: aka, brain: brain,
                               name: name, opts: opts}
