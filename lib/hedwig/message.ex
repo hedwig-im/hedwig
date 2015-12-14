@@ -3,7 +3,7 @@ defmodule Hedwig.Message do
   Hedwig Message
   """
 
-  @type adapter :: {module, term}
+  @type adapter :: {module, pid}
   @type matches :: list | map
   @type private :: map
   @type ref     :: reference
