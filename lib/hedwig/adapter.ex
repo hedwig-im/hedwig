@@ -7,13 +7,22 @@ defmodule Hedwig.Adapter do
   @doc false
   defmacro __using__(adapter \\ :undefined) do
     quote do
+      import Kernel, except: [send: 2]
+
       @behaviour Hedwig.Adapter
       @conn __MODULE__.Connection
       @adapter unquote(adapter)
 
-      @doc false
-      defmacro __before_compile__(_env) do
-        :ok
+      def send(pid, %Hedwig.Message{} = msg) do
+        GenServer.cast(pid, {:send, msg})
+      end
+
+      def reply(pid, %Hedwig.Message{} = msg) do
+        GenServer.cast(pid, {:reply, msg})
+      end
+
+      def emote(pid, %Hedwig.Message{} = msg) do
+        GenServer.cast(pid, {:emote, msg})
       end
 
       @doc false
@@ -38,7 +47,12 @@ defmodule Hedwig.Adapter do
         {:ok, %{conn: pid, opts: opts, robot: robot}}
       end
 
-      defoverridable [init: 1, __before_compile__: 1]
+      @doc false
+      defmacro __before_compile__(_env) do
+        :ok
+      end
+
+      defoverridable [init: 1, __before_compile__: 1, send: 2, reply: 2, emote: 2]
     end
   end
 
@@ -61,7 +75,7 @@ defmodule Hedwig.Adapter do
     GenServer.start_link(module, {self, opts})
   end
 
-  @callback send(pid, term) :: term
-  @callback reply(pid, term) :: term
-  @callback emote(pid, term) :: term
+  @callback send(pid, Hedwig.Message.t) :: term
+  @callback reply(pid, Hedwig.Message.t) :: term
+  @callback emote(pid, Hedwig.Message.t) :: term
 end

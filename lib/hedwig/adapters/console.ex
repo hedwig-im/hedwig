@@ -1,22 +1,6 @@
 defmodule Hedwig.Adapters.Console do
   use Hedwig.Adapter
 
-  ## Adapter API
-
-  def send(pid, msg) do
-    GenServer.cast(pid, {:reply, msg})
-  end
-
-  def reply(pid, msg) do
-    GenServer.cast(pid, {:reply, msg})
-  end
-
-  def emote(pid, msg) do
-    GenServer.cast(pid, {:emote, msg})
-  end
-
-  ## Callbacks
-
   def handle_cast({:send, msg}, %{conn: conn} = state) do
     Kernel.send(conn, {:reply, msg})
     {:noreply, state}
@@ -73,7 +57,7 @@ defmodule Hedwig.Adapters.Console do
     end
 
     defp send_to_adapter(text, owner, name) do
-      send(owner, {:message, text})
+      Kernel.send(owner, {:message, text})
       await(name)
     end
 
@@ -82,7 +66,7 @@ defmodule Hedwig.Adapters.Console do
         {:reply, resp} ->
           handle_result(resp, name)
       after
-        1_000 -> :ok
+        500 -> :ok
       end
     end
 

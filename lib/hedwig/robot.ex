@@ -33,6 +33,18 @@ defmodule Hedwig.Robot do
         Hedwig.stop_robot(robot)
       end
 
+      def send(pid, msg) do
+        GenServer.cast(pid, {:send, msg})
+      end
+
+      def reply(pid, msg) do
+        GenServer.cast(pid, {:reply, msg})
+      end
+
+      def emote(pid, msg) do
+        GenServer.cast(pid, {:emote, msg})
+      end
+
       def config(opts \\ []) do
         Hedwig.Robot.Supervisor.config(__MODULE__, @otp_app, opts)
       end
@@ -67,13 +79,23 @@ defmodule Hedwig.Robot do
         {:reply, :ok, state}
       end
 
-      def handle_cast({:register_name, name}, state) do
-        Hedwig.Registry.register_name(name)
+      def handle_cast({:send, msg}, %{adapter: adapter} = state) do
+        @adapter.send(adapter, msg)
         {:noreply, state}
       end
 
-      def handle_cast({:register_property, property}, state) do
-        Hedwig.Registry.register_property(property)
+      def handle_cast({:reply, msg}, %{adapter: adapter} = state) do
+        @adapter.reply(adapter, msg)
+        {:noreply, state}
+      end
+
+      def handle_cast({:emote, msg}, %{adapter: adapter} = state) do
+        @adapter.emote(adapter, msg)
+        {:noreply, state}
+      end
+
+      def handle_cast({:register, name}, state) do
+        Hedwig.Registry.register(name)
         {:noreply, state}
       end
 
@@ -118,11 +140,7 @@ defmodule Hedwig.Robot do
     GenServer.call(robot, :after_connect, timeout)
   end
 
-  def register_name(robot, name) do
-    GenServer.cast(robot, {:register_name, name})
-  end
-
-  def register_property(robot, property) do
-    GenServer.cast(robot, {:register_property, property})
+  def register(robot, name) do
+    GenServer.cast(robot, {:register, name})
   end
 end
