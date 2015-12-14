@@ -15,6 +15,12 @@ defmodule Hedwig.Adapters.Console do
   use Hedwig.Adapter
 
   @doc false
+  def init({robot, opts}) do
+    {:ok, conn} = __MODULE__.Connection.connect(opts)
+    {:ok, %{conn: conn, opts: opts, robot: robot}}
+  end
+
+  @doc false
   def handle_cast({:send, msg}, %{conn: conn} = state) do
     Kernel.send(conn, {:reply, msg})
     {:noreply, state}

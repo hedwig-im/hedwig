@@ -10,13 +10,11 @@ defmodule Hedwig.Adapter do
   use Behaviour
 
   @doc false
-  defmacro __using__(adapter \\ :undefined) do
+  defmacro __using__(_opts) do
     quote do
       import Kernel, except: [send: 2]
 
       @behaviour Hedwig.Adapter
-      @conn __MODULE__.Connection
-      @adapter unquote(adapter)
 
       def send(pid, %Hedwig.Message{} = msg) do
         GenServer.cast(pid, {:send, msg})
@@ -32,7 +30,7 @@ defmodule Hedwig.Adapter do
 
       @doc false
       def start_link(robot, opts) do
-        Hedwig.Adapter.start_link({__MODULE__, @conn, @adapter}, opts)
+        Hedwig.Adapter.start_link(__MODULE__, opts)
       end
 
       @doc false
@@ -47,36 +45,17 @@ defmodule Hedwig.Adapter do
         :ok
       end
 
-      def init({robot, opts}) do
-        {:ok, pid} = Hedwig.Adapters.Connection.connect(@conn, opts)
-        {:ok, %{conn: pid, opts: opts, robot: robot}}
-      end
-
       @doc false
       defmacro __before_compile__(_env) do
         :ok
       end
 
-      defoverridable [init: 1, __before_compile__: 1, send: 2, reply: 2, emote: 2]
+      defoverridable [__before_compile__: 1, send: 2, reply: 2, emote: 2]
     end
   end
 
   @doc false
-  def start_link({module, conn, adapter}, opts) do
-    unless Code.ensure_loaded?(conn) do
-      raise """
-      could not find #{inspect conn}.
-
-      Please verify you have added #{inspect adapter} as a dependency:
-
-          {#{inspect adapter}, ">= 0.0.0"}
-
-      And remember to recompile Hedwig afterwards by cleaning the current build:
-
-          mix deps.clean hedwig
-      """
-    end
-
+  def start_link(module, opts) do
     GenServer.start_link(module, {self, opts})
   end
 
