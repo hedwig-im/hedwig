@@ -15,10 +15,6 @@ defmodule Mix.Tasks.Hedwig.Gen.Robot do
       mix hedwig.gen.robot
       mix hedwig.gen.robot --name alfred --robot Custom.Module
 
-  This generator will automatically open the config/config.exs
-  after generation if you have `EDITOR` set in your environment
-  variable.
-
   ## Command line options
 
     * `--name` - the name your robot will respond to
