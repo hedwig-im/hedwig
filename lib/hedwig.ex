@@ -2,19 +2,13 @@ defmodule Hedwig do
   @moduledoc """
   Hedwig Application
 
-  ## Starting a client
+  ## Starting a robot
 
-      Hedwig.start_client(%{
-        jid: "alice@wonderland.lit",
-        password: "password",
-        nickname: "alice",
-        rooms: ["lobby@conference.wonderland.lit"],
-        handlers: [{Hedwig.Handlers.Help, %{}}, {Hedwig.Handlers.Panzy, %{}}]
-      })
+      {:ok, pid} = Hedwig.start_robot(MyApp.Robot, name: "alfred")
 
-  ## Stopping a client
+  ## Stopping a robot
 
-      pid = Hedwig.whereis("alice@wonderland.lit")
+      pid = Hedwig.whereis("alfred")
       Hedwig.stop_client(pid)
   """
 
