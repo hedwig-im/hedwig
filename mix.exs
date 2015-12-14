@@ -8,6 +8,7 @@ defmodule Hedwig.Mixfile do
      deps: deps,
      package: package,
      name: "Hedwig",
+     elixirc_paths: elixirc_paths(Mix.env),
      description: "An adapter-based chat bot framework",
      source_url: "https://github.com/hedwig-im/hedwig",
      homepage_url: "https://github.com/hedwig-im/hedwig",
@@ -18,6 +19,9 @@ defmodule Hedwig.Mixfile do
     [applications: [:crypto, :ssl, :logger, :gproc],
      mod: {Hedwig, []}]
   end
+
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
 
   defp deps do
     [{:gproc, "~> 0.5"},
