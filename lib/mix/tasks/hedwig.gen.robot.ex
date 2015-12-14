@@ -60,8 +60,8 @@ defmodule Mix.Tasks.Hedwig.Gen.Robot do
     case File.read "config/config.exs" do
       {:ok, contents} ->
         Mix.shell.info [:green, "* updating ", :reset, "config/config.exs"]
-        #File.write! "config/config.exs",
-                    #String.replace(contents, "use Mix.Config", config_template(opts))
+        File.write! "config/config.exs",
+                    String.replace(contents, "use Mix.Config", config_template(opts))
       {:error, _} ->
         create_file "config/config.exs", config_template(opts)
     end
