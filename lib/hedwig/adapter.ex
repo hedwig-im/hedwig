@@ -1,5 +1,10 @@
 defmodule Hedwig.Adapter do
   @moduledoc """
+  Hedwig Adapter Behaviour
+
+  An adapter is the interface to the service your bot runs on. To implement an
+  adapter you will need to translate messages from the service to the
+  `Hedwig.Message` struct and call `Hedwig.Robot.handle_message(robot, msg)`.
   """
 
   use Behaviour

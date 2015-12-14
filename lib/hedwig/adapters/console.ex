@@ -1,25 +1,43 @@
 defmodule Hedwig.Adapters.Console do
+  @moduledoc """
+  Hedwig Console Adapter
+
+  The console adapter is useful for testing out responders without a remote
+  chat service.
+
+      config :my_app, MyApp.Robot,
+        adapter: Hedwig.Adapters.Console,
+        ...
+
+  Start your application with `mix run --no-halt` and you will have a console
+  interface to your bot.
+  """
   use Hedwig.Adapter
 
+  @doc false
   def handle_cast({:send, msg}, %{conn: conn} = state) do
     Kernel.send(conn, {:reply, msg})
     {:noreply, state}
   end
 
+  @doc false
   def handle_cast({:reply, msg}, %{conn: conn} = state) do
     Kernel.send(conn, {:reply, msg})
     {:noreply, state}
   end
 
+  @doc false
   def handle_cast({:emote, %{text: text} = msg}, %{conn: conn} = state) do
     Kernel.send(conn, {:reply, msg})
     {:noreply, state}
   end
 
+  @doc false
   def handle_info({:message, ""}, state) do
     {:noreply, state}
   end
 
+  @doc false
   def handle_info({:message, text}, %{robot: robot, conn: conn} = state) do
     {user, 0} = System.cmd("whoami", [])
 
@@ -37,6 +55,7 @@ defmodule Hedwig.Adapters.Console do
   end
 
   defmodule Connection do
+    @moduledoc false
 
     def connect(opts) do
       {user, 0} = System.cmd("whoami", [])
