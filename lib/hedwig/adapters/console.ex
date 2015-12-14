@@ -33,7 +33,7 @@ defmodule Hedwig.Adapters.Console do
   end
 
   @doc false
-  def handle_cast({:emote, %{text: text} = msg}, %{conn: conn} = state) do
+  def handle_cast({:emote, msg}, %{conn: conn} = state) do
     Kernel.send(conn, {:reply, msg})
     {:noreply, state}
   end
@@ -44,7 +44,7 @@ defmodule Hedwig.Adapters.Console do
   end
 
   @doc false
-  def handle_info({:message, text}, %{robot: robot, conn: conn} = state) do
+  def handle_info({:message, text}, %{robot: robot} = state) do
     {user, 0} = System.cmd("whoami", [])
 
     msg = %Hedwig.Message{
