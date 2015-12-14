@@ -2,7 +2,7 @@ defmodule Hedwig.Robot do
   @moduledoc """
   Hedwig is a chat bot, highly inspired by GitHub's [Hubot](https://hubot.github.com/).
 
-  Robots receive messages from a chat source (XMPP, IRC, Console, etc), and
+  Robots receive messages from a chat source (XMPP, Slack, Console, etc), and
   dispatch them to matching responders.
   """
 
