@@ -59,7 +59,13 @@ defmodule Hedwig.Adapter do
     GenServer.start_link(module, {self, opts})
   end
 
-  @callback send(pid, Hedwig.Message.t) :: term
-  @callback reply(pid, Hedwig.Message.t) :: term
-  @callback emote(pid, Hedwig.Message.t) :: term
+  @type robot :: pid
+  @type state :: term
+  @type opts  :: any
+  @type msg   :: Hedwig.Message.t
+
+  defcallback send(pid, msg) :: term
+  defcallback reply(pid, msg) :: term
+  defcallback emote(pid, msg) :: term
+  defcallback init({robot, opts}) :: {:ok, state}
 end
