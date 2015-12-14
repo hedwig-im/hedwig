@@ -3,12 +3,12 @@ defmodule Hedwig.Mixfile do
 
   def project do
     [app: :hedwig,
-     version: "0.4.0-dev",
+     version: "0.4.0",
      elixir: "~> 1.0 or ~> 1.1",
      deps: deps,
      package: package,
      name: "Hedwig",
-     description: "Chat Bot Framework",
+     description: "An adapter-based chat bot framework",
      source_url: "https://github.com/hedwig-im/hedwig",
      homepage_url: "https://github.com/hedwig-im/hedwig",
      test_coverage: [tool: ExCoveralls]]
