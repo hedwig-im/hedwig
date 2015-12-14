@@ -20,7 +20,7 @@ defmodule Hedwig.Responder do
       end
   """
 
-  defmacro __using__(opts) do
+  defmacro __using__(_opts) do
     quote do
       import unquote(__MODULE__)
       import Kernel, except: [send: 2]
@@ -129,7 +129,7 @@ defmodule Hedwig.Responder do
     "^\\s*[@]?(?:#{a}[:,]?|#{b}[:,]?)\\s*(?:#{source})"
   end
 
-  defmacro __before_compile__(env) do
+  defmacro __before_compile__(_env) do
     quote do
       def usage(name) do
         @usage

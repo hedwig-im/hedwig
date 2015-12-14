@@ -33,7 +33,7 @@ defmodule Mix.Tasks.Hedwig.Gen.Robot do
 
     config  = Mix.Project.config
 
-    {opts, argv, _} = OptionParser.parse(argv, switches: @switches)
+    {opts, _argv, _} = OptionParser.parse(argv, switches: @switches)
 
     app   = config[:app]
     deps  = config[:deps]
