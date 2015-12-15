@@ -95,11 +95,23 @@ defmodule Mix.Tasks.Hedwig.Gen.Robot do
   end
 
   defp all_modules(deps) do
-    Enum.reduce(deps, [], fn {app, _}, acc ->
-      Application.load(app)
-      {:ok, modules} = :application.get_key(app, :modules)
-      modules ++ acc
-    end)
+    Enum.reduce(deps, [], &load_and_get_modules/2)
+  end
+
+  defp load_and_get_modules({app, _}, acc) do
+    load_and_get_modules(app, acc)
+  end
+  defp load_and_get_modules({app, _, _}, acc) do
+    load_and_get_modules(app, acc)
+  end
+  defp load_and_get_modules(app, acc) do
+    Application.load(app)
+    case :application.get_key(app, :modules) do
+      {:ok, modules} ->
+        modules ++ acc
+      _ ->
+        acc
+    end
   end
 
   defp hedwig_modules do
