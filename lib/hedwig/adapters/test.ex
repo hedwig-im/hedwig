@@ -4,7 +4,14 @@ defmodule Hedwig.Adapters.Test do
   use Hedwig.Adapter
 
   def init({robot, opts}) do
+    GenServer.cast(self, :after_init)
     {:ok, %{conn: nil, opts: opts, robot: robot}}
+  end
+
+  def handle_cast(:after_init, %{robot: robot, opts: opts} = state) do
+    Hedwig.Robot.after_connect(robot)
+    Hedwig.Robot.register(robot, opts[:name])
+    {:noreply, state}
   end
 
   def handle_cast({:send, msg}, %{conn: conn} = state) do
