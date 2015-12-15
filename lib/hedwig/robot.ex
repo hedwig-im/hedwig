@@ -77,7 +77,7 @@ defmodule Hedwig.Robot do
 
       def handle_call(:after_connect, _from, state) do
         if function_exported?(__MODULE__, :after_connect, 1) do
-          __MODULE__.after_connect(state)
+          {:ok, state} = __MODULE__.after_connect(state)
         end
         {:reply, :ok, state}
       end
