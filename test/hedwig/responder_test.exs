@@ -18,17 +18,16 @@ defmodule Hedwig.ResponderTest do
       ~r/^\s*[@]?(?:alfred[:,]?|\/[:,]?)\s*(?:this\s*should\s*escape)/i
   end
 
-  test "responding to messages", %{adapter: adapter} do
-    msg = %{text: "", user: "scrogson"}
-
+  @tag start_robot: true, name: "alfred"
+  test "responding to messages", %{adapter: adapter, msg: msg} do
     send adapter, {:message, %{msg | text: "this is a test"}}
     assert_receive {:message, %{text: "did someone say test?"}}
 
     send adapter, {:message, %{msg | text: "alfred do you hear me?"}}
-    assert_receive {:message, %{text: "scrogson: loud and clear!"}}
+    assert_receive {:message, %{text: "testuser: loud and clear!"}}
 
     send adapter, {:message, %{msg | text: "i love cats"}}
-    assert_receive {:message, %{text: "scrogson: then why don't you marry cats!?"}}
+    assert_receive {:message, %{text: "testuser: then why don't you marry cats!?"}}
 
     send adapter, {:message, %{msg | text: "i like pie"}}
     assert_receive {:message, %{text: "* likes pie too!"}}
