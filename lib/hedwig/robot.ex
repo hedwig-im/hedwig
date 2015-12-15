@@ -8,7 +8,6 @@ defmodule Hedwig.Robot do
 
   defstruct adapter: nil,
             aka: nil,
-            brain: nil,
             name: "",
             opts: [],
             responders: []
@@ -60,7 +59,6 @@ defmodule Hedwig.Robot do
       def init({robot, opts}) do
         opts = Keyword.merge(robot.config, opts)
         {:ok, adapter} = @adapter.start_link(robot, opts)
-        {:ok, brain} = Hedwig.Brain.start_link
 
         {aka, opts}  = Keyword.pop(opts, :aka)
         {name, opts} = Keyword.pop(opts, :name)
@@ -70,8 +68,7 @@ defmodule Hedwig.Robot do
           GenServer.cast(self, :install_responders)
         end
 
-        state = %Hedwig.Robot{adapter: adapter, aka: aka, brain: brain,
-                              name: name, opts: opts}
+        state = %Hedwig.Robot{adapter: adapter, aka: aka, name: name, opts: opts}
         {:ok, state}
       end
 
