@@ -28,4 +28,11 @@ defmodule TestResponder do
   respond ~r/do you hear me\?/i, msg do
     reply msg, "loud and clear!"
   end
+
+  @usage """
+  a random example
+  """
+  hear ~r/randomness/i, msg do
+    send msg, random(Enum.to_list(1..1000))
+  end
 end

@@ -31,5 +31,9 @@ defmodule Hedwig.ResponderTest do
 
     send adapter, {:message, %{msg | text: "i like pie"}}
     assert_receive {:message, %{text: "* likes pie too!"}}
+
+    send adapter, {:message, %{msg | text: "randomness"}}
+    assert_receive {:message, %{text: text}}
+    assert text in 1..1000
   end
 end

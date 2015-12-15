@@ -55,9 +55,9 @@ defmodule Hedwig.Responder do
   end
 
   @doc """
-  Returns a random item from a list.
+  Returns a random item from a list or range.
   """
-  def random(list) when is_list(list) do
+  def random(list) do
     :random.seed(:os.timestamp)
     Enum.random(list)
   end
