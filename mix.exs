@@ -23,7 +23,7 @@ defmodule Hedwig.Mixfile do
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
-  defp elixirc_paths(_), do: ["lib"]
+  defp elixirc_paths(_), do: ["lib", "responders"]
 
   defp deps do
     [{:gproc, "~> 0.5"},
@@ -37,7 +37,7 @@ defmodule Hedwig.Mixfile do
   end
 
   defp package do
-    [files: ["lib", "priv", "mix.exs", "README*", "readme*", "LICENSE*", "license*"],
+    [files: ["lib", "responders", "priv", "mix.exs", "README*", "readme*", "LICENSE*", "license*"],
      maintainers: ["Sonny Scroggin"],
      licenses: ["MIT"],
      links: %{
