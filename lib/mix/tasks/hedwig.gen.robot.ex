@@ -49,8 +49,10 @@ defmodule Mix.Tasks.Hedwig.Gen.Robot do
     robot   = opts[:robot] || default_robot(app)
     adapter = get_adapter_module(deps)
 
-    underscored = Mix.Utils.underscore(inspect(robot))
+    underscored = Mix.Utils.underscore(robot)
     file = Path.join("lib", underscored) <> ".ex"
+
+    robot = Module.concat([robot])
 
     opts = [adapter: adapter, aka: aka, app: app, name: name, robot: robot]
 
