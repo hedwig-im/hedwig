@@ -94,6 +94,7 @@ defmodule Hedwig.Responder do
     source = source(regex)
     quote do
       @hear {unquote(regex), unquote(source)}
+      @doc false
       def unquote(source)(unquote(msg), unquote(opts)) do
         unquote(block)
       end
@@ -104,6 +105,7 @@ defmodule Hedwig.Responder do
     source = source(regex)
     quote do
       @respond {unquote(regex), unquote(source)}
+      @doc false
       def unquote(source)(unquote(msg), unquote(opts)) do
         unquote(block)
       end
@@ -131,6 +133,7 @@ defmodule Hedwig.Responder do
 
   defmacro __before_compile__(_env) do
     quote do
+      @doc false
       def usage(name) do
         @usage
         |> Enum.map(&String.strip/1)
@@ -146,6 +149,7 @@ defmodule Hedwig.Responder do
         @respond
       end
 
+      @doc false
       def install(robot, opts) do
         hearers =
           __hearers__
