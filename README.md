@@ -1,81 +1,175 @@
 # Hedwig
 
-> XMPP Client/Bot Framework for Elixir
+> An Adapter-based Bot Framework for Elixir Applications
 
 [![Build Status](https://travis-ci.org/hedwig-im/hedwig.svg?branch=master)](https://travis-ci.org/hedwig-im/hedwig)
 [![Coverage Status](https://coveralls.io/repos/hedwig-im/hedwig/badge.svg?branch=master&service=github)](https://coveralls.io/github/hedwig-im/hedwig?branch=master)
 
 ![Hedwig](https://raw.githubusercontent.com/hedwig-im/hedwig/master/hedwig.png)
 
+Hedwig is a chat bot, highly inspired by GitHub's [Hubot](https://hubot.github.com/).
+
+Hedwig was designed for 2 use-cases:
+
+  1. A single, stand-alone OTP application.
+  2. Included as a dependency of other OTP applications.
+
+You can spawn multiple bots at run-time with different configurations.
+
+## Adapters
+
+- [XMPP](https://github.com/hedwig-im/hedwig_xmpp)
+- [Slack](https://github.com/hedwig-im/hedwig_slack) (Not yet implemented)
+
 ## Usage
 
-Add the dependencies to you `mix.exs` file.
+Hedwig ships with a console adapter to get you up and running quickly. It's
+great for testing how your bot will respond to the messages it receives.
+
+To add Hedwig to an existing Elixir application, add `:hedwig` to your list of
+dependencies in your `mix.exs` file:
 
 ```elixir
 defp deps do
-  [{:hedwig, "~> 0.3.0"},
-   {:exml, github: "paulgray/exml"}]
+  [{:hedwig, "~> 0.4.0"}]
 end
 ```
 
-Update your applications to include both projects.
+Update your applications list to include `:hedwig`. This will ensure that the
+Hedwig application, along with it's supervision tree is started when you start
+your application.
 
 ```elixir
 def applications do
-  [applications: [:hedwig, :exml]]
+  [applications: [:hedwig]]
 end
 ```
 
-Configure multiple clients/bots to connect to an XMPP server. Specify handlers for incoming `message`, `presence`, or `iq` stanzas.
+## Create a robot module
 
-## Configuring Clients
+Run the following mix task and follow the prompts to generate a robot module
+in your application:
 
-```elixir
-romeo = %{
-  jid: "romeo@capulet.lit",
-  password: "iL0v3JuL13t",
-  nickname: "loverboy",
-  resource: "chamber",
-  rooms: ["lobby@conference.capulet.lit"],
-  handlers: [{Hedwig.Handlers.Panzy, %{}}]
-}
+```
+$ mix hedwig.gen.robot
 
-# Start a client for Romeo. This client will be supervised
-# and restarted if it crashes abnormally.
-{:ok, pid} = Hedwig.start_client(romeo)
+Welcome to the Hedwig Robot Generator!
 
-# Get the pid of the client by the JID
-pid = Hedwig.whereis("romeo@capulet.lit")
+Let's get started.
 
-# Stop the client.
-Hedwig.stop_client(pid)
+What would you like to name your bot?: alfred
+
+Available adapters
+
+1. Hedwig.Adapters.Console
+
+Please select an adapter: 1
+
+* creating lib/alfred
+* creating lib/alfred/robot.ex
+* updating config/config.exs
+
+Don't forget to add your new robot to your supervision tree
+(typically in lib/alfred.ex):
+
+    worker(Alfred.Robot, [])
 ```
 
-## Setting a client's server configuration
-
-If you need to override the default server configuration, you can add the
-`:config` key to the client map:
-
 ```elixir
-config: %{
-  server: "im.capulet.lit", # default: inferred by the JID
-  port: 9222, # default: 5222
-  require_tls?: true, # default: false
-  ignore_from_self?: false, # defaults to true
-}
+defmodule Alfred.Robot do
+  use Alfred.Robot, otp_app: :alfred
+end
 ```
 
-## Building Handlers
+## Configuration
 
-Handlers are `GenEvent` handlers that will process incoming stanzas.
+The generator will automatically generate a default configuration in
+`config/config.exs`. You will need to customize it further depending on the
+adapter you will use.
 
-All that's needed is to `use Hedwig.Handler` and define `handle_event/2`
-functions to process incoming `Message`, `Presence`, or `IQ` stanzas.
+This is mainly to setup the module to be compiled along with the adapter. An
+adapter can inject functionality into your module if needed.
+
+```elixir
+# config/config.exs
+
+config :alfred, Alfred.Robot,
+  adapter: Hedwig.Adapters.Console,
+  name: "alfred",
+  aka: "/",
+  responders: [
+    {Hedwig.Responders.Help, []},
+    {Hedwig.Responders.Panzy, []},
+    {Hedwig.Responders.GreatSuccess, []},
+    {Hedwig.Responders.ShipIt, []}
+  ]
+```
+
+### Start a bot.
+
+You can start your bot as part of your application's supervision tree or by
+using the supervision tree provided by Hedwig.
+
+### Starting as part of your supervision tree:
+
+```elixir
+# add this to the list of your supervisor's children
+worker(Alfred.Robot, [])
+```
+
+### Trying out the console adapter:
+
+```
+mix run --no-halt
+
+Hedwig Console - press Ctrl+C to exit.
+
+The console adapter is useful for quickly verifying how your
+bot will respond based on the current installed responders.
+
+scrogson> alfred help
+alfred> alfred help <query> - Displays all help commands that match <query>.
+alfred help - Displays all of the help commands that alfred knows about.
+alfred: hey - Replies with 'sup?'
+(tired|too? hard|upset|bored) - Replies with 'Panzy!'
+great success - Displays a random Borat image.
+ship it - Display a motivation squirrel
+scrogson>
+```
+
+### Starting bots manually:
+
+```elixir
+# Start the bot via the module. The configuration options will be read in from
+# config.exs
+{:ok, pid} = Hedwig.start_robot(Alfred..Robot)
+
+# You can also pass in a list of options that will override the configuration
+# provided in config.exs (except for the adapter as that is compiled into the
+# module).
+{:ok, pid} = Hedwig.start_robot(Alfred.Robot, [name: "jeeves"])
+
+# Get the pid of the robot by name
+pid = Hedwig.whereis("alfred")
+# Stop the robot.
+Hedwig.stop_robot(pid)
+
+pid = Hedwig.whereis("jeeves")
+Hedwig.stop_robot(pid)
+```
+
+## Building Responders
+
+Responders are functions that will process incoming messages.
+
+All that's needed is to `use Hedwig.Responder` and use the `hear/2`, or
+`respond/2` macros to define a pattern to listen for and how to respond in
+the block when a message matches.
 
 Here is an example:
 
 ```elixir
-defmodule Hedwig.Handlers.GreatSuccess do
+defmodule Hedwig.Responders.GreatSuccess do
   @moduledoc """
   Borat, Great Success!
 
@@ -83,11 +177,7 @@ defmodule Hedwig.Handlers.GreatSuccess do
   'great success'.
   """
 
-  @usage """
-  <text> (great success) - Replies with a random link to a Borat image.
-  """
-
-  use Hedwig.Handler
+  use Hedwig.Responder
 
   @links [
     "http://mjanja.co.ke/wordpress/wp-content/uploads/2013/09/borat_great_success.jpg",
@@ -95,36 +185,18 @@ defmodule Hedwig.Handlers.GreatSuccess do
     "https://www.youtube.com/watch?v=r13riaRKGo0"
   ]
 
-  def handle_event(%Message{} = msg, opts) do
-    cond do
-      hear ~r/great success(!)?/i, msg -> process msg
-      true -> :ok
-    end
-    {:ok, opts}
-  end
-
-  def handle_event(_, opts), do: {:ok, opts}
-
-  defp process(msg) do
-    :random.seed(:os.timestamp)
-    link = Enum.shuffle(@links) |> List.first
-    reply(msg, Stanza.body(link))
+  @usage """
+  <text> (great success) - Replies with a random Borat image.
+  """
+  hear ~r/great success(!)?/i, msg do
+    reply msg, random(@links)
   end
 end
 ```
 
-## NOTE: Always create a default handle_event function
-
-If you do not create a default `handle_event/2` function, your event handler
-will surely crash. So be sure to add a default at the bottom.
-
-```elixir
-def handle_event(_, opts), do: {:ok, opts}
-```
-
 ## @usage
 
-The `@usage` module attribute works nicely with `Hedwig.Handlers.Help`. If you
+The `@usage` module attribute works nicely with `Hedwig.Responders.Help`. If you
 install the help handler, your bot will listen for `<your-bots-nickname> help`
 and respond with a message containing all of the installed handlers `@usage`
 text.
