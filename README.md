@@ -21,7 +21,7 @@ You can spawn multiple bots at run-time with different configurations.
 - [XMPP](https://github.com/hedwig-im/hedwig_xmpp)
 - [Slack](https://github.com/hedwig-im/hedwig_slack) (Not yet implemented)
 
-## Usage
+## Getting started
 
 Hedwig ships with a console adapter to get you up and running quickly. It's
 great for testing how your bot will respond to the messages it receives.
