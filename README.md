@@ -31,7 +31,7 @@ dependencies in your `mix.exs` file:
 
 ```elixir
 defp deps do
-  [{:hedwig, "~> 0.4.0"}]
+  [{:hedwig, "~> 1.0.0-rc0"}]
 end
 ```
 
