@@ -14,7 +14,8 @@ defmodule Hedwig.Mixfile do
      description: "An adapter-based chat bot framework",
      source_url: "https://github.com/hedwig-im/hedwig",
      homepage_url: "https://github.com/hedwig-im/hedwig",
-     test_coverage: [tool: ExCoveralls]]
+     test_coverage: [tool: ExCoveralls],
+     preferred_cli_env: ["coveralls": :test, "coveralls.detail": :test, "coveralls.post": :test]]
   end
 
   def application do
@@ -29,7 +30,7 @@ defmodule Hedwig.Mixfile do
     [{:gproc, "~> 0.5"},
 
      # Test dependencies
-     {:excoveralls, "~> 0.3", only: :test},
+     {:excoveralls, "~> 0.4", only: :test},
 
      # Dev dependencies
      {:earmark, "~> 0.1", only: :dev},
