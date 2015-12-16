@@ -1,4 +1,6 @@
 defmodule Hedwig.Responders.ShipIt do
+  @moduledoc false
+
   use Hedwig.Responder
 
   @squirrels [

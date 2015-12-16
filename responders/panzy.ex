@@ -1,7 +1,6 @@
 defmodule Hedwig.Responders.Panzy do
-  @moduledoc """
-  Says 'Panzy!' whenever someone is being a whiner.
-  """
+  @moduledoc false
+
   use Hedwig.Responder
 
   @usage """
