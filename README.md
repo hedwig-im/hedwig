@@ -142,7 +142,7 @@ scrogson>
 ```elixir
 # Start the bot via the module. The configuration options will be read in from
 # config.exs
-{:ok, pid} = Hedwig.start_robot(Alfred..Robot)
+{:ok, pid} = Hedwig.start_robot(Alfred.Robot)
 
 # You can also pass in a list of options that will override the configuration
 # provided in config.exs (except for the adapter as that is compiled into the
