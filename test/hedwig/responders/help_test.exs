@@ -12,6 +12,6 @@ defmodule Hedwig.Responders.HelpTest do
   test "help <query> - displays the usage for responders that match query", %{adapter: adapter, msg: msg} do
     send adapter, {:message, %{msg | text: "alfred help test"}}
     assert_receive {:message, %{text: text}}
-    assert text == "testuser: (this is a test) - did someone say test?"
+    assert text == "(this is a test) - did someone say test?"
   end
 end
