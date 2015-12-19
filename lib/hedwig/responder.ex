@@ -1,5 +1,5 @@
 defmodule Hedwig.Responder do
-  @moduledoc """
+  @moduledoc ~S"""
   Base module for building responders.
 
   A responder is a module which setups up handlers for hearing and responding
@@ -11,12 +11,35 @@ defmodule Hedwig.Responder do
   addressed to it. Both methods take a regular expression, the message and a block
   to execute when there is a match. For example:
 
-      hear ~/(hi|hello)/i, msg do
+      hear ~r/(hi|hello)/i, msg do
         # your code here
       end
 
-      respond ~/help/i, msg do
+      respond ~r/help$/i, msg do
         # your code here
+      end
+
+  ## Using captures
+
+  Responders support regular expression captures. It supports both normal
+  captures and named captures. When a message matches, captures are handled
+  automatically and added to the message's `:matches` key.
+
+  Accessing the captures depends on the type of capture used in the responder's
+  regex. If named captures are used, captures will be available by the name,
+  otherwise it will be available by an index, starting with 0.
+
+
+  ### Example:
+
+      # with indexed captures
+      hear ~r/i like (\w+), msg do
+        emote msg, "likes #{msg.matches[1]} too!"
+      end
+
+      # with named captures
+      hear ~r/i like (?<subject>\w+), msg do
+        emote msg, "likes #{msg.matches["subject"]} too!"
       end
   """
 
@@ -35,6 +58,10 @@ defmodule Hedwig.Responder do
 
   @doc """
   Sends a message via the underlying adapter.
+
+  ## Example
+
+      send msg, "Hello there!"
   """
   def send(%Hedwig.Message{adapter: {mod, pid}} = msg, text) do
     mod.send(pid, %{msg | text: text})
@@ -42,6 +69,10 @@ defmodule Hedwig.Responder do
 
   @doc """
   Send a reply message via the underlying adapter.
+
+  ## Example
+
+      reply msg, "Hello there!"
   """
   def reply(%Hedwig.Message{adapter: {mod, pid}} = msg, text) do
     mod.reply(pid, %{msg | text: text})
@@ -49,6 +80,10 @@ defmodule Hedwig.Responder do
 
   @doc """
   Send an emote message via the underlying adapter.
+
+  ## Example
+
+      emote msg, "goes and hides"
   """
   def emote(%Hedwig.Message{adapter: {mod, pid}} = msg, text) do
     mod.emote(pid, %{msg | text: text})
@@ -56,6 +91,10 @@ defmodule Hedwig.Responder do
 
   @doc """
   Returns a random item from a list or range.
+
+  ## Example
+
+      send msg, random(["apples", "bananas", "carrots"])
   """
   def random(list) do
     :random.seed(:os.timestamp)
@@ -90,6 +129,15 @@ defmodule Hedwig.Responder do
     end
   end
 
+  @doc """
+  Matches messages based on the regular expression.
+
+  ## Example
+
+      hear ~r/hello/, msg do
+        # code to handle the message
+      end
+  """
   defmacro hear(regex, msg, opts \\ Macro.escape(%{}), do: block) do
     source = source(regex)
     quote do
@@ -101,6 +149,18 @@ defmodule Hedwig.Responder do
     end
   end
 
+  @doc """
+  Setups up an responder that will match when a message is prefixed with the bot's name.
+
+  ## Example
+
+      # Give our bot's name is "alfred", this responder
+      # would match for a message with the following text:
+      # "alfred hello"
+      respond ~r/hello/, msg do
+        # code to handle the message
+      end
+  """
   defmacro respond(regex, msg, opts \\ Macro.escape(%{}), do: block) do
     source = source(regex)
     quote do
