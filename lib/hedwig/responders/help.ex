@@ -1,4 +1,30 @@
 defmodule Hedwig.Responders.Help do
+  @moduledoc """
+  The Help Responder.
+
+  This responder is responsible for displaying the usage for all installed
+  responders.
+
+  ## Installation
+
+  Add this responder to your bot's list of responders:
+
+      responders: [
+        {Hedwig.Responders.Help, []}
+      ]
+
+  ## Usage
+
+  You can invoke this responder by mentioning your bot's name followed by 'help'
+  (hedwig help). Your bot will reply back with a list of usage text for each
+  responder installed.
+
+  ## Searching help
+
+  If you include a search term, your bot will only respond with help that matches
+  (hedwig help <query>).
+  """
+
   use Hedwig.Responder
 
   @usage """
