@@ -31,14 +31,14 @@ defmodule Hedwig.Responders.Help do
   hedwig help - Displays all of the help commands that hedwig knows about.
   """
   respond ~r/help$/, %{robot: robot} = msg do
-    reply msg, display_usage(robot)
+    send msg, display_usage(robot)
   end
 
   @usage """
   hedwig help <query> - Displays all help commands that match <query>.
   """
   respond ~r/help (?<query>.*)/, %{robot: robot} = msg do
-    reply msg, search(robot, msg.matches["query"])
+    send msg, search(robot, msg.matches["query"])
   end
 
   defp display_usage(robot) do
