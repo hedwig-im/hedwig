@@ -7,6 +7,7 @@ defmodule Hedwig.Mixfile do
     [app: :hedwig,
      version: @version,
      elixir: "~> 1.0 or ~> 1.2",
+     docs: docs,
      deps: deps,
      package: package,
      name: "Hedwig",
@@ -23,8 +24,14 @@ defmodule Hedwig.Mixfile do
      mod: {Hedwig, []}]
   end
 
-  defp elixirc_paths(:test), do: ["lib", "test/support"]
-  defp elixirc_paths(_), do: ["lib", "responders"]
+  defp docs do
+    [extras: docs_extras,
+      main: "readme"]
+  end
+
+  defp docs_extras do
+    ["README.md"]
+  end
 
   defp deps do
     [{:gproc, "~> 0.5"},
@@ -36,6 +43,9 @@ defmodule Hedwig.Mixfile do
      {:earmark, "~> 0.1", only: :dev},
      {:ex_doc, "~> 0.10", only: :dev}]
   end
+
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib", "responders"]
 
   defp package do
     [files: ["lib", "responders", "priv", "mix.exs", "README*", "readme*", "LICENSE*", "license*"],
