@@ -77,7 +77,7 @@ Don't forget to add your new robot to your supervision tree
 
 ```elixir
 defmodule Alfred.Robot do
-  use Alfred.Robot, otp_app: :alfred
+  use Hedwig.Robot, otp_app: :alfred
 end
 ```
 
