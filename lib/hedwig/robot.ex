@@ -173,7 +173,7 @@ defmodule Hedwig.Robot do
   end
 
   @doc """
-  User defined `after_connect/1` function.
+  Invokes a user defined `after_connect/1` function, if defined.
 
   If the user has defined an `after_connect/1` in the robot module, it will be
   called with the robot's state. It is expected that the function return
