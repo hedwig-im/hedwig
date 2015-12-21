@@ -30,6 +30,8 @@ defmodule Hedwig.Robot do
   * `name` - the name the robot will respond to.
   * `aka` - an alias the robot will respond to.
   * `log_level` - the level to use when logging output.
+  * `responders` - a list of responders specified in the following format:
+    `{module, kwlist}`.
   """
 
   defstruct adapter: nil,
