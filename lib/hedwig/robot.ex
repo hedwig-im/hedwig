@@ -1,9 +1,35 @@
 defmodule Hedwig.Robot do
   @moduledoc """
-  Hedwig is a chat bot, highly inspired by GitHub's [Hubot](https://hubot.github.com/).
+  Defines a robot.
 
   Robots receive messages from a chat source (XMPP, Slack, Console, etc), and
-  dispatch them to matching responders.
+  dispatch them to matching responders. See the documentation for
+  `Hedwig.Responder` for details on responders.
+
+  When used, the robot expects the `:otp_app` as option. The `:otp_app` should
+  point to an OTP application that has the robot configuration. For example,
+  the robot:
+
+      defmodule MyApp.Robot do
+        use Hedwig.Robot, otp_app: :my_app
+      end
+
+  Could be configured with:
+
+      config :my_app, MyApp.Robot,
+        adapter: Hedwig.Adapters.Console,
+        name: "alfred"
+
+  Most of the configuration that goes into the `config` is specific to the
+  adapter.  Be sure to check the documentation for the adapter in use for all
+  of the available options.
+
+  ## Robot configuration
+
+  * `adapter` - the adapter module name.
+  * `name` - the name the robot will respond to.
+  * `aka` - an alias the robot will respond to.
+  * `log_level` - the level to use when logging output.
   """
 
   defstruct adapter: nil,
@@ -128,18 +154,38 @@ defmodule Hedwig.Robot do
     end
   end
 
+  @doc false
   def start_link(robot, opts) do
     GenServer.start_link(robot, {robot, opts})
   end
 
+  @doc """
+  Handles invoking installed responders with a `Hedwig.Message`.
+
+  This function should be called by an adapter when a message arrives. A message
+  will be sent to each installed responder.
+  """
+  @spec handle_message(pid, Hedwig.Message.t) :: :ok
   def handle_message(robot, %Hedwig.Message{} = msg) do
     GenServer.cast(robot, msg)
   end
 
+  @doc """
+  User defined `after_connect/1` function.
+
+  If the user has defined an `after_connect/1` in the robot module, it will be
+  called with the robot's state. It is expected that the function return
+  `{:ok, state}`.
+  """
+  @spec after_connect(pid, integer) :: :ok
   def after_connect(robot, timeout \\ 5000) do
     GenServer.call(robot, :after_connect, timeout)
   end
 
+  @doc """
+  Allows a robot to be registered by name.
+  """
+  @spec register(pid, any) :: :ok
   def register(robot, name) do
     GenServer.cast(robot, {:register, name})
   end
