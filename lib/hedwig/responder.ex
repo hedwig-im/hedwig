@@ -124,7 +124,7 @@ defmodule Hedwig.Responder do
         Enum.reduce(Enum.with_index(matches), %{}, fn {match, index}, acc ->
           Map.put(acc, index, match)
         end)
-      [_] ->
+      _ ->
         Regex.named_captures(regex, text)
     end
   end
