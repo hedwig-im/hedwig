@@ -128,7 +128,7 @@ defmodule Hedwig.Robot do
       end
 
       def handle_cast(%Hedwig.Message{} = msg, %{responders: responders} = state) do
-        Hedwig.Responder.run(%{msg | robot: state}, responders)
+        Hedwig.Responder.run(%{msg | robot: %{state | responders: []}}, responders)
         {:noreply, state}
       end
 
