@@ -198,7 +198,6 @@ defmodule Hedwig.Responder do
         @usage
         |> Enum.map(&String.strip/1)
         |> Enum.map(&(String.replace(&1, "hedwig", name)))
-        |> Enum.reverse
       end
 
       def __hearers__ do
