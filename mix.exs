@@ -1,7 +1,7 @@
 defmodule Hedwig.Mixfile do
   use Mix.Project
 
-  @version "1.0.0-rc0"
+  @version "1.0.0-rc1"
 
   def project do
     [app: :hedwig,
