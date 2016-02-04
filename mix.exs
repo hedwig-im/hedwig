@@ -1,12 +1,12 @@
 defmodule Hedwig.Mixfile do
   use Mix.Project
 
-  @version "1.0.0-rc1"
+  @version "1.0.0-rc2"
 
   def project do
     [app: :hedwig,
      version: @version,
-     elixir: "~> 1.0 or ~> 1.2",
+     elixir: "~> 1.2",
      docs: docs,
      deps: deps,
      package: package,
