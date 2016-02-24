@@ -11,8 +11,8 @@ defmodule Hedwig.Robot.Supervisor do
   end
 
   def config(robot, otp_app, opts) do
-    if config = Application.get_env(otp_app, robot) do
-      config
+    if robot_config = Application.get_env(otp_app, robot) do
+      robot_config
       |> Keyword.put(:otp_app, otp_app)
       |> Keyword.put(:robot, robot)
       |> Keyword.merge(opts)
@@ -24,8 +24,8 @@ defmodule Hedwig.Robot.Supervisor do
 
   def parse_config(robot, opts) do
     otp_app = Keyword.fetch!(opts, :otp_app)
-    config  = Application.get_env(otp_app, robot, [])
-    adapter = opts[:adapter] || config[:adapter]
+    robot_config  = Application.get_env(otp_app, robot, [])
+    adapter = opts[:adapter] || robot_config[:adapter]
 
     unless adapter do
       raise ArgumentError, "missing `:adapter` configuration for " <>
@@ -38,7 +38,7 @@ defmodule Hedwig.Robot.Supervisor do
                            "project dependency."
     end
 
-    {otp_app, adapter, config}
+    {otp_app, adapter, robot_config}
   end
 
   def init(:ok) do
