@@ -24,7 +24,7 @@ defmodule Hedwig.JID do
   defstruct user: "", server: "", resource: ""
 
 
-  @doc """
+  @impldoc """
   Returns a string representation from a JID struct.
 
   ## Examples
