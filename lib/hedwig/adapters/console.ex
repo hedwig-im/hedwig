@@ -90,6 +90,7 @@ defmodule Hedwig.Adapters.Console do
       receive do
         {:reply, resp} ->
           handle_result(resp, name)
+          await(name)
       after
         500 -> :ok
       end
