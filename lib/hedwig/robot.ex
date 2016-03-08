@@ -45,11 +45,11 @@ defmodule Hedwig.Robot do
       use GenServer
       require Logger
 
-      {otp_app, adapter, config} = Hedwig.Robot.Supervisor.parse_config(__MODULE__, opts)
+      {otp_app, adapter, robot_config} = Hedwig.Robot.Supervisor.parse_config(__MODULE__, opts)
       @adapter adapter
       @before_compile adapter
-      @config  config
-      @log_level config[:log_level] || :debug
+      @config  robot_config
+      @log_level robot_config[:log_level] || :debug
       @otp_app otp_app
 
       def start_link(opts \\ []) do

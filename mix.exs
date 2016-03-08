@@ -38,6 +38,7 @@ defmodule Hedwig.Mixfile do
 
      # Test dependencies
      {:excoveralls, "~> 0.4", only: :test},
+     {:credo, "~> 0.3", only: [:dev, :test]},
 
      # Dev dependencies
      {:earmark, "~> 0.1", only: :dev},

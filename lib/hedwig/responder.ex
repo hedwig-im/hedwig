@@ -109,7 +109,7 @@ defmodule Hedwig.Responder do
   defp run_aysnc(%{text: text} = msg, {regex, mod, fun, opts}) do
     Task.async(fn ->
       if Regex.match?(regex, text) do
-        msg = %{msg | matches: matches(regex, text)}
+        msg = %{msg | matches: find_matches(regex, text)}
         apply(mod, fun, [msg, opts])
       else
         nil
@@ -117,7 +117,7 @@ defmodule Hedwig.Responder do
     end)
   end
 
-  defp matches(regex, text) do
+  defp find_matches(regex, text) do
     case Regex.names(regex) do
       []  ->
         matches = Regex.run(regex, text)
@@ -139,11 +139,11 @@ defmodule Hedwig.Responder do
       end
   """
   defmacro hear(regex, msg, opts \\ Macro.escape(%{}), do: block) do
-    source = source(regex)
+    name = regex_to_name(regex)
     quote do
-      @hear {unquote(regex), unquote(source)}
+      @hear {unquote(regex), unquote(name)}
       @doc false
-      def unquote(source)(unquote(msg), unquote(opts)) do
+      def unquote(name)(unquote(msg), unquote(opts)) do
         unquote(block)
       end
     end
@@ -162,17 +162,17 @@ defmodule Hedwig.Responder do
       end
   """
   defmacro respond(regex, msg, opts \\ Macro.escape(%{}), do: block) do
-    source = source(regex)
+    name = regex_to_name(regex)
     quote do
-      @respond {unquote(regex), unquote(source)}
+      @respond {unquote(regex), unquote(name)}
       @doc false
-      def unquote(source)(unquote(msg), unquote(opts)) do
+      def unquote(name)(unquote(msg), unquote(opts)) do
         unquote(block)
       end
     end
   end
 
-  defp source({:sigil_r, _, [{:<<>>, _, [source]}, _]}),
+  defp regex_to_name({:sigil_r, _, [{:<<>>, _, [source]}, _]}),
     do: String.to_atom("__" <> source <> "__")
 
   @doc false
