@@ -81,18 +81,18 @@ defmodule Hedwig.Adapters.Console do
       loop(owner, user, name)
     end
 
-    def send_to_adapter(text, owner, name) do
+    def send_to_adapter(text, owner, name, timeout \\ 500) do
       Kernel.send(owner, {:message, text})
-      await(name)
+      await(name, timeout)
     end
 
-    defp await(name) do
+    defp await(name, timeout) do
       receive do
         {:reply, resp} ->
           handle_result(resp, name)
-          await(name)
+          await(name, timeout)
       after
-        500 -> :ok
+        timeout -> :ok
       end
     end
 

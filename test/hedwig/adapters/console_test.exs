@@ -6,14 +6,21 @@ defmodule Hedwig.Adapters.ConsoleTest do
 
   test "console connection processes multiple responses" do
     output = capture_and_normalize_io(fn ->
-      conn = spawn_link(Connection, :send_to_adapter, ["foo", self, "consoletest"])
+      # run `send_to_adapter` in a new process, pass self() as owner (robot)
+      owner = self()
+      conn = Task.async(fn ->
+        Connection.send_to_adapter("foo", owner, "consoletest", 100)
+      end)
+      # "we" (the robot) should have received the message "foo"
       assert_receive {:message, "foo"}
-      send(conn, {:reply, %Hedwig.Message{text: "bar"}})
-      send(conn, {:reply, %Hedwig.Message{text: "baaz"}})
-      :timer.sleep(500)
+      # let's pretend that two responders matched, sending different replies
+      send(conn.pid, {:reply, %Hedwig.Message{text: "bar"}})
+      send(conn.pid, {:reply, %Hedwig.Message{text: "baaz"}})
+      Task.await(conn)
     end)
 
-    assert output == ["consoletest> bar", "consoletest> baaz"]
+    # final console output should contain both replies, not necessarily in order
+    assert Enum.sort(output) == ["consoletest> baaz", "consoletest> bar"]
   end
 
   defp capture_and_normalize_io(fun) do
