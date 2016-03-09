@@ -81,7 +81,7 @@ defmodule Hedwig.Adapters.Console do
       loop(owner, user, name)
     end
 
-    defp send_to_adapter(text, owner, name) do
+    def send_to_adapter(text, owner, name) do
       Kernel.send(owner, {:message, text})
       await(name)
     end
