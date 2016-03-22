@@ -167,7 +167,7 @@ pid = Hedwig.whereis("alfred")
 # Create a Hedwig message
 msg = %Hedwig.Message{
       type: "groupchat",
-      room: room_jid, # eg. 123456_someroom@conf.hipchat.com"
+      room: "my_room@example.com"
       text: "hello world"
     }
 
