@@ -158,6 +158,24 @@ pid = Hedwig.whereis("jeeves")
 Hedwig.stop_robot(pid)
 ```
 
+## Sending Messages
+
+```elixir
+# Get the pid of the robot
+pid = Hedwig.whereis("alfred")
+
+# Create a Hedwig message
+msg = %Hedwig.Message{
+      type: "groupchat",
+      room: "my_room@example.com"
+      text: "hello world"
+    }
+
+# Send the message
+Alfred.Robot.send(pid, msg)
+```
+
+
 ## Building Responders
 
 Responders are functions that will process incoming messages.
