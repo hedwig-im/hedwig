@@ -45,7 +45,9 @@ defmodule Hedwig.Robot do
       use GenServer
       require Logger
 
-      {otp_app, adapter, robot_config} = Hedwig.Robot.Supervisor.parse_config(__MODULE__, opts)
+      {otp_app, adapter, robot_config} =
+        Hedwig.Robot.Supervisor.parse_config(__MODULE__, opts)
+
       @adapter adapter
       @before_compile adapter
       @config  robot_config
@@ -88,15 +90,21 @@ defmodule Hedwig.Robot do
         opts = Keyword.merge(robot.config, opts)
         {:ok, adapter} = @adapter.start_link(robot, opts)
 
-        {aka, opts}  = Keyword.pop(opts, :aka)
-        {name, opts} = Keyword.pop(opts, :name)
-        responders   = Keyword.get(opts, :responders, [])
+        {aka, opts}   = Keyword.pop(opts, :aka)
+        {name, opts}  = Keyword.pop(opts, :name)
+        responders    = Keyword.get(opts, :responders, [])
 
         unless responders == [] do
           GenServer.cast(self, :install_responders)
         end
 
-        state = %Hedwig.Robot{adapter: adapter, aka: aka, name: name, opts: opts}
+        state = %Hedwig.Robot{
+          adapter: adapter,
+          aka: aka,
+          name: name,
+          opts: opts
+        }
+
         {:ok, state}
       end
 
@@ -152,7 +160,11 @@ defmodule Hedwig.Robot do
         {:ok, state}
       end
 
-      defoverridable terminate: 2, code_change: 3, handle_info: 2
+      defoverridable [
+        {:terminate, 2},
+        {:code_change, 3},
+        {:handle_info, 2}
+      ]
     end
   end
 
