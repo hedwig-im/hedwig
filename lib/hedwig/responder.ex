@@ -103,10 +103,10 @@ defmodule Hedwig.Responder do
 
   @doc false
   def run(msg, responders) do
-    Enum.map(responders, &run_aysnc(msg, &1))
+    Enum.map(responders, &run_async(msg, &1))
   end
 
-  defp run_aysnc(%{text: text} = msg, {regex, mod, fun, opts}) do
+  defp run_async(%{text: text} = msg, {regex, mod, fun, opts}) do
     Task.async(fn ->
       if Regex.match?(regex, text) do
         msg = %{msg | matches: find_matches(regex, text)}
