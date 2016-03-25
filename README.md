@@ -50,7 +50,7 @@ end
 Run the following mix task and follow the prompts to generate a robot module
 in your application:
 
-```shell
+```
 $ mix hedwig.gen.robot
 
 Welcome to the Hedwig Robot Generator!
@@ -119,7 +119,7 @@ worker(Alfred.Robot, [])
 
 ### Trying out the console adapter:
 
-```shell
+```
 mix run --no-halt
 
 Hedwig Console - press Ctrl+C to exit.
