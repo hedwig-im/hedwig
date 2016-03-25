@@ -212,6 +212,30 @@ defmodule Hedwig.Responders.GreatSuccess do
 end
 ```
 
+## Testing responders:
+
+Hedwig ships with a ExUnit-based module sepecifically made to test responders: `Hedwig.RobotCase`.
+
+In order to test the above responder, you need to create an ExUnit test case:
+
+```elixir
+
+# test/great_success_test.exs
+
+defmodule Hedwig.Responders.GreatSuccessTest do
+  use Hedwig.RobotCase
+
+  @tag start_robot: true, name: "alfred", responders: [{Hedwig.Responders.GreatSuccess, []}]
+  test "great success - responds with a borat url", %{adapter: adapter, msg: msg} do
+    send adapter, {:message, %{msg | text: "great success"}}
+    assert_receive {:message, %{text: text}}
+    assert String.contains?(text, "http")
+  end
+end
+```
+
+To run the tests, use `mix test`
+
 ## @usage
 
 The `@usage` module attribute works nicely with `Hedwig.Responders.Help`. If you
