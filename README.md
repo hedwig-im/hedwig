@@ -19,7 +19,7 @@ You can spawn multiple bots at run-time with different configurations.
 ## Adapters
 
 - [XMPP](https://github.com/hedwig-im/hedwig_xmpp)
-- [Slack](https://github.com/hedwig-im/hedwig_slack) (Not yet implemented)
+- [Slack](https://github.com/hedwig-im/hedwig_slack) (WIP)
 
 ## Getting started
 
