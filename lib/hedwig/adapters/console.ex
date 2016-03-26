@@ -16,6 +16,7 @@ defmodule Hedwig.Adapters.Console do
 
   @doc false
   def init({robot, opts}) do
+    Hedwig.Robot.register(robot, opts[:name])
     {:ok, conn} = __MODULE__.Connection.connect(opts)
     {:ok, %{conn: conn, opts: opts, robot: robot}}
   end
