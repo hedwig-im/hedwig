@@ -15,6 +15,7 @@ defmodule Hedwig.Adapter do
       import Kernel, except: [send: 2]
 
       @behaviour Hedwig.Adapter
+      use GenServer
 
       def send(pid, %Hedwig.Message{} = msg) do
         GenServer.cast(pid, {:send, msg})
@@ -67,5 +68,4 @@ defmodule Hedwig.Adapter do
   defcallback send(pid, msg) :: term
   defcallback reply(pid, msg) :: term
   defcallback emote(pid, msg) :: term
-  defcallback init({robot, opts}) :: {:ok, state}
 end
