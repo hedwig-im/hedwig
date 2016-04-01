@@ -3,7 +3,6 @@ defmodule Hedwig.Message do
   Hedwig Message
   """
 
-  @type adapter :: {module, pid}
   @type matches :: list | map
   @type private :: map
   @type ref     :: reference
@@ -14,7 +13,6 @@ defmodule Hedwig.Message do
   @type user    :: map
 
   @type t :: %__MODULE__{
-    adapter: adapter,
     matches: matches,
     private: private,
     ref:     ref,
@@ -25,8 +23,7 @@ defmodule Hedwig.Message do
     user:    user
   }
 
-  defstruct adapter: nil,
-            matches: nil,
+  defstruct matches: nil,
             private: %{},
             ref:     nil,
             robot:   nil,

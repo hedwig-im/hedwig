@@ -49,7 +49,6 @@ defmodule Hedwig.Adapters.Console do
     {user, 0} = System.cmd("whoami", [])
 
     msg = %Hedwig.Message{
-      adapter: {__MODULE__, self},
       ref: make_ref(),
       text: text,
       type: "chat",

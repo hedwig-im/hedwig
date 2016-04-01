@@ -38,6 +38,7 @@ defmodule Hedwig.Robot do
             aka: nil,
             name: "",
             opts: [],
+            pid: nil,
             responders: []
 
   defmacro __using__(opts) do
@@ -60,18 +61,6 @@ defmodule Hedwig.Robot do
 
       def stop(robot) do
         Hedwig.stop_robot(robot)
-      end
-
-      def send(pid, msg) do
-        GenServer.cast(pid, {:send, msg})
-      end
-
-      def reply(pid, msg) do
-        GenServer.cast(pid, {:reply, msg})
-      end
-
-      def emote(pid, msg) do
-        GenServer.cast(pid, {:emote, msg})
       end
 
       def config(opts \\ []) do
@@ -102,7 +91,8 @@ defmodule Hedwig.Robot do
           adapter: adapter,
           aka: aka,
           name: name,
-          opts: opts
+          opts: opts,
+          pid: self()
         }
 
         {:ok, state}
@@ -171,6 +161,27 @@ defmodule Hedwig.Robot do
   @doc false
   def start_link(robot, opts) do
     GenServer.start_link(robot, {robot, opts})
+  end
+
+  @doc """
+  Send a message via the robot.
+  """
+  def send(pid, msg) do
+    GenServer.cast(pid, {:send, msg})
+  end
+
+  @doc """
+  Send a reply message via the robot.
+  """
+  def reply(pid, msg) do
+    GenServer.cast(pid, {:reply, msg})
+  end
+
+  @doc """
+  Send an emote message via the robot.
+  """
+  def emote(pid, msg) do
+    GenServer.cast(pid, {:emote, msg})
   end
 
   @doc """

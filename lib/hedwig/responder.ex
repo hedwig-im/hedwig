@@ -63,8 +63,8 @@ defmodule Hedwig.Responder do
 
       send msg, "Hello there!"
   """
-  def send(%Hedwig.Message{adapter: {mod, pid}} = msg, text) do
-    mod.send(pid, %{msg | text: text})
+  def send(%Hedwig.Message{robot: %{pid: pid}} = msg, text) do
+    Hedwig.Robot.send(pid, %{msg | text: text})
   end
 
   @doc """
@@ -74,8 +74,8 @@ defmodule Hedwig.Responder do
 
       reply msg, "Hello there!"
   """
-  def reply(%Hedwig.Message{adapter: {mod, pid}} = msg, text) do
-    mod.reply(pid, %{msg | text: text})
+  def reply(%Hedwig.Message{robot: %{pid: pid}} = msg, text) do
+    Hedwig.Robot.reply(pid, %{msg | text: text})
   end
 
   @doc """
@@ -85,8 +85,8 @@ defmodule Hedwig.Responder do
 
       emote msg, "goes and hides"
   """
-  def emote(%Hedwig.Message{adapter: {mod, pid}} = msg, text) do
-    mod.emote(pid, %{msg | text: text})
+  def emote(%Hedwig.Message{robot: %{pid: pid}} = msg, text) do
+    Hedwig.Robot.emote(pid, %{msg | text: text})
   end
 
   @doc """
