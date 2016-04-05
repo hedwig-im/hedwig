@@ -47,7 +47,6 @@ defmodule Mix.Tasks.Ecto.Gen.RepoTest do
         aka: "/",
         responders: [
           {Hedwig.Responders.Help, []},
-          {Hedwig.Responders.Panzy, []},
           {Hedwig.Responders.GreatSuccess, []},
           {Hedwig.Responders.ShipIt, []}
         ]

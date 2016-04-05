@@ -99,7 +99,6 @@ config :alfred, Alfred.Robot,
   aka: "/",
   responders: [
     {Hedwig.Responders.Help, []},
-    {Hedwig.Responders.Panzy, []},
     {Hedwig.Responders.GreatSuccess, []},
     {Hedwig.Responders.ShipIt, []}
   ]
@@ -130,8 +129,6 @@ bot will respond based on the current installed responders.
 scrogson> alfred help
 alfred> alfred help <query> - Displays all help commands that match <query>.
 alfred help - Displays all of the help commands that alfred knows about.
-alfred: hey - Replies with 'sup?'
-(tired|too? hard|upset|bored) - Replies with 'Panzy!'
 great success - Displays a random Borat image.
 ship it - Display a motivation squirrel
 scrogson>

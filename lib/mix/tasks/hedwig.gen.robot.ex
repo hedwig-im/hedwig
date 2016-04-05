@@ -166,7 +166,6 @@ defmodule Mix.Tasks.Hedwig.Gen.Robot do
     aka: <%= inspect @aka %>,
     responders: [
       {Hedwig.Responders.Help, []},
-      {Hedwig.Responders.Panzy, []},
       {Hedwig.Responders.GreatSuccess, []},
       {Hedwig.Responders.ShipIt, []}
     ]
