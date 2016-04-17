@@ -1,7 +1,7 @@
 defmodule Hedwig.Mixfile do
   use Mix.Project
 
-  @version "1.0.0-rc3"
+  @version "1.0.0-rc.4"
 
   def project do
     [app: :hedwig,
@@ -16,7 +16,11 @@ defmodule Hedwig.Mixfile do
      source_url: "https://github.com/hedwig-im/hedwig",
      homepage_url: "https://github.com/hedwig-im/hedwig",
      test_coverage: [tool: ExCoveralls],
-     preferred_cli_env: ["coveralls": :test, "coveralls.detail": :test, "coveralls.post": :test]]
+     preferred_cli_env: [
+       "coveralls": :test,
+       "coveralls.detail": :test,
+       "coveralls.post": :test,
+       "docs": :docs]]
   end
 
   def application do
@@ -37,12 +41,11 @@ defmodule Hedwig.Mixfile do
     [{:gproc, "~> 0.5"},
 
      # Test dependencies
-     {:excoveralls, "~> 0.4", only: :test},
-     {:credo, "~> 0.3", only: [:dev, :test]},
+     {:excoveralls, "~> 0.5", only: :test},
 
-     # Dev dependencies
-     {:earmark, "~> 0.1", only: :dev},
-     {:ex_doc, "~> 0.10", only: :dev}]
+     # Documentation dependencies
+     {:earmark, "~> 0.2", only: :docs},
+     {:ex_doc, "~> 0.11", only: :docs}]
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
