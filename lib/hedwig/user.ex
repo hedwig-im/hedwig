@@ -1,7 +1,8 @@
 defmodule Hedwig.User do
-  @defmodule """
+  @moduledoc ~S"""
   Module defining a `User` struct for `Hedwig.Message`.
   """
+
   @type t :: %__MODULE__{
     id: binary,
     name: binary
