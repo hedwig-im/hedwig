@@ -98,6 +98,10 @@ defmodule Hedwig.Robot do
         {:ok, state}
       end
 
+      def handle_in(msg, state) do
+        {:ok, state}
+      end
+
       def handle_call(:after_connect, _from, state) do
         if function_exported?(__MODULE__, :after_connect, 1) do
           {:ok, state} = __MODULE__.after_connect(state)
@@ -130,6 +134,13 @@ defmodule Hedwig.Robot do
         {:noreply, state}
       end
 
+      def handle_cast({:handle_in, msg}, state) do
+        if function_exported?(__MODULE__, :handle_in, 2) do
+          {:ok, state} = __MODULE__.handle_in(msg, state)
+        end
+        {:noreply, state}
+      end
+
       def handle_cast(:install_responders, %{opts: opts} = state) do
         responders =
           Enum.reduce opts[:responders], [], fn {mod, opts}, acc ->
@@ -153,6 +164,7 @@ defmodule Hedwig.Robot do
       defoverridable [
         {:terminate, 2},
         {:code_change, 3},
+        {:handle_in, 2},
         {:handle_info, 2}
       ]
     end
@@ -193,6 +205,17 @@ defmodule Hedwig.Robot do
   @spec handle_message(pid, Hedwig.Message.t) :: :ok
   def handle_message(robot, %Hedwig.Message{} = msg) do
     GenServer.cast(robot, msg)
+  end
+
+  @doc """
+  Invokes a user defined `handle_in/2` function, if defined.
+
+  This function should be called by an adapter when a message arrives but
+  should be handled by the user.
+  """
+  @spec handle_in(pid, any) :: :ok
+  def handle_in(robot, msg) do
+    GenServer.cast(robot, {:handle_in, msg})
   end
 
   @doc """
