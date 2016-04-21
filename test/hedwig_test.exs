@@ -11,4 +11,9 @@ defmodule HedwigTest do
     assert Hedwig.whereis("hedwig") == :undefined
     assert Hedwig.whereis("codsworth") == pid
   end
+  @tag start_robot: true
+  test "handle_in/2", %{robot: pid} do
+    Hedwig.Robot.handle_in(pid, {:ping, self()})
+    assert_receive :pong
+  end
 end

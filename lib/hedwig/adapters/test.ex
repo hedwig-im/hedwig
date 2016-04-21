@@ -10,7 +10,6 @@ defmodule Hedwig.Adapters.Test do
 
   def handle_cast(:after_init, %{robot: robot, opts: opts} = state) do
     Hedwig.Robot.after_connect(robot)
-    Hedwig.Robot.register(robot, opts[:name])
     {:noreply, state}
   end
 
@@ -32,6 +31,11 @@ defmodule Hedwig.Adapters.Test do
   def handle_info({:message, msg}, %{robot: robot} = state) do
     msg = %Hedwig.Message{text: msg.text, user: msg.user}
     Hedwig.Robot.handle_message(robot, msg)
+    {:noreply, state}
+  end
+
+  def handle_info(msg, %{robot: robot} = state) do
+    Hedwig.Robot.handle_in(robot, msg)
     {:noreply, state}
   end
 end
