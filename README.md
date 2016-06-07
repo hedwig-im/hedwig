@@ -20,6 +20,7 @@ You can spawn multiple bots at run-time with different configurations.
 
 - [XMPP](https://github.com/hedwig-im/hedwig_xmpp)
 - [Slack](https://github.com/hedwig-im/hedwig_slack) (WIP)
+- [Flowdock](https://github.com/supernullset/hedwig_flowdock) (WIP)
 
 ## Getting started
 
