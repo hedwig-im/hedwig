@@ -25,6 +25,7 @@ defmodule Hedwig.Robot.Supervisor do
   def parse_config(robot, opts) do
     otp_app = Keyword.fetch!(opts, :otp_app)
     robot_config  = Application.get_env(otp_app, robot, [])
+    name = opts[:name] || robot_config[:name]
     adapter = opts[:adapter] || robot_config[:adapter]
 
     unless adapter do
@@ -36,6 +37,15 @@ defmodule Hedwig.Robot.Supervisor do
       raise ArgumentError, "adapter #{inspect adapter} was not compiled, " <>
                            "ensure it is correct and it is included as a " <>
                            "project dependency."
+    end
+
+    unless name do
+      raise ArgumentError, "missing `:name` configuration for " <>
+                           "#{inspect otp_app}, #{inspect robot}"
+    end
+
+    if String.strip(name) == "" do
+      raise ArgumentError, "Name can not be an empty string"
     end
 
     {otp_app, adapter, robot_config}

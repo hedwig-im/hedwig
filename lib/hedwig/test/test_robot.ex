@@ -1,7 +1,7 @@
 Code.ensure_compiled(Hedwig.Adapters.Test)
 
 defmodule Hedwig.TestRobot do
-  use Hedwig.Robot, otp_app: :hedwig, adapter: Hedwig.Adapters.Test
+  use Hedwig.Robot, otp_app: :hedwig, adapter: Hedwig.Adapters.Test, name: "hedwig"
 
   def after_connect(%{name: name} = robot) do
     Hedwig.Robot.register(self, name)
