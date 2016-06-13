@@ -45,7 +45,7 @@ defmodule Mix.Tasks.Hedwig.Gen.Robot do
     """]
 
     aka     = opts[:aka]   || "/"
-    name    = opts[:name]  || prompt_for_name
+    name    = opts[:name]  || get_name
     robot   = opts[:robot] || default_robot(app)
     adapter = get_adapter_module(deps)
 
@@ -133,6 +133,16 @@ defmodule Mix.Tasks.Hedwig.Gen.Robot do
     adapters = available_adapters(deps)
     {selection, _} = adapters |> prompt_for_adapter |> Integer.parse
     adapters[selection]
+  end
+
+  defp get_name do
+    case prompt_for_name do
+      "" ->
+        Mix.shell.info "Name can not be an empty string"
+        get_name
+      valid_name ->
+        valid_name
+    end
   end
 
   defp prompt_for_name do
