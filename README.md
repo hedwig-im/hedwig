@@ -9,6 +9,8 @@
 
 Hedwig is a chat bot, highly inspired by GitHub's [Hubot](https://hubot.github.com/).
 
+See the [online documentation](https://hexdocs.pm/hedwig) for more information.
+
 Hedwig was designed for 2 use-cases:
 
   1. A single, stand-alone OTP application.
