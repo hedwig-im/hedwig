@@ -24,6 +24,9 @@ You can spawn multiple bots at run-time with different configurations.
 - [Slack](https://github.com/hedwig-im/hedwig_slack) (WIP)
 - [Flowdock](https://github.com/supernullset/hedwig_flowdock) (WIP)
 
+
+Check out [awesome-hedwig](https://github.com/enilsen16/awesome-hedwig) for a curated list of adapters, responders, and other resources.
+
 ## Getting started
 
 Hedwig ships with a console adapter to get you up and running quickly. It's
