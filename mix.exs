@@ -7,9 +7,9 @@ defmodule Hedwig.Mixfile do
     [app: :hedwig,
      version: @version,
      elixir: "~> 1.2",
-     docs: docs,
-     deps: deps,
-     package: package,
+     docs: docs(),
+     deps: deps(),
+     package: package(),
      name: "Hedwig",
      elixirc_paths: elixirc_paths(Mix.env),
      description: "An adapter-based chat bot framework",
@@ -29,7 +29,7 @@ defmodule Hedwig.Mixfile do
   end
 
   defp docs do
-    [extras: docs_extras,
+    [extras: docs_extras(),
       main: "readme"]
   end
 
