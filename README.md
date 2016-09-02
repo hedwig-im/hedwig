@@ -106,6 +106,7 @@ config :alfred, Alfred.Robot,
   responders: [
     {Hedwig.Responders.Help, []},
     {Hedwig.Responders.GreatSuccess, []},
+    {Hedwig.Responders.SuperFast, []},
     {Hedwig.Responders.ShipIt, []}
   ]
 ```
@@ -136,6 +137,7 @@ scrogson> alfred help
 alfred> alfred help <query> - Displays all help commands that match <query>.
 alfred help - Displays all of the help commands that alfred knows about.
 great success - Displays a random Borat image.
+that was superfast - Display a fast gif animation.
 ship it - Display a motivation squirrel
 scrogson>
 ```

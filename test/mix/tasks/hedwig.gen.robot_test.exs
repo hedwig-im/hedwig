@@ -48,6 +48,7 @@ defmodule Mix.Tasks.Ecto.Gen.RepoTest do
         responders: [
           {Hedwig.Responders.Help, []},
           {Hedwig.Responders.GreatSuccess, []},
+          {Hedwig.Responders.SuperFast, []},
           {Hedwig.Responders.ShipIt, []}
         ]
 
