@@ -167,6 +167,7 @@ defmodule Mix.Tasks.Hedwig.Gen.Robot do
     responders: [
       {Hedwig.Responders.Help, []},
       {Hedwig.Responders.GreatSuccess, []},
+      {Hedwig.Responders.SuperFast, []},
       {Hedwig.Responders.ShipIt, []}
     ]
   """
