@@ -151,12 +151,38 @@ scrogson>
 # provided in config.exs (except for the adapter as that is compiled into the
 # module).
 {:ok, pid} = Hedwig.start_robot(Alfred.Robot, [name: "jeeves"])
+```
 
+### Registering bots by name
+
+Hedwig allows you to register your bot's process by name, making it easy to
+start, stop, and send messages to your bot without keeping track of the pid.
+
+You can register your robot in the `after_connect/1` callback in your robot
+module like so:
+
+```elixir
+defmodule Alfred.Robot do
+  use Hedwig.Robot, otp_app: :alfred
+
+  def after_connect(state) do
+    Hedwig.Registry.register(state.name)
+
+    {:ok, state}
+  end
+end
+```
+
+#### Finding your robot process by name
+
+```elixir
+Hedwig.start_robot(Alfred.Robot)
 # Get the pid of the robot by name
 pid = Hedwig.whereis("alfred")
 # Stop the robot.
 Hedwig.stop_robot(pid)
 
+Hedwig.start_robot(Alfred.Robot, [name: "jeeves"])
 pid = Hedwig.whereis("jeeves")
 Hedwig.stop_robot(pid)
 ```
