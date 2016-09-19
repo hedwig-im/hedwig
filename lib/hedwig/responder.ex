@@ -139,7 +139,7 @@ defmodule Hedwig.Responder do
       end
   """
   defmacro hear(regex, msg, opts \\ Macro.escape(%{}), do: block) do
-    name = regex_to_name(regex)
+    name = unique_name(:hear)
     quote do
       @hear {unquote(regex), unquote(name)}
       @doc false
@@ -162,7 +162,7 @@ defmodule Hedwig.Responder do
       end
   """
   defmacro respond(regex, msg, opts \\ Macro.escape(%{}), do: block) do
-    name = regex_to_name(regex)
+    name = unique_name(:respond)
     quote do
       @respond {unquote(regex), unquote(name)}
       @doc false
@@ -172,8 +172,9 @@ defmodule Hedwig.Responder do
     end
   end
 
-  defp regex_to_name({:sigil_r, _, [{:<<>>, _, [source]}, _]}),
-    do: String.to_atom("__" <> source <> "__")
+  defp unique_name(type) do
+    String.to_atom("#{type}_#{System.unique_integer([:positive, :monotonic])}")
+  end
 
   @doc false
   def respond_pattern(pattern, robot) do
