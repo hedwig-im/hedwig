@@ -105,8 +105,10 @@ defmodule Hedwig.Robot do
       def handle_call(:after_connect, _from, state) do
         if function_exported?(__MODULE__, :after_connect, 1) do
           {:ok, state} = __MODULE__.after_connect(state)
+          {:reply, :ok, state}
+        else
+          {:reply, :ok, state}
         end
-        {:reply, :ok, state}
       end
 
       def handle_cast({:send, msg}, %{adapter: adapter} = state) do
@@ -137,8 +139,10 @@ defmodule Hedwig.Robot do
       def handle_cast({:handle_in, msg}, state) do
         if function_exported?(__MODULE__, :handle_in, 2) do
           {:ok, state} = __MODULE__.handle_in(msg, state)
+          {:noreply, state}
+        else
+          {:noreply, state}
         end
-        {:noreply, state}
       end
 
       def handle_cast(:install_responders, %{opts: opts} = state) do

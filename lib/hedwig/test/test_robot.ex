@@ -13,7 +13,7 @@ defmodule Hedwig.TestRobot do
     {:ok, robot}
   end
 
-  def handle_in(msg, robot) do
+  def handle_in(_msg, robot) do
     {:ok, robot}
   end
 end

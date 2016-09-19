@@ -97,7 +97,7 @@ defmodule Hedwig.Responder do
       send msg, random(["apples", "bananas", "carrots"])
   """
   def random(list) do
-    :random.seed(:os.timestamp)
+    :rand.seed(:exsplus, :os.timestamp)
     Enum.random(list)
   end
 
