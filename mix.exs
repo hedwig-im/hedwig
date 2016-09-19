@@ -19,8 +19,7 @@ defmodule Hedwig.Mixfile do
      preferred_cli_env: [
        "coveralls": :test,
        "coveralls.detail": :test,
-       "coveralls.post": :test,
-       "docs": :docs]]
+       "coveralls.post": :test]]
   end
 
   def application do
@@ -44,8 +43,7 @@ defmodule Hedwig.Mixfile do
      {:excoveralls, "~> 0.5", only: :test},
 
      # Documentation dependencies
-     {:earmark, "~> 0.2", only: :docs},
-     {:ex_doc, "~> 0.11", only: :docs}]
+     {:ex_doc, "~> 0.13", only: :dev}]
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
