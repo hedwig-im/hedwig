@@ -42,7 +42,7 @@ defmodule Hedwig.Robot do
             responders: []
 
   defmacro __using__(opts) do
-    quote bind_quoted: [opts: opts] do
+    quote location: :keep, bind_quoted: [opts: opts] do
       use GenServer
       require Logger
 
@@ -98,17 +98,23 @@ defmodule Hedwig.Robot do
         {:ok, state}
       end
 
+      def after_connect(state) do
+        Logger.warn """
+        #{inspect __MODULE__}.after_connect/1 default handler invoked.
+        """
+        {:ok, state}
+      end
+
       def handle_in(msg, state) do
+        Logger.warn """
+        #{inspect __MODULE__}.handle_in/2 default handler invoked.
+        """
         {:ok, state}
       end
 
       def handle_call(:after_connect, _from, state) do
-        if function_exported?(__MODULE__, :after_connect, 1) do
-          {:ok, state} = __MODULE__.after_connect(state)
-          {:reply, :ok, state}
-        else
-          {:reply, :ok, state}
-        end
+        {:ok, state} = __MODULE__.after_connect(state)
+        {:reply, :ok, state}
       end
 
       def handle_cast({:send, msg}, %{adapter: adapter} = state) do
@@ -137,12 +143,8 @@ defmodule Hedwig.Robot do
       end
 
       def handle_cast({:handle_in, msg}, state) do
-        if function_exported?(__MODULE__, :handle_in, 2) do
-          {:ok, state} = __MODULE__.handle_in(msg, state)
-          {:noreply, state}
-        else
-          {:noreply, state}
-        end
+        {:ok, state} = __MODULE__.handle_in(msg, state)
+        {:noreply, state}
       end
 
       def handle_cast(:install_responders, %{opts: opts} = state) do
@@ -166,6 +168,7 @@ defmodule Hedwig.Robot do
       end
 
       defoverridable [
+        {:after_connect, 1},
         {:terminate, 2},
         {:code_change, 3},
         {:handle_in, 2},
