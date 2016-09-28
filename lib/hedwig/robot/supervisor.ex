@@ -42,7 +42,7 @@ defmodule Hedwig.Robot.Supervisor do
   end
 
   def init(:ok) do
-    opts = [strategy: :simple_one_for_one, restart: :transient]
-    supervise([worker(Hedwig.Robot, [])], opts)
+    opts = [strategy: :simple_one_for_one]
+    supervise([worker(Hedwig.Robot, [], restart: :transient)], opts)
   end
 end
