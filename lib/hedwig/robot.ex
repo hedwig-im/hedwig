@@ -130,7 +130,6 @@ defmodule Hedwig.Robot do
           {:reconnect, state} ->
             {:reply, :reconnect, state}
           {:disconnect, reason, state} ->
-            Process.unlink(state.adapter)
             {:stop, reason, {:disconnect, reason}, state}
         end
       end
