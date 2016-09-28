@@ -9,7 +9,7 @@ defmodule Hedwig.Adapters.Test do
   end
 
   def handle_cast(:after_init, %{robot: robot} = state) do
-    Hedwig.Robot.after_connect(robot)
+    Hedwig.Robot.handle_connect(robot)
     {:noreply, state}
   end
 

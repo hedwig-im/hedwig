@@ -158,14 +158,14 @@ scrogson>
 Hedwig allows you to register your bot's process by name, making it easy to
 start, stop, and send messages to your bot without keeping track of the pid.
 
-You can register your robot in the `after_connect/1` callback in your robot
+You can register your robot in the `handle_connect/1` callback in your robot
 module like so:
 
 ```elixir
 defmodule Alfred.Robot do
   use Hedwig.Robot, otp_app: :alfred
 
-  def after_connect(state) do
+  def handle_connect(state) do
     Hedwig.Registry.register(state.name)
 
     {:ok, state}

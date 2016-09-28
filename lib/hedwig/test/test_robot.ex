@@ -3,9 +3,9 @@ Code.ensure_compiled(Hedwig.Adapters.Test)
 defmodule Hedwig.TestRobot do
   use Hedwig.Robot, otp_app: :hedwig, adapter: Hedwig.Adapters.Test
 
-  def after_connect(%{name: name} = robot) do
-    Hedwig.Robot.register(self, name)
-    {:ok, robot}
+  def handle_connect(%{name: name} = state) do
+    Hedwig.Registry.register(name)
+    {:ok, state}
   end
 
   def handle_in({:ping, from}, robot) do
