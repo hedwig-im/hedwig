@@ -129,6 +129,8 @@ defmodule Hedwig.Robot do
         case __MODULE__.handle_disconnect(reason, state) do
           {:reconnect, state} ->
             {:reply, :reconnect, state}
+          {:reconnect, timer, state} ->
+            {:reply, {:reconnect, timer}, state}
           {:disconnect, reason, state} ->
             {:stop, reason, {:disconnect, reason}, state}
         end
@@ -262,7 +264,7 @@ defmodule Hedwig.Robot do
   called with the robot's state. It is expected that the function return
   `{:reconnect, state}` or `{:disconnect, reason, state}`.
   """
-  @spec handle_disconnect(pid, any, integer) :: :ok
+  @spec handle_disconnect(pid, any, integer) :: :reconnect | {:reconnect, integer} | {:disconnect, any}
   def handle_disconnect(robot, reason, timeout \\ 5000) do
     GenServer.call(robot, {:handle_disconnect, reason}, timeout)
   end
