@@ -87,13 +87,13 @@ defmodule Hedwig.Robot do
           GenServer.cast(self, :install_responders)
         end
 
-        state = %Hedwig.Robot{
+        {:ok, %Hedwig.Robot{
           adapter: adapter,
           aka: aka,
           name: name,
           opts: opts,
-          pid: self()
-        }
+          pid: self()}}
+      end
 
       def handle_connect(state) do
         Logger.warn """
@@ -102,8 +102,11 @@ defmodule Hedwig.Robot do
         {:ok, state}
       end
 
+      def handle_disconnect(_reason, state) do
         Logger.warn """
+        #{inspect __MODULE__}.handle_disconnect/2 default handler invoked.
         """
+        {:reconnect, state}
       end
 
       def handle_in(msg, state) do
@@ -119,6 +122,16 @@ defmodule Hedwig.Robot do
             {:reply, :ok, state}
           {:stop, reason, state} ->
             {:stop, reason, state}
+        end
+      end
+
+      def handle_call({:handle_disconnect, reason}, _from, state) do
+        case __MODULE__.handle_disconnect(reason, state) do
+          {:reconnect, state} ->
+            {:reply, :reconnect, state}
+          {:disconnect, reason, state} ->
+            Process.unlink(state.adapter)
+            {:stop, reason, {:disconnect, reason}, state}
         end
       end
 
@@ -174,9 +187,10 @@ defmodule Hedwig.Robot do
 
       defoverridable [
         {:handle_connect, 1},
+        {:handle_disconnect, 2},
+        {:handle_in, 2},
         {:terminate, 2},
         {:code_change, 3},
-        {:handle_in, 2},
         {:handle_info, 2}
       ]
     end
@@ -240,9 +254,18 @@ defmodule Hedwig.Robot do
   @spec handle_connect(pid, integer) :: :ok
   def handle_connect(robot, timeout \\ 5000) do
     GenServer.call(robot, :handle_connect, timeout)
+  end
 
+  @doc """
+  Invokes a user defined `handle_disconnect/1` function, if defined.
+
+  If the user has defined an `handle_disconnect/1` in the robot module, it will be
   called with the robot's state. It is expected that the function return
+  `{:reconnect, state}` or `{:disconnect, reason, state}`.
   """
+  @spec handle_disconnect(pid, any, integer) :: :ok
+  def handle_disconnect(robot, reason, timeout \\ 5000) do
+    GenServer.call(robot, {:handle_disconnect, reason}, timeout)
   end
 
   @doc """
