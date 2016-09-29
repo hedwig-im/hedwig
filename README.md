@@ -201,7 +201,7 @@ msg = %Hedwig.Message{
 }
 
 # Send the message
-Alfred.Robot.send(pid, msg)
+Hedwig.Robot.send(pid, msg)
 ```
 
 
