@@ -8,6 +8,5 @@ defmodule Hedwig.User do
     name: binary
   }
 
-  defstruct id: nil,
-            name: nil
+  defstruct id: nil, name: nil
 end

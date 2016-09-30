@@ -3,11 +3,8 @@ defmodule Hedwig.Robot.Supervisor do
 
   use Supervisor
 
-  @doc """
-  Starts the robot supervisor.
-  """
   def start_link(opts \\ []) do
-    Supervisor.start_link(__MODULE__, :ok, opts)
+    Supervisor.start_link(__MODULE__, [], opts)
   end
 
   def config(robot, otp_app, opts) do
@@ -41,8 +38,11 @@ defmodule Hedwig.Robot.Supervisor do
     {otp_app, adapter, robot_config}
   end
 
-  def init(:ok) do
-    opts = [strategy: :simple_one_for_one]
-    supervise([worker(Hedwig.Robot, [], restart: :transient)], opts)
+  def init(_) do
+    children = [
+      worker(Hedwig.Robot, [], restart: :transient)
+    ]
+
+    supervise(children, strategy: :simple_one_for_one)
   end
 end

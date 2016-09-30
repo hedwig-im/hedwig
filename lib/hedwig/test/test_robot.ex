@@ -12,12 +12,16 @@ defmodule Hedwig.TestRobot do
     {:disconnect, reason, state}
   end
 
-  def handle_in({:ping, from}, state) do
-    Kernel.send(from, :pong)
-    {:ok, state}
+  def handle_in(%Hedwig.Message{} = msg, state) do
+    {:dispatch, msg, state}
   end
 
-  def handle_in(_msg, state) do
-    {:ok, state}
+  def handle_in({:ping, from}, state) do
+    Kernel.send(from, :pong)
+    {:noreply, state}
+  end
+
+  def handle_in(msg, state) do
+    super(msg, state)
   end
 end

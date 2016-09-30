@@ -4,17 +4,13 @@ defmodule Hedwig.ResponderTest do
   alias Hedwig.Responder
 
   test "respond_pattern" do
-    robot = %Hedwig.Robot{name: "alfred", aka: nil}
-
-    assert Responder.respond_pattern(~r/hey there/i, robot) ==
+    assert Responder.respond_pattern(~r/hey there/i, "alfred", nil) ==
       ~r/^\s*[@]?alfred[:,]?\s*(?:hey there)/i
 
-    assert Responder.respond_pattern(~r/this\s*should\s*escape/i, robot) ==
+    assert Responder.respond_pattern(~r/this\s*should\s*escape/i, "alfred", nil) ==
       ~r/^\s*[@]?alfred[:,]?\s*(?:this\s*should\s*escape)/i
 
-    robot = %{robot | aka: "/"}
-
-    assert Responder.respond_pattern(~r/this\s*should\s*escape/i, robot) ==
+    assert Responder.respond_pattern(~r/this\s*should\s*escape/i, "alfred", "/") ==
       ~r/^\s*[@]?(?:alfred[:,]?|\/[:,]?)\s*(?:this\s*should\s*escape)/i
   end
 
