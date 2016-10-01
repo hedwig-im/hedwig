@@ -108,7 +108,7 @@ defmodule Hedwig.Responder do
   @doc false
   def dispatch(msg, responders) do
     Enum.map(responders, fn {_, pid, _, _} ->
-      :ok = GenServer.cast(pid, {:dispatch, msg})
+      GenServer.cast(pid, {:dispatch, msg})
     end)
   end
 
@@ -177,6 +177,11 @@ defmodule Hedwig.Responder do
 
   defmacro __before_compile__(_env) do
     quote location: :keep do
+      @doc false
+      def usage(name) do
+        import String
+        Enum.map(@usage, &(&1 |> strip |> replace("hedwig", name)))
+      end
 
       def init({aka, name, opts, robot}) do
         :ok = GenServer.cast(self(), :compile_responders)
@@ -197,18 +202,18 @@ defmodule Hedwig.Responder do
         {:noreply, dispatch_responders(msg, state)}
       end
 
-      def dispatch_responders(msg, %{responders: responders} = state) do
-        Enum.reduce responders, state, fn responder, state ->
-          case dispatch_responder(responder, msg, state) do
+      defp dispatch_responders(msg, %{responders: responders} = state) do
+        Enum.reduce responders, state, fn responder, new_state ->
+          case dispatch_responder(responder, msg, new_state) do
             :ok ->
-              state
-            {:ok, state} ->
-              state
+              new_state
+            {:ok, new_state} ->
+              new_state
           end
         end
       end
 
-      def dispatch_responder({regex, fun}, %{text: text} = msg, state) do
+      defp dispatch_responder({regex, fun}, %{text: text} = msg, state) do
         if Regex.match?(regex, text) do
           msg = %{msg | matches: find_matches(regex, text)}
           apply(__MODULE__, fun, [msg, state])
@@ -229,15 +234,7 @@ defmodule Hedwig.Responder do
         end
       end
 
-      @doc false
-      def usage(name) do
-        @usage
-        |> Enum.map(&String.strip/1)
-        |> Enum.map(&(String.replace(&1, "hedwig", name)))
-      end
-
-      @doc false
-      def compile_responders(name, aka) do
+      defp compile_responders(name, aka) do
         responders = for {regex, fun} <- @respond do
           regex = Hedwig.Responder.respond_pattern(regex, name, aka)
           {regex, fun}
