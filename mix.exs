@@ -47,10 +47,10 @@ defmodule Hedwig.Mixfile do
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
-  defp elixirc_paths(_), do: ["lib", "responders"]
+  defp elixirc_paths(_), do: ["lib"]
 
   defp package do
-    [files: ["lib", "responders", "priv", "mix.exs", "README*", "readme*", "LICENSE*", "license*"],
+    [files: ["lib", "priv", "mix.exs", "README*", "readme*", "LICENSE*", "license*"],
      maintainers: ["Sonny Scroggin"],
      licenses: ["MIT"],
      links: %{
