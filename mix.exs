@@ -18,6 +18,7 @@ defmodule Hedwig.Mixfile do
      test_coverage: [tool: ExCoveralls],
      preferred_cli_env: [
        "coveralls": :test,
+       "coveralls.html": :test,
        "coveralls.detail": :test,
        "coveralls.post": :test]]
   end
