@@ -308,12 +308,4 @@ defmodule Hedwig.Robot do
   def handle_disconnect(robot, reason, timeout \\ 5000) do
     GenServer.call(robot, {:handle_disconnect, reason}, timeout)
   end
-
-  @doc """
-  Allows a robot to be registered by name.
-  """
-  @spec register(pid, any) :: :ok
-  def register(robot, name) do
-    GenServer.cast(robot, {:register, name})
-  end
 end
