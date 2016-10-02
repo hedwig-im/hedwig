@@ -264,17 +264,6 @@ defmodule Hedwig.Robot do
   end
 
   @doc """
-  Handles invoking installed responders with a `Hedwig.Message`.
-
-  This function should be called by an adapter when a message arrives. A message
-  will be sent to each installed responder.
-  """
-  @spec handle_message(pid, Hedwig.Message.t) :: :ok
-  def handle_message(robot, %Hedwig.Message{} = msg) do
-    GenServer.cast(robot, msg)
-  end
-
-  @doc """
   Invokes a user defined `handle_in/2` function, if defined.
 
   This function should be called by an adapter when a message arrives but
