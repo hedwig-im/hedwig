@@ -14,18 +14,17 @@ See the [online documentation](https://hexdocs.pm/hedwig) for more information.
 Hedwig was designed for 2 use-cases:
 
   1. A single, stand-alone OTP application.
-  2. Included as a dependency of other OTP applications.
+  2. Included as a dependency of other OTP applications (or an umbrella).
 
 You can spawn multiple bots at run-time with different configurations.
 
 ## Adapters
 
-- [XMPP](https://github.com/hedwig-im/hedwig_xmpp)
-- [Slack](https://github.com/hedwig-im/hedwig_slack) (WIP)
-- [Flowdock](https://github.com/supernullset/hedwig_flowdock) (WIP)
+- [XMPP](https://github.com/hedwig-im/hedwig_xmpp) (Official)
+- [Slack](https://github.com/hedwig-im/hedwig_slack) (Official)
+- [Flowdock](https://github.com/supernullset/hedwig_flowdock)
 
-
-Check out [awesome-hedwig](https://github.com/enilsen16/awesome-hedwig) for a curated list of adapters, responders, and other resources.
+Check out [enilsen16/awesome-hedwig](https://github.com/enilsen16/awesome-hedwig) for a curated list of adapters, responders, and other resources.
 
 ## Getting started
 
@@ -34,6 +33,12 @@ great for testing how your bot will respond to the messages it receives.
 
 To add Hedwig to an existing Elixir application, add `:hedwig` to your list of
 dependencies in your `mix.exs` file:
+
+**NOTE**: Hedwig is currently under active development and the APIs may change
+before the final 1.0.0 release. Please see the [CHANGELOG](https://github.com/hedwig-im/hedwig/blob/master/CHANGELOG.md)
+for upgrade instructions.
+
+If you care to live on the edge, feel free to install Hedwig from `master`.
 
 ```elixir
 defp deps do
@@ -51,10 +56,17 @@ def applications do
 end
 ```
 
+Fetch the dependencies:
+
+```
+$ mix deps.get
+```
+
 ## Create a robot module
 
-Run the following mix task and follow the prompts to generate a robot module
-in your application:
+Hedwig provides a convenient mix task to help you generate a basic robot module.
+
+Run the following and follow the prompts:
 
 ```
 $ mix hedwig.gen.robot
@@ -84,6 +96,25 @@ Don't forget to add your new robot to your supervision tree
 ```elixir
 defmodule Alfred.Robot do
   use Hedwig.Robot, otp_app: :alfred
+
+  def handle_connect(%{name: name} = state) do
+    if :undefined == Hedwig.whereis(name) do
+      Hedwig.Registry.register(name)
+    end
+    {:ok, state}
+  end
+
+  def handle_disconnect(_reason, state) do
+    {:reconnect, 5000, state}
+  end
+
+  def handle_in(%Hedwig.Message{} = msg, state) do
+    {:dispatch, msg, state}
+  end
+
+  def handle_in(_msg, state) do
+    {:noreply, state}
+  end
 end
 ```
 
@@ -105,8 +136,7 @@ config :alfred, Alfred.Robot,
   aka: "/",
   responders: [
     {Hedwig.Responders.Help, []},
-    {Hedwig.Responders.GreatSuccess, []},
-    {Hedwig.Responders.ShipIt, []}
+    {Hedwig.Responders.Ping, []}
   ]
 ```
 
@@ -135,8 +165,7 @@ bot will respond based on the current installed responders.
 scrogson> alfred help
 alfred> alfred help <query> - Displays all help commands that match <query>.
 alfred help - Displays all of the help commands that alfred knows about.
-great success - Displays a random Borat image.
-ship it - Display a motivation squirrel
+alfred: ping - Responds with 'pong'
 scrogson>
 ```
 
@@ -204,10 +233,9 @@ msg = %Hedwig.Message{
 Hedwig.Robot.send(pid, msg)
 ```
 
-
 ## Building Responders
 
-Responders are functions that will process incoming messages.
+Responders are processes that will handle incoming messages.
 
 All that's needed is to `use Hedwig.Responder` and use the `hear/2`, or
 `respond/2` macros to define a pattern to listen for and how to respond in
@@ -216,7 +244,7 @@ the block when a message matches.
 Here is an example:
 
 ```elixir
-defmodule Hedwig.Responders.GreatSuccess do
+defmodule MyApp.Responders.GreatSuccess do
   @moduledoc """
   Borat, Great Success!
 
@@ -241,6 +269,13 @@ defmodule Hedwig.Responders.GreatSuccess do
 end
 ```
 
+## Hear vs. Respond
+
+The two responder macros are use for different reasons:
+
+* `hear` - matches messages containing the regular expression
+* `respond` - matches only when prefixed by your robot's configured `name` or `aka` value.
+
 ## Testing responders:
 
 Hedwig ships with a ExUnit-based module sepecifically made to test responders: `Hedwig.RobotCase`.
@@ -249,12 +284,12 @@ In order to test the above responder, you need to create an ExUnit test case:
 
 ```elixir
 
-# test/great_success_test.exs
+# test/my_app/responders/great_success_test.exs
 
-defmodule Hedwig.Responders.GreatSuccessTest do
+defmodule MyApp.Responders.GreatSuccessTest do
   use Hedwig.RobotCase
 
-  @tag start_robot: true, name: "alfred", responders: [{Hedwig.Responders.GreatSuccess, []}]
+  @tag start_robot: true, name: "alfred", responders: [{MyApp.Responders.GreatSuccess, []}]
   test "great success - responds with a borat url", %{adapter: adapter, msg: msg} do
     send adapter, {:message, %{msg | text: "great success"}}
     assert_receive {:message, %{text: text}}
