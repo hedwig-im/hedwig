@@ -105,13 +105,11 @@ defmodule Hedwig.Robot do
         {:reconnect, state}
       end
 
-      def handle_in(msg, state) do
-        case msg do
-          %Hedwig.Message{} ->
-            {:dispatch, msg, state}
-          _ ->
-            {:noreply, state}
-        end
+      def handle_in(%Hedwig.Message{} = msg, state) do
+        {:dispatch, msg, state}
+      end
+      def handle_in(_msg, state) do
+        {:noreply, state}
       end
 
       def handle_call(:name, _from, %{name: name} = state) do
