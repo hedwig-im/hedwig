@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.Ecto.Gen.RepoTest do
+defmodule Mix.Tasks.Hedwig.Gen.RobotTest do
   use ExUnit.Case
 
   import ExUnit.CaptureIO
@@ -12,7 +12,14 @@ defmodule Mix.Tasks.Ecto.Gen.RepoTest do
       assert_file "lib/hedwig/robot.ex", """
       defmodule Hedwig.Robot do
         use Hedwig.Robot, otp_app: :hedwig
-      end
+      """
+
+      assert_file "lib/hedwig/robot.ex", """
+      def handle_connect(%{name: name} = state) do
+      """
+
+      assert_file "lib/hedwig/robot.ex", """
+      def handle_disconnect(_reason, state) do
       """
 
       assert_file "config/config.exs", """
@@ -47,8 +54,7 @@ defmodule Mix.Tasks.Ecto.Gen.RepoTest do
         aka: "/",
         responders: [
           {Hedwig.Responders.Help, []},
-          {Hedwig.Responders.GreatSuccess, []},
-          {Hedwig.Responders.ShipIt, []}
+          {Hedwig.Responders.Ping, []}
         ]
 
       # World

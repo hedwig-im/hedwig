@@ -44,7 +44,7 @@ defmodule Hedwig.Responder do
   """
 
   defmacro __using__(_opts) do
-    quote do
+    quote location: :keep do
       import unquote(__MODULE__)
       import Kernel, except: [send: 2]
 
@@ -56,6 +56,10 @@ defmodule Hedwig.Responder do
     end
   end
 
+  def start_link(module, {aka, name, opts, robot}) do
+    GenServer.start_link(module, {aka, name, opts, robot})
+  end
+
   @doc """
   Sends a message via the underlying adapter.
 
@@ -63,8 +67,8 @@ defmodule Hedwig.Responder do
 
       send msg, "Hello there!"
   """
-  def send(%Hedwig.Message{robot: %{pid: pid}} = msg, text) do
-    Hedwig.Robot.send(pid, %{msg | text: text})
+  def send(%Hedwig.Message{robot: robot} = msg, text) do
+    Hedwig.Robot.send(robot, %{msg | text: text})
   end
 
   @doc """
@@ -74,8 +78,8 @@ defmodule Hedwig.Responder do
 
       reply msg, "Hello there!"
   """
-  def reply(%Hedwig.Message{robot: %{pid: pid}} = msg, text) do
-    Hedwig.Robot.reply(pid, %{msg | text: text})
+  def reply(%Hedwig.Message{robot: robot} = msg, text) do
+    Hedwig.Robot.reply(robot, %{msg | text: text})
   end
 
   @doc """
@@ -85,8 +89,8 @@ defmodule Hedwig.Responder do
 
       emote msg, "goes and hides"
   """
-  def emote(%Hedwig.Message{robot: %{pid: pid}} = msg, text) do
-    Hedwig.Robot.emote(pid, %{msg | text: text})
+  def emote(%Hedwig.Message{robot: robot} = msg, text) do
+    Hedwig.Robot.emote(robot, %{msg | text: text})
   end
 
   @doc """
@@ -102,31 +106,10 @@ defmodule Hedwig.Responder do
   end
 
   @doc false
-  def run(msg, responders) do
-    Enum.map(responders, &run_async(msg, &1))
-  end
-
-  defp run_async(%{text: text} = msg, {regex, mod, fun, opts}) do
-    Task.async(fn ->
-      if Regex.match?(regex, text) do
-        msg = %{msg | matches: find_matches(regex, text)}
-        apply(mod, fun, [msg, opts])
-      else
-        nil
-      end
+  def dispatch(msg, responders) do
+    Enum.map(responders, fn {_, pid, _, _} ->
+      GenServer.cast(pid, {:dispatch, msg})
     end)
-  end
-
-  defp find_matches(regex, text) do
-    case Regex.names(regex) do
-      []  ->
-        matches = Regex.run(regex, text)
-        Enum.reduce(Enum.with_index(matches), %{}, fn {match, index}, acc ->
-          Map.put(acc, index, match)
-        end)
-      _ ->
-        Regex.named_captures(regex, text)
-    end
   end
 
   @doc """
@@ -138,12 +121,12 @@ defmodule Hedwig.Responder do
         # code to handle the message
       end
   """
-  defmacro hear(regex, msg, opts \\ Macro.escape(%{}), do: block) do
+  defmacro hear(regex, msg, state \\ Macro.escape(%{}), do: block) do
     name = unique_name(:hear)
     quote do
       @hear {unquote(regex), unquote(name)}
       @doc false
-      def unquote(name)(unquote(msg), unquote(opts)) do
+      def unquote(name)(unquote(msg), unquote(state)) do
         unquote(block)
       end
     end
@@ -161,12 +144,12 @@ defmodule Hedwig.Responder do
         # code to handle the message
       end
   """
-  defmacro respond(regex, msg, opts \\ Macro.escape(%{}), do: block) do
+  defmacro respond(regex, msg, state \\ Macro.escape(%{}), do: block) do
     name = unique_name(:respond)
     quote do
       @respond {unquote(regex), unquote(name)}
       @doc false
-      def unquote(name)(unquote(msg), unquote(opts)) do
+      def unquote(name)(unquote(msg), unquote(state)) do
         unquote(block)
       end
     end
@@ -177,10 +160,10 @@ defmodule Hedwig.Responder do
   end
 
   @doc false
-  def respond_pattern(pattern, robot) do
+  def respond_pattern(pattern, name, aka) do
     pattern
     |> Regex.source
-    |> rewrite_source(robot.name, robot.aka)
+    |> rewrite_source(name, aka)
     |> Regex.compile!(Regex.opts(pattern))
   end
 
@@ -193,48 +176,71 @@ defmodule Hedwig.Responder do
   end
 
   defmacro __before_compile__(_env) do
-    quote do
+    quote location: :keep do
       @doc false
       def usage(name) do
-        @usage
-        |> Enum.map(&String.strip/1)
-        |> Enum.map(&(String.replace(&1, "hedwig", name)))
+        import String
+        Enum.map(@usage, &(&1 |> strip |> replace("hedwig", name)))
       end
 
-      def __hearers__ do
-        @hear
+      def init({aka, name, opts, robot}) do
+        :ok = GenServer.cast(self(), :compile_responders)
+
+        {:ok, %{
+          aka: aka,
+          name: name,
+          opts: opts,
+          responders: [],
+          robot: robot}}
       end
 
-      def __responders__ do
-        @respond
+      def handle_cast(:compile_responders, %{aka: aka, name: name} = state) do
+        {:noreply, %{state | responders: compile_responders(name, aka)}}
       end
 
-      @doc false
-      def install(robot, opts) do
-        hearers =
-          __hearers__
-          |> Enum.map(&install_hearer(&1, robot, opts))
-          |> Enum.map(&Task.await/1)
-
-        responders =
-          __responders__
-          |> Enum.map(&install_responder(&1, robot, opts))
-          |> Enum.map(&Task.await/1)
-
-        List.flatten([hearers, responders])
+      def handle_cast({:dispatch, msg}, state) do
+        {:noreply, dispatch_responders(msg, state)}
       end
 
-      defp install_hearer({regex, fun}, _robot, opts) do
-        Task.async(fn ->
-          {regex, __MODULE__, fun, Enum.into(opts, %{})}
-        end)
+      defp dispatch_responders(msg, %{responders: responders} = state) do
+        Enum.reduce responders, state, fn responder, new_state ->
+          case dispatch_responder(responder, msg, new_state) do
+            :ok ->
+              new_state
+            {:ok, new_state} ->
+              new_state
+          end
+        end
       end
 
-      defp install_responder({regex, fun}, robot, opts) do
-        Task.async(fn ->
-          regex = Hedwig.Responder.respond_pattern(regex, robot)
-          {regex, __MODULE__, fun, Enum.into(opts, %{})}
-        end)
+      defp dispatch_responder({regex, fun}, %{text: text} = msg, state) do
+        if Regex.match?(regex, text) do
+          msg = %{msg | matches: find_matches(regex, text)}
+          apply(__MODULE__, fun, [msg, state])
+        else
+          :ok
+        end
+      end
+
+      defp find_matches(regex, text) do
+        case Regex.names(regex) do
+          []  ->
+            matches = Regex.run(regex, text)
+            Enum.reduce(Enum.with_index(matches), %{}, fn {match, index}, acc ->
+              Map.put(acc, index, match)
+            end)
+          _ ->
+            Regex.named_captures(regex, text)
+        end
+      end
+
+      defp compile_responders(name, aka) do
+        responders = for {regex, fun} <- @respond do
+          regex = Hedwig.Responder.respond_pattern(regex, name, aka)
+          {regex, fun}
+        end
+
+        List.flatten([@hear, responders])
       end
     end
   end

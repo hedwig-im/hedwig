@@ -8,12 +8,19 @@ defmodule HedwigTest do
 
   @tag start_robot: true, name: "codsworth"
   test "find a robot by name", %{robot: pid} do
-    assert Hedwig.whereis("hedwig") == :undefined
-    assert Hedwig.whereis("codsworth") == pid
+    assert :undefined == :global.whereis_name("hedwig")
+    assert ^pid = :global.whereis_name("codsworth")
   end
+
   @tag start_robot: true
   test "handle_in/2", %{robot: pid} do
     Hedwig.Robot.handle_in(pid, {:ping, self()})
     assert_receive :pong
+  end
+
+  @tag start_robot: true
+  test "stop_robot/1", %{robot: pid} do
+    Hedwig.stop_robot(pid)
+    refute Process.alive?(pid)
   end
 end

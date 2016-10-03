@@ -6,7 +6,7 @@ defmodule Hedwig.Message do
   @type matches :: list | map
   @type private :: map
   @type ref     :: reference
-  @type robot   :: Hedwig.Robot.t
+  @type robot   :: pid
   @type room    :: binary
   @type text    :: binary
   @type type    :: binary

@@ -38,7 +38,7 @@ defmodule Hedwig.Robot do
             aka: nil,
             name: "",
             opts: [],
-            pid: nil,
+            responder_sup: nil,
             responders: []
 
   defmacro __using__(opts) do
@@ -69,55 +69,59 @@ defmodule Hedwig.Robot do
 
       def log(msg) do
         Logger.unquote(@log_level)(fn ->
-          "#{inspect msg}"
+          msg
         end, [])
       end
 
       def __adapter__, do: @adapter
 
       def init({robot, opts}) do
-        opts = Keyword.merge(robot.config, opts)
-        {:ok, adapter} = @adapter.start_link(robot, opts)
-
-        {aka, opts}   = Keyword.pop(opts, :aka)
-        {name, opts}  = Keyword.pop(opts, :name)
-        responders    = Keyword.get(opts, :responders, [])
+        opts = robot.config(opts)
+        aka = Keyword.get(opts, :aka)
+        name = Keyword.get(opts, :name)
+        {responders, opts} = Keyword.pop(opts, :responders, [])
 
         unless responders == [] do
-          GenServer.cast(self, :install_responders)
+          GenServer.cast(self(), {:install_responders, responders})
         end
+
+        {:ok, adapter} = @adapter.start_link(robot, opts)
+        {:ok, responder_sup} = Hedwig.Responder.Supervisor.start_link()
 
         {:ok, %Hedwig.Robot{
           adapter: adapter,
           aka: aka,
           name: name,
           opts: opts,
-          pid: self()}}
+          responder_sup: responder_sup,
+          responders: responders}}
       end
 
       def handle_connect(state) do
-        Logger.warn """
-        #{inspect __MODULE__}.handle_connect/1 default handler invoked.
-        """
         {:ok, state}
       end
 
       def handle_disconnect(_reason, state) do
-        Logger.warn """
-        #{inspect __MODULE__}.handle_disconnect/2 default handler invoked.
-        """
         {:reconnect, state}
       end
 
-      def handle_in(msg, state) do
-        Logger.warn """
-        #{inspect __MODULE__}.handle_in/2 default handler invoked.
-        """
-        {:ok, state}
+      def handle_in(%Hedwig.Message{} = msg, state) do
+        {:dispatch, msg, state}
+      end
+      def handle_in(_msg, state) do
+        {:noreply, state}
+      end
+
+      def handle_call(:name, _from, %{name: name} = state) do
+        {:reply, name, state}
+      end
+
+      def handle_call(:responders, _from, %{responders: responders} = state) do
+        {:reply, responders, state}
       end
 
       def handle_call(:handle_connect, _from, state) do
-        case __MODULE__.handle_connect(state) do
+        case handle_connect(state) do
           {:ok, state} ->
             {:reply, :ok, state}
           {:stop, reason, state} ->
@@ -126,7 +130,7 @@ defmodule Hedwig.Robot do
       end
 
       def handle_call({:handle_disconnect, reason}, _from, state) do
-        case __MODULE__.handle_disconnect(reason, state) do
+        case handle_disconnect(reason, state) do
           {:reconnect, state} ->
             {:reply, :reconnect, state}
           {:reconnect, timer, state} ->
@@ -151,27 +155,36 @@ defmodule Hedwig.Robot do
         {:noreply, state}
       end
 
-      def handle_cast({:register, name}, state) do
-        Hedwig.Registry.register(name)
-        {:noreply, state}
+      def handle_cast({:handle_in, msg}, %{responder_sup: sup} = state) do
+        case handle_in(msg, state) do
+          {:dispatch, %Hedwig.Message{} = msg, state} ->
+            responders = Supervisor.which_children(sup)
+            Hedwig.Responder.dispatch(msg, responders)
+            {:noreply, state}
+
+          {:dispatch, _msg, state} ->
+            log_incorrect_return(:dispatch)
+            {:noreply, state}
+
+          {fun, {%Hedwig.Message{} = msg, text}, state} when fun in [:send, :reply, :emote] ->
+            apply(Hedwig.Responder, fun, [msg, text])
+            {:noreply, state}
+
+          {fun, {_msg, _text}, state} when fun in [:send, :reply, :emote] ->
+            log_incorrect_return(fun)
+            {:noreply, state}
+
+          {:noreply, state} ->
+            {:noreply, state}
+        end
       end
 
-      def handle_cast(%Hedwig.Message{} = msg, %{responders: responders} = state) do
-        Hedwig.Responder.run(%{msg | robot: %{state | responders: []}}, responders)
+      def handle_cast({:install_responders, responders}, %{aka: aka, name: name} = state) do
+        for {module, opts} <- responders do
+          args = [module, {aka, name, opts, self()}]
+          Supervisor.start_child(state.responder_sup, args)
+        end
         {:noreply, state}
-      end
-
-      def handle_cast({:handle_in, msg}, state) do
-        {:ok, state} = __MODULE__.handle_in(msg, state)
-        {:noreply, state}
-      end
-
-      def handle_cast(:install_responders, %{opts: opts} = state) do
-        responders =
-          Enum.reduce opts[:responders], [], fn {mod, opts}, acc ->
-            mod.install(state, opts) ++ acc
-          end
-        {:noreply, %{state | responders: responders}}
       end
 
       def handle_info(msg, state) do
@@ -184,6 +197,12 @@ defmodule Hedwig.Robot do
 
       def code_change(_old, state, _extra) do
         {:ok, state}
+      end
+
+      defp log_incorrect_return(atom) do
+        Logger.warn """
+        #{inspect atom} return value from `handle_in/2` only works with `%Hedwig.Message{}` structs.
+        """
       end
 
       defoverridable [
@@ -224,14 +243,17 @@ defmodule Hedwig.Robot do
   end
 
   @doc """
-  Handles invoking installed responders with a `Hedwig.Message`.
-
-  This function should be called by an adapter when a message arrives. A message
-  will be sent to each installed responder.
+  Get the name of the robot.
   """
-  @spec handle_message(pid, Hedwig.Message.t) :: :ok
-  def handle_message(robot, %Hedwig.Message{} = msg) do
-    GenServer.cast(robot, msg)
+  def name(pid) do
+    GenServer.call(pid, :name)
+  end
+
+  @doc """
+  Get the list of the robot's responders.
+  """
+  def responders(pid) do
+    GenServer.call(pid, :responders)
   end
 
   @doc """
@@ -267,13 +289,5 @@ defmodule Hedwig.Robot do
   @spec handle_disconnect(pid, any, integer) :: :reconnect | {:reconnect, integer} | {:disconnect, any}
   def handle_disconnect(robot, reason, timeout \\ 5000) do
     GenServer.call(robot, {:handle_disconnect, reason}, timeout)
-  end
-
-  @doc """
-  Allows a robot to be registered by name.
-  """
-  @spec register(pid, any) :: :ok
-  def register(robot, name) do
-    GenServer.cast(robot, {:register, name})
   end
 end

@@ -11,3 +11,4 @@ erl_crash.dump
 /mnesia
 /log
 /test/tmp
+/cover

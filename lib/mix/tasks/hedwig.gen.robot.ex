@@ -35,8 +35,8 @@ defmodule Mix.Tasks.Hedwig.Gen.Robot do
 
     {opts, _argv, _} = OptionParser.parse(argv, switches: @switches)
 
-    app   = config[:app]
-    deps  = config[:deps]
+    app = config[:app]
+    deps = config[:deps]
 
     Mix.shell.info [:clear, :home, """
     Welcome to the Hedwig Robot Generator!
@@ -154,6 +154,26 @@ defmodule Mix.Tasks.Hedwig.Gen.Robot do
   embed_template :robot, """
   defmodule <%= inspect @robot %> do
     use Hedwig.Robot, otp_app: <%= inspect @app %>
+
+    def handle_connect(%{name: name} = state) do
+      if :undefined == :global.whereis_name(name) do
+        :yes = :global.register_name(name, self())
+      end
+
+      {:ok, state}
+    end
+
+    def handle_disconnect(_reason, state) do
+      {:reconnect, 5000, state}
+    end
+
+    def handle_in(%Hedwig.Message{} = msg, state) do
+      {:dispatch, msg, state}
+    end
+
+    def handle_in(_msg, state) do
+      {:noreply, state}
+    end
   end
   """
 
@@ -166,8 +186,7 @@ defmodule Mix.Tasks.Hedwig.Gen.Robot do
     aka: <%= inspect @aka %>,
     responders: [
       {Hedwig.Responders.Help, []},
-      {Hedwig.Responders.GreatSuccess, []},
-      {Hedwig.Responders.ShipIt, []}
+      {Hedwig.Responders.Ping, []}
     ]
   """
 end
