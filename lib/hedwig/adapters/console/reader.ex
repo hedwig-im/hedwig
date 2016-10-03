@@ -26,7 +26,7 @@ defmodule Hedwig.Adapters.Console.Reader do
     {:stop, :normal, state}
   end
 
-  def handle_info({ref, msg}, state) when is_reference(ref) do
+  def handle_info({ref, _msg}, state) when is_reference(ref) do
     {:noreply, state}
   end
 
