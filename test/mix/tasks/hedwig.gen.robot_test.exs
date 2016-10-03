@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.Ecto.Gen.RepoTest do
+defmodule Mix.Tasks.Hedwig.Gen.RobotTest do
   use ExUnit.Case
 
   import ExUnit.CaptureIO
@@ -54,8 +54,7 @@ defmodule Mix.Tasks.Ecto.Gen.RepoTest do
         aka: "/",
         responders: [
           {Hedwig.Responders.Help, []},
-          {Hedwig.Responders.GreatSuccess, []},
-          {Hedwig.Responders.ShipIt, []}
+          {Hedwig.Responders.Ping, []}
         ]
 
       # World

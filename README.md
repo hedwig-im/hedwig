@@ -97,24 +97,7 @@ Don't forget to add your new robot to your supervision tree
 defmodule Alfred.Robot do
   use Hedwig.Robot, otp_app: :alfred
 
-  def handle_connect(%{name: name} = state) do
-    if :undefined == Hedwig.whereis(name) do
-      Hedwig.Registry.register(name)
-    end
-    {:ok, state}
-  end
-
-  def handle_disconnect(_reason, state) do
-    {:reconnect, 5000, state}
-  end
-
-  def handle_in(%Hedwig.Message{} = msg, state) do
-    {:dispatch, msg, state}
-  end
-
-  def handle_in(_msg, state) do
-    {:noreply, state}
-  end
+  ...
 end
 ```
 
@@ -182,37 +165,46 @@ scrogson>
 {:ok, pid} = Hedwig.start_robot(Alfred.Robot, [name: "jeeves"])
 ```
 
-### Registering bots by name
+### Registering your robot process
 
-Hedwig allows you to register your bot's process by name, making it easy to
-start, stop, and send messages to your bot without keeping track of the pid.
-
-You can register your robot in the `handle_connect/1` callback in your robot
-module like so:
+If you want to start, stop, and send messages to your bot without keeping track
+of its `pid`, you can register your robot in the `handle_connect/1` callback in
+your robot module like so:
 
 ```elixir
 defmodule Alfred.Robot do
   use Hedwig.Robot, otp_app: :alfred
 
-  def handle_connect(state) do
-    Hedwig.Registry.register(state.name)
-
+  def handle_connect(%{name: name} = state) do
+    if :undefined == :global.whereis_name(name) do
+      :yes = :global.register_name(name, self())
+    end
     {:ok, state}
   end
 end
 ```
 
-#### Finding your robot process by name
+Process registration via `Process.register/2` is simple. However, since the name
+can only be an atom it may not work for all use-cases. If you are using the same
+module for many robots, you'll need to reach for something more flexible like:
+
+* [global](http://erlang.org/doc/man/global.html)
+* [gproc](https://github.com/uwiger/gproc)
+* [swarm](https://github.com/bitwalker/swarm)
+
+#### Finding your robot
 
 ```elixir
+# Start the robot
 Hedwig.start_robot(Alfred.Robot)
 # Get the pid of the robot by name
-pid = Hedwig.whereis("alfred")
-# Stop the robot.
-Hedwig.stop_robot(pid)
+pid = :global.whereis_name("alfred")
 
+# Start a new robot with a different name
 Hedwig.start_robot(Alfred.Robot, [name: "jeeves"])
-pid = Hedwig.whereis("jeeves")
+# Get the pid
+pid = :global.whereis_name("jeeves")
+# Stop the robot
 Hedwig.stop_robot(pid)
 ```
 
@@ -220,7 +212,7 @@ Hedwig.stop_robot(pid)
 
 ```elixir
 # Get the pid of the robot
-pid = Hedwig.whereis("alfred")
+pid = :global.whereis_name("alfred")
 
 # Create a Hedwig message
 msg = %Hedwig.Message{

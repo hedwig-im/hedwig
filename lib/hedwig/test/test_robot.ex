@@ -4,9 +4,10 @@ defmodule Hedwig.TestRobot do
   use Hedwig.Robot, otp_app: :hedwig, adapter: Hedwig.Adapters.Test
 
   def handle_connect(%{name: name} = state) do
-    if :undefined == Hedwig.whereis(name) do
-      Hedwig.Registry.register(name)
+    if :undefined == :global.whereis_name(name) do
+      :yes = :global.register_name(name, self())
     end
+
     {:ok, state}
   end
 

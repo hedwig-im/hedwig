@@ -156,9 +156,10 @@ defmodule Mix.Tasks.Hedwig.Gen.Robot do
     use Hedwig.Robot, otp_app: <%= inspect @app %>
 
     def handle_connect(%{name: name} = state) do
-      if :undefined == Hedwig.whereis(name) do
-        Hedwig.Registry.register(name)
+      if :undefined == :global.whereis_name(name) do
+        :yes = :global.register_name(name, self())
       end
+
       {:ok, state}
     end
 
@@ -185,8 +186,7 @@ defmodule Mix.Tasks.Hedwig.Gen.Robot do
     aka: <%= inspect @aka %>,
     responders: [
       {Hedwig.Responders.Help, []},
-      {Hedwig.Responders.GreatSuccess, []},
-      {Hedwig.Responders.ShipIt, []}
+      {Hedwig.Responders.Ping, []}
     ]
   """
 end

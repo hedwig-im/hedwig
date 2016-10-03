@@ -8,7 +8,6 @@ defmodule Hedwig do
 
   ## Stopping a robot
 
-      pid = Hedwig.whereis("alfred")
       Hedwig.stop_client(pid)
   """
 
@@ -16,7 +15,7 @@ defmodule Hedwig do
 
   @doc false
   def start(_type, _args) do
-    Hedwig.Supervisor.start_link
+    Hedwig.Supervisor.start_link()
   end
 
   @doc """
@@ -38,12 +37,5 @@ defmodule Hedwig do
   """
   def which_robots do
     Supervisor.which_children(Hedwig.Robot.Supervisor)
-  end
-
-  @doc """
-  Find a robot PID by name through the `Hedwig.Registry`.
-  """
-  def whereis(name) do
-    Hedwig.Registry.whereis(name)
   end
 end

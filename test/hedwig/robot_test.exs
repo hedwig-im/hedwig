@@ -14,7 +14,7 @@ defmodule Hedwig.RobotTest do
 
   @tag start_robot: true
   test "handle_connect/1", %{robot: robot} do
-    assert ^robot = Hedwig.whereis("hedwig")
+    assert ^robot = :global.whereis_name("hedwig")
   end
 
   @tag start_robot: true

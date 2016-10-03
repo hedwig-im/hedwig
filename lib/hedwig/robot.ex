@@ -155,11 +155,6 @@ defmodule Hedwig.Robot do
         {:noreply, state}
       end
 
-      def handle_cast({:register, name}, state) do
-        Hedwig.Registry.register(name)
-        {:noreply, state}
-      end
-
       def handle_cast({:handle_in, msg}, %{responder_sup: sup} = state) do
         case handle_in(msg, state) do
           {:dispatch, %Hedwig.Message{} = msg, state} ->

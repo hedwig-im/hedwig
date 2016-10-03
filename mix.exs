@@ -24,7 +24,7 @@ defmodule Hedwig.Mixfile do
   end
 
   def application do
-    [applications: [:crypto, :ssl, :logger, :gproc],
+    [applications: [:logger],
      mod: {Hedwig, []}]
   end
 
@@ -38,12 +38,7 @@ defmodule Hedwig.Mixfile do
   end
 
   defp deps do
-    [{:gproc, "~> 0.5"},
-
-     # Test dependencies
-     {:excoveralls, "~> 0.5", only: :test},
-
-     # Documentation dependencies
+    [{:excoveralls, "~> 0.5", only: :test},
      {:ex_doc, "~> 0.13", only: :dev}]
   end
 
