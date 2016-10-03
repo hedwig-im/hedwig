@@ -161,7 +161,7 @@ defmodule Hedwig.Robot do
       end
 
       def handle_cast({:handle_in, msg}, %{responder_sup: sup} = state) do
-        case __MODULE__.handle_in(msg, state) do
+        case handle_in(msg, state) do
           {:dispatch, %Hedwig.Message{} = msg, state} ->
             responders = Supervisor.which_children(sup)
             Hedwig.Responder.dispatch(msg, responders)
