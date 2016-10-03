@@ -12,7 +12,14 @@ defmodule Mix.Tasks.Ecto.Gen.RepoTest do
       assert_file "lib/hedwig/robot.ex", """
       defmodule Hedwig.Robot do
         use Hedwig.Robot, otp_app: :hedwig
-      end
+      """
+
+      assert_file "lib/hedwig/robot.ex", """
+      def handle_connect(%{name: name} = state) do
+      """
+
+      assert_file "lib/hedwig/robot.ex", """
+      def handle_disconnect(_reason, state) do
       """
 
       assert_file "config/config.exs", """

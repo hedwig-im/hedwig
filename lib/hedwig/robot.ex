@@ -77,12 +77,12 @@ defmodule Hedwig.Robot do
 
       def init({robot, opts}) do
         opts = robot.config(opts)
-        {aka, opts} = Keyword.pop(opts, :aka)
-        {name, opts} = Keyword.pop(opts, :name)
+        aka = Keyword.get(opts, :aka)
+        name = Keyword.get(opts, :name)
         {responders, opts} = Keyword.pop(opts, :responders, [])
 
         unless responders == [] do
-          GenServer.cast(self, :install_responders)
+          GenServer.cast(self(), {:install_responders, responders})
         end
 
         {:ok, adapter} = @adapter.start_link(robot, opts)
@@ -123,7 +123,7 @@ defmodule Hedwig.Robot do
       end
 
       def handle_call(:handle_connect, _from, state) do
-        case __MODULE__.handle_connect(state) do
+        case handle_connect(state) do
           {:ok, state} ->
             {:reply, :ok, state}
           {:stop, reason, state} ->
@@ -132,7 +132,7 @@ defmodule Hedwig.Robot do
       end
 
       def handle_call({:handle_disconnect, reason}, _from, state) do
-        case __MODULE__.handle_disconnect(reason, state) do
+        case handle_disconnect(reason, state) do
           {:reconnect, state} ->
             {:reply, :reconnect, state}
           {:reconnect, timer, state} ->
@@ -186,8 +186,8 @@ defmodule Hedwig.Robot do
         end
       end
 
-      def handle_cast(:install_responders, %{aka: aka, name: name} = state) do
-        for {module, opts} <- state.responders do
+      def handle_cast({:install_responders, responders}, %{aka: aka, name: name} = state) do
+        for {module, opts} <- responders do
           args = [module, {aka, name, opts, self()}]
           Supervisor.start_child(state.responder_sup, args)
         end

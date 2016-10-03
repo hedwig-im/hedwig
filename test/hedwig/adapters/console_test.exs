@@ -1,34 +1,66 @@
 defmodule Hedwig.Adapters.ConsoleTest do
   use ExUnit.Case
 
-  alias ExUnit.CaptureIO
-  alias Hedwig.Adapters.Console.Connection
+  import ExUnit.CaptureIO
+  alias Hedwig.Adapters.Console
 
-  test "console connection processes multiple responses" do
-    output = capture_and_normalize_io(fn ->
-      # run `send_to_adapter` in a new process, pass self() as owner (robot)
-      owner = self()
-      conn = Task.async(fn ->
-        Connection.send_to_adapter("foo", owner, "consoletest", 100)
-      end)
-      # "we" (the robot) should have received the message "foo"
-      assert_receive {:message, "foo"}
-      # let's pretend that two responders matched, sending different replies
-      send(conn.pid, {:reply, %Hedwig.Message{text: "bar"}})
-      send(conn.pid, {:reply, %Hedwig.Message{text: "baaz"}})
-      Task.await(conn)
-    end)
+  test "console handles messages from the connection" do
+    capture_io fn ->
+      {:ok, adapter} = Hedwig.Adapter.start_link(Console, name: "hedwig", user: "testuser")
 
-    # final console output should contain both replies, not necessarily in order
-    assert Enum.sort(output) == ["consoletest> baaz", "consoletest> bar"]
+      # Simulate an incoming message from the connection process
+      msg = {:message, %{"text" => "ping", "user" => "testuser"}}
+      send(adapter, msg)
+      assert_receive {:"$gen_cast", {:handle_in, %Hedwig.Message{text: "ping", user: "testuser"}}}
+    end
   end
 
-  defp capture_and_normalize_io(fun) do
-    CaptureIO.capture_io(fun)
-    |> strip_ansi()
-    |> split_on_eol()
+  describe "sending messages to the connection process" do
+    test "send/2" do
+      capture_io fn ->
+        {:ok, adapter} = Hedwig.Adapter.start_link(Console, name: "hedwig", user: "testuser")
+
+        # replace the adapter's connection pid to the test process
+        replace_connection_pid(adapter)
+
+        msg = %Hedwig.Message{text: "pong", user: "testuser"}
+        Console.send(adapter, msg)
+
+        assert_receive {:reply, ^msg}
+      end
+    end
+
+    test "reply/2 includes the reply user's name" do
+      capture_io fn ->
+        {:ok, adapter} = Hedwig.Adapter.start_link(Console, name: "hedwig", user: "testuser")
+
+        # replace the adapter's connection pid to the test process
+        replace_connection_pid(adapter)
+
+        msg = %Hedwig.Message{text: "pong", user: "testuser"}
+        Console.reply(adapter, msg)
+
+        assert_receive {:reply, %Hedwig.Message{text: "testuser: pong"}}
+      end
+    end
+
+    test "emote/2" do
+      capture_io fn ->
+        {:ok, adapter} = Hedwig.Adapter.start_link(Console, name: "hedwig", user: "testuser")
+
+        # replace the adapter's connection pid to the test process
+        replace_connection_pid(adapter)
+
+        msg = %Hedwig.Message{text: "pong", user: "testuser"}
+        Console.emote(adapter, msg)
+
+        assert_receive {:reply, ^msg}
+      end
+    end
   end
 
-  defp strip_ansi(string), do: Regex.replace(~r/\e\[[^m]+m/, string, "")
-  defp split_on_eol(string), do: String.split(string, "\n", trim: true)
+  def replace_connection_pid(adapter) do
+    test_process = self()
+    :sys.replace_state(adapter, fn state -> %{state | conn: test_process} end)
+  end
 end

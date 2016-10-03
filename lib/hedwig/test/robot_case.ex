@@ -13,8 +13,8 @@ defmodule Hedwig.RobotCase do
 
   setup tags do
     if tags[:start_robot] do
-      robot      = Map.get(tags, :robot, @robot)
-      name       = Map.get(tags, :name, "hedwig")
+      robot = Map.get(tags, :robot, @robot)
+      name = Map.get(tags, :name, "hedwig")
       responders = Map.get(tags, :responders, @default_responders)
 
       config = [name: name, aka: "/", responders: responders]
@@ -25,7 +25,7 @@ defmodule Hedwig.RobotCase do
 
       on_exit fn -> Hedwig.stop_robot(pid) end
 
-      msg = %{text: "", user: "testuser"}
+      msg = %Hedwig.Message{robot: pid, text: "", user: "testuser"}
 
       {:ok, %{robot: pid, adapter: adapter, msg: msg}}
     else
@@ -34,9 +34,9 @@ defmodule Hedwig.RobotCase do
   end
 
   def update_robot_adapter(robot) do
-    current = self
+    test_process = self()
     adapter = :sys.get_state(robot).adapter
-    :sys.replace_state(adapter, fn state -> %{state | conn: current} end)
+    :sys.replace_state(adapter, fn state -> %{state | conn: test_process} end)
 
     adapter
   end

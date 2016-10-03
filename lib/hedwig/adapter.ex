@@ -35,7 +35,7 @@ defmodule Hedwig.Adapter do
       end
 
       @doc false
-      def stop(_robot, pid, timeout) do
+      def stop(pid, timeout \\ 5000) do
         ref = Process.monitor(pid)
         Process.exit(pid, :normal)
         receive do
