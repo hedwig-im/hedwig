@@ -18,6 +18,7 @@ defmodule Hedwig.Adapters.Console do
   @doc false
   def init({robot, opts}) do
     {:ok, conn} = Connection.start(opts)
+    Kernel.send(self(), :connected)
     {:ok, %{conn: conn, opts: opts, robot: robot}}
   end
 
@@ -51,6 +52,11 @@ defmodule Hedwig.Adapters.Console do
 
     Hedwig.Robot.handle_in(robot, msg)
 
+    {:noreply, state}
+  end
+
+  def handle_info(:connected, %{robot: robot} = state) do
+    :ok = Hedwig.Robot.handle_connect(robot)
     {:noreply, state}
   end
 end

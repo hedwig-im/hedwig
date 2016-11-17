@@ -8,6 +8,7 @@ defmodule Hedwig.Adapters.ConsoleTest do
     capture_io fn ->
       {:ok, adapter} = Hedwig.Adapter.start_link(Console, name: "hedwig", user: "testuser")
 
+      handle_connect()
       # Simulate an incoming message from the connection process
       msg = {:message, %{"text" => "ping", "user" => "testuser"}}
       send(adapter, msg)
@@ -20,6 +21,7 @@ defmodule Hedwig.Adapters.ConsoleTest do
       capture_io fn ->
         {:ok, adapter} = Hedwig.Adapter.start_link(Console, name: "hedwig", user: "testuser")
 
+        handle_connect()
         # replace the adapter's connection pid to the test process
         replace_connection_pid(adapter)
 
@@ -34,6 +36,7 @@ defmodule Hedwig.Adapters.ConsoleTest do
       capture_io fn ->
         {:ok, adapter} = Hedwig.Adapter.start_link(Console, name: "hedwig", user: "testuser")
 
+        handle_connect()
         # replace the adapter's connection pid to the test process
         replace_connection_pid(adapter)
 
@@ -48,6 +51,7 @@ defmodule Hedwig.Adapters.ConsoleTest do
       capture_io fn ->
         {:ok, adapter} = Hedwig.Adapter.start_link(Console, name: "hedwig", user: "testuser")
 
+        handle_connect()
         # replace the adapter's connection pid to the test process
         replace_connection_pid(adapter)
 
@@ -59,7 +63,14 @@ defmodule Hedwig.Adapters.ConsoleTest do
     end
   end
 
-  def replace_connection_pid(adapter) do
+  defp handle_connect do
+    receive do
+      {:"$gen_call", from, :handle_connect} ->
+        GenServer.reply(from, :ok)
+    end
+  end
+
+  defp replace_connection_pid(adapter) do
     test_process = self()
     :sys.replace_state(adapter, fn state -> %{state | conn: test_process} end)
   end
