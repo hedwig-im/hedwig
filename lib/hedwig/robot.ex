@@ -260,7 +260,16 @@ defmodule Hedwig.Robot do
   Invokes a user defined `handle_in/2` function, if defined.
 
   This function should be called by an adapter when a message arrives but
-  should be handled by the user.
+  should be handled by the user module.
+
+  Returning `{:dispatch, msg, state}` will dispatch the message
+  to all installed responders.
+
+  Returning `{:send, {msg, text}, state}`, `{:reply, {msg, text}, state}`,
+  or `{:emote, {msg, text}, state}` will send the message directly to the
+  adapter without dispatching to any responders.
+
+  Returning `{:noreply, state}` will ignore the message.
   """
   @spec handle_in(pid, any) :: :ok
   def handle_in(robot, msg) do
@@ -284,7 +293,7 @@ defmodule Hedwig.Robot do
 
   If the user has defined an `handle_disconnect/1` in the robot module, it will be
   called with the robot's state. It is expected that the function return
-  `{:reconnect, state}` or `{:disconnect, reason, state}`.
+  `{:reconnect, state}` `{:reconnect, integer, state}`, or `{:disconnect, reason, state}`.
   """
   @spec handle_disconnect(pid, any, integer) :: :reconnect | {:reconnect, integer} | {:disconnect, any}
   def handle_disconnect(robot, reason, timeout \\ 5000) do
