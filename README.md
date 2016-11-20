@@ -34,15 +34,9 @@ great for testing how your bot will respond to the messages it receives.
 To add Hedwig to an existing Elixir application, add `:hedwig` to your list of
 dependencies in your `mix.exs` file:
 
-**NOTE**: Hedwig is currently under active development and the APIs may change
-before the final 1.0.0 release. Please see the [CHANGELOG](https://github.com/hedwig-im/hedwig/blob/master/CHANGELOG.md)
-for upgrade instructions.
-
-If you care to live on the edge, feel free to install Hedwig from `master`.
-
 ```elixir
 defp deps do
-  [{:hedwig, github: "hedwig-im/hedwig"}]
+  [{:hedwig, "~> 1.0"}]
 end
 ```
 
