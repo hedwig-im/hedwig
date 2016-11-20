@@ -1,5 +1,59 @@
 # Changelog
 
+## v1.0.0 (2016-11-20)
+
+- Improvements
+  - Handle disconnects with `handle_disconnect/2` in the robot module. See docs
+    for details.
+  - Responders are now `GenServer`s.
+
+- Backwards Incompatible Changes
+  - The `user` field on `Hedwig.Message` is now a `Hedwig.User` struct.
+    This should aid in consistency across adapters.
+  - `after_connect/1` is now `handle_connect/1`. See the docs for details.
+  - Adapters should now call `Hedwig.Robot.handle_in/2` rather than `handle_message`
+    for incoming messages. See the docs for details.
+  - `Hedwig.Registry` has been removed. Alternatives are outlined in the README.
+  - `GreatSuccess` and `ShipIt` responders have been moved in the `examples`
+    directory and no longer shipped with Hedwig.
+
+## v1.0.0-rc.4 (2016-04-17)
+
+- Breaking Changes
+  - The `Panzy` responder has been removed. You will need to remove it from your
+    bot's list of responders (if you had previously had it configured).
+  - The `adapter` field has been removed from the `Hedwig.Message` struct.
+  - Robots are now a proper `GenServer`.
+
+Diff: https://github.com/hedwig-im/hedwig/compare/v1.0.0-rc3...v1.0.0-rc.4
+
+## v1.0.0-rc3 (2016-02-04)
+
+Diff: https://github.com/hedwig-im/hedwig/compare/v1.0.0-rc2...v1.0.0-rc3
+
+## v1.0.0-rc2 (2016-02-04)
+
+Diff: https://github.com/hedwig-im/hedwig/compare/v1.0.0-rc1...v1.0.0-rc2
+
+## v1.0.0-rc1 (2016-01-08)
+
+Diff: https://github.com/hedwig-im/hedwig/compare/v1.0.0-rc0...v1.0.0-rc1
+
+## v1.0.0-rc0 (2015-12-19)
+
+Major rewrite and breaking changes. See the diff below for details.
+
+Diff: https://github.com/hedwig-im/hedwig/compare/v0.3.0...v1.0.0-rc0
+
+## v0.3.0 (2015-10-16)
+
+- Improvements
+  - Documentation Improvements
+  - Added `Hedwig.Stanza.presence/2`
+  - Increased timeout in `Hedwig.Conn` to `30_000` ms.
+
+Diff: https://github.com/hedwig-im/hedwig/compare/v0.2.0...v0.3.0
+
 ## v0.2.0 (2015-08-09)
 
 - Improvements
