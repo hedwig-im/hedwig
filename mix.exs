@@ -1,7 +1,7 @@
 defmodule Hedwig.Mixfile do
   use Mix.Project
 
-  @version "1.0.0-rc5"
+  @version "1.0.0"
 
   def project do
     [app: :hedwig,
@@ -30,7 +30,7 @@ defmodule Hedwig.Mixfile do
 
   defp docs do
     [extras: docs_extras(),
-      main: "readme"]
+     main: "readme"]
   end
 
   defp docs_extras do
@@ -39,14 +39,14 @@ defmodule Hedwig.Mixfile do
 
   defp deps do
     [{:excoveralls, "~> 0.5", only: :test},
-     {:ex_doc, "~> 0.13", only: :dev}]
+     {:ex_doc, "~> 0.14", only: :dev}]
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
 
   defp package do
-    [files: ["lib", "priv", "mix.exs", "README*", "readme*", "LICENSE*", "license*"],
+    [files: ["lib", "mix.exs", "README*", "readme*", "LICENSE*", "license*"],
      maintainers: ["Sonny Scroggin"],
      licenses: ["MIT"],
      links: %{
