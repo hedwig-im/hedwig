@@ -2,7 +2,9 @@ defmodule Hedwig.RobotCase do
   use ExUnit.CaseTemplate
 
   @robot Hedwig.TestRobot
-  @default_responders [{Hedwig.Responders.Help, []}, {TestResponder, []}]
+  @default_responders [{Hedwig.Responders.Help, []}, 
+                       {TestResponder, []},
+                       {TestIdentityResponder, []}]
 
   using do
     quote do

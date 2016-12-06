@@ -42,7 +42,11 @@ defmodule Hedwig.Adapters.Console.Writer do
   end
 
   defp handle_result(msg, name) do
-    print prompt(name) ++ [:normal, :default_color, msg.text]
+    from = case msg do
+      %Hedwig.Message{private: %{identity: %{name: bot_name}}} -> bot_name
+      _ -> name
+    end
+    print prompt(from) ++ [:normal, :default_color, msg.text]
   end
 
   defp prompt(name) do

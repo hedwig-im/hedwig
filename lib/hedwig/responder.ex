@@ -45,6 +45,10 @@ defmodule Hedwig.Responder do
 
   defmacro __using__(_opts) do
     quote location: :keep do
+      @bot_name nil
+      @bot_emoji nil
+      @bot_thumbnail nil
+
       import unquote(__MODULE__)
       import Kernel, except: [send: 2]
 
@@ -183,6 +187,8 @@ defmodule Hedwig.Responder do
         Enum.map(@usage, &(&1 |> strip |> replace("hedwig", name)))
       end
 
+      def terminate(_, _), do: nil
+
       def init({aka, name, opts, robot}) do
         :ok = GenServer.cast(self(), :compile_responders)
 
@@ -199,7 +205,25 @@ defmodule Hedwig.Responder do
       end
 
       def handle_cast({:dispatch, msg}, state) do
-        {:noreply, dispatch_responders(msg, state)}
+        result = msg
+        |> mask_identity(state)
+        |> dispatch_responders(state)
+
+        {:noreply, result}
+      end
+
+      @doc false
+      def bot_identity(msg, state) do
+        %{name: @bot_name, emoji: @bot_emoji, thumbnail: @bot_thumbnail}
+      end
+      
+      @doc false
+      defp mask_identity(msg, state) do
+        case bot_identity(msg, state) do
+          %{name: name} = identity when not is_nil(name) 
+            -> Map.merge(msg, %{private: %{ identity: identity}})
+          _ -> msg
+        end
       end
 
       defp dispatch_responders(msg, %{responders: responders} = state) do
@@ -242,6 +266,8 @@ defmodule Hedwig.Responder do
 
         List.flatten([@hear, responders])
       end
+
+      defoverridable [bot_identity: 2]
     end
   end
 end

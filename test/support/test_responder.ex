@@ -1,6 +1,6 @@
 defmodule TestResponder do
   use Hedwig.Responder
-
+  
   @usage """
   (this is a test) - did someone say test?
   """
@@ -34,5 +34,12 @@ defmodule TestResponder do
   """
   hear ~r/randomness/i, msg do
     send msg, random(Enum.to_list(1..1000))
+  end
+
+  @usage """
+  set private data
+  """
+  hear ~r/promote me/i, msg do
+    send %{msg | private: %{rank: "captain"}}, "yessir"
   end
 end
