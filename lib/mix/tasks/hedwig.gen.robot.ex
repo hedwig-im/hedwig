@@ -49,7 +49,7 @@ defmodule Mix.Tasks.Hedwig.Gen.Robot do
     robot   = opts[:robot] || default_robot(app)
     adapter = get_adapter_module(deps)
 
-    underscored = Mix.Utils.underscore(robot)
+    underscored = Macro.underscore(robot)
     file = Path.join("lib", underscored) <> ".ex"
 
     robot = Module.concat([robot])
@@ -79,7 +79,7 @@ defmodule Mix.Tasks.Hedwig.Gen.Robot do
 
   defp default_robot(app) do
     case Application.get_env(app, :app_namespace, app) do
-      ^app -> app |> to_string |> Mix.Utils.camelize
+      ^app -> app |> to_string |> Macro.camelize
       mod  -> mod |> inspect
     end |> Module.concat(Robot)
   end
