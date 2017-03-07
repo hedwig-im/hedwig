@@ -7,8 +7,6 @@ defmodule Hedwig.Adapter do
   `Hedwig.Message` struct and call `Hedwig.Robot.handle_message(robot, msg)`.
   """
 
-  use Behaviour
-
   @doc false
   defmacro __using__(_opts) do
     quote do
@@ -57,7 +55,7 @@ defmodule Hedwig.Adapter do
 
   @doc false
   def start_link(module, opts) do
-    GenServer.start_link(module, {self, opts})
+    GenServer.start_link(module, {self(), opts})
   end
 
   @type robot :: pid
@@ -65,7 +63,7 @@ defmodule Hedwig.Adapter do
   @type opts  :: any
   @type msg   :: Hedwig.Message.t
 
-  defcallback send(pid, msg) :: term
-  defcallback reply(pid, msg) :: term
-  defcallback emote(pid, msg) :: term
+  @callback send(pid, msg) :: term
+  @callback reply(pid, msg) :: term
+  @callback emote(pid, msg) :: term
 end

@@ -45,7 +45,7 @@ defmodule Mix.Tasks.Hedwig.Gen.Robot do
     """]
 
     aka     = opts[:aka]   || "/"
-    name    = opts[:name]  || prompt_for_name
+    name    = opts[:name]  || prompt_for_name()
     robot   = opts[:robot] || default_robot(app)
     adapter = get_adapter_module(deps)
 
@@ -87,7 +87,7 @@ defmodule Mix.Tasks.Hedwig.Gen.Robot do
   defp available_adapters(deps) do
     deps
     |> all_modules
-    |> Kernel.++(hedwig_modules)
+    |> Kernel.++(hedwig_modules())
     |> Enum.uniq
     |> Enum.filter(&implements_adapter?/1)
     |> Enum.with_index
