@@ -12,6 +12,25 @@ defmodule Hedwig.RobotTest do
     assert [{TestResponder, []}] = Hedwig.Robot.responders(robot)
   end
 
+  def collection_fill_opts(opts), do: [{A, opts}, {B, opts}]
+
+  @tag start_robot: true, responders: [{Hedwig.RobotTest, :collection_fill_opts, [foo: "bar"]}]
+  test "collect_responders/1 expands responder list with common options", %{robot: robot} do
+    assert [{A, [foo: "bar"]}, {B, [foo: "bar"]}] = Hedwig.Robot.responders(robot)
+  end
+
+  def collection_empty_opts(_opts), do: [{A, []}, {B, []}]
+
+  @tag start_robot: true, responders: [{Hedwig.RobotTest, :collection_empty_opts, [foo: "bar"]}]
+  test "collect_responders/1 expands responder list", %{robot: robot} do
+    assert [{A, []}, {B, []}] = Hedwig.Robot.responders(robot)
+  end
+
+  @tag start_robot: true, responders: [{TestResponder, []}, {Hedwig.RobotTest, :collection_empty_opts, []}]
+  test "collect_responders/1 includes normal responder definition at start", %{robot: robot} do
+    assert [{TestResponder, []}, {A, []}, {B, []}] = Hedwig.Robot.responders(robot)
+  end
+
   @tag start_robot: true
   test "handle_connect/1", %{robot: robot} do
     assert ^robot = :global.whereis_name("hedwig")

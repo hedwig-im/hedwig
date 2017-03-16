@@ -79,7 +79,8 @@ defmodule Hedwig.Robot do
         opts = robot.config(opts)
         aka = Keyword.get(opts, :aka)
         name = Keyword.get(opts, :name)
-        {responders, opts} = Keyword.pop(opts, :responders, [])
+        {responder_list, opts} = Keyword.pop(opts, :responders, [])
+        responders = collect_responders(responder_list)
 
         unless responders == [] do
           GenServer.cast(self(), {:install_responders, responders})
@@ -197,6 +198,18 @@ defmodule Hedwig.Robot do
 
       def code_change(_old, state, _extra) do
         {:ok, state}
+      end
+
+      def collect_responders([]), do: []
+      def collect_responders([{module, list_fun, opts} | responders])
+          when is_atom(list_fun) do
+        collection = apply(module, list_fun, [opts])
+          |> collect_responders()
+
+        collection ++ collect_responders(responders)
+      end
+      def collect_responders([{module, opts} = responder | responders]) do
+        [responder] ++ collect_responders(responders)
       end
 
       defp log_incorrect_return(atom) do
