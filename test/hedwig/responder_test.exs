@@ -3,6 +3,11 @@ defmodule Hedwig.ResponderTest do
 
   alias Hedwig.Responder
 
+  test "bot_identity" do
+    assert TestResponder.bot_identity(nil, nil) ==
+      %{name: nil, thumbnail: nil, emoji: nil}
+  end
+
   test "respond_pattern" do
     assert Responder.respond_pattern(~r/hey there/i, "alfred", nil) ==
       ~r/^\s*[@]?alfred[:,]?\s*(?:hey there)/i
@@ -31,5 +36,8 @@ defmodule Hedwig.ResponderTest do
     send adapter, {:message, %{msg | text: "randomness"}}
     assert_receive {:message, %{text: text}}
     assert text in 1..1000
+
+    send adapter, {:message, %{msg | text: "promote me"}}
+    assert_receive {:message, %{text: "yessir", private: %{rank: "captain"}}}
   end
 end
