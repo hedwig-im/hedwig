@@ -211,7 +211,7 @@ pid = :global.whereis_name("alfred")
 # Create a Hedwig message
 msg = %Hedwig.Message{
   type: "groupchat",
-  room: "my_room@example.com"
+  room: "my_room@example.com",
   text: "hello world"
 }
 
