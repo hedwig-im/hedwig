@@ -123,9 +123,9 @@ defmodule Mix.Tasks.Hedwig.Gen.Robot do
   end
 
   defp implements_adapter?(module) do
-    case get_in(module.module_info(), [:attributes, :behaviour]) do
+    case get_in(module.module_info(), [:attributes, :hedwig_adapter]) do
       nil  -> false
-      mods -> Hedwig.Adapter in mods
+      [true] -> true
     end
   end
 
@@ -137,7 +137,7 @@ defmodule Mix.Tasks.Hedwig.Gen.Robot do
 
   defp prompt_for_name do
     Mix.shell.prompt("What would you like to name your bot?:")
-    |> String.strip
+    |> String.trim
   end
 
   defp prompt_for_adapter(adapters) do
@@ -153,14 +153,11 @@ defmodule Mix.Tasks.Hedwig.Gen.Robot do
 
   embed_template :robot, """
   defmodule <%= inspect @robot %> do
-    use Hedwig.Robot, otp_app: <%= inspect @app %>
+    use Hedwig.Robot
 
-    def handle_connect(%{name: name} = state) do
-      if :undefined == :global.whereis_name(name) do
-        :yes = :global.register_name(name, self())
-      end
-
-      {:ok, state}
+    def start_link do
+      args = Application.get_env(<%= inspect @app %>, __MODULE__)
+      Hedwig.Robot.start_link(__MODULE__, args, name: __MODULE__)
     end
 
     def handle_disconnect(_reason, state) do
