@@ -11,12 +11,12 @@ defmodule Mix.Tasks.Hedwig.Gen.RobotTest do
 
       assert_file "lib/hedwig/robot.ex", """
       defmodule Hedwig.Robot do
-        use Hedwig.Robot, otp_app: :hedwig
+        use Hedwig.Robot
       """
 
-      assert_file "lib/hedwig/robot.ex", """
-      def handle_connect(%{name: name} = state) do
-      """
+      #assert_file "lib/hedwig/robot.ex", """
+      #def handle_connect(%{name: name} = state) do
+      #"""
 
       assert_file "lib/hedwig/robot.ex", """
       def handle_disconnect(_reason, state) do
