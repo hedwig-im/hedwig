@@ -25,7 +25,7 @@ defmodule Hedwig.Mixfile do
 
   def application do
     [applications: [:logger],
-     mod: {Hedwig, []}]
+     mod: {Hedwig.Application, []}]
   end
 
   defp docs do
