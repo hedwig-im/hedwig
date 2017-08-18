@@ -2,11 +2,12 @@ defmodule Hedwig.Adapters.ConsoleTest do
   use ExUnit.Case
 
   import ExUnit.CaptureIO
+  alias Hedwig.Adapter
   alias Hedwig.Adapters.Console
 
   test "console handles messages from the connection" do
     capture_io fn ->
-      {:ok, adapter} = Hedwig.Adapter.start_link(Console, name: "hedwig", user: "testuser")
+      {:ok, adapter} = Adapter.start_link(Console, name: "hedwig", user: "testuser")
 
       handle_connect()
       # Simulate an incoming message from the connection process
@@ -19,14 +20,14 @@ defmodule Hedwig.Adapters.ConsoleTest do
   describe "sending messages to the connection process" do
     test "send/2" do
       capture_io fn ->
-        {:ok, adapter} = Hedwig.Adapter.start_link(Console, name: "hedwig", user: "testuser")
+        {:ok, adapter} = Adapter.start_link(Console, name: "hedwig", user: "testuser")
 
         handle_connect()
         # replace the adapter's connection pid to the test process
         replace_connection_pid(adapter)
 
         msg = %Hedwig.Message{text: "pong", user: "testuser"}
-        Console.send(adapter, msg)
+        Adapter.send(adapter, msg)
 
         assert_receive {:reply, ^msg}
       end
@@ -34,14 +35,14 @@ defmodule Hedwig.Adapters.ConsoleTest do
 
     test "reply/2 includes the reply user's name" do
       capture_io fn ->
-        {:ok, adapter} = Hedwig.Adapter.start_link(Console, name: "hedwig", user: "testuser")
+        {:ok, adapter} = Adapter.start_link(Console, name: "hedwig", user: "testuser")
 
         handle_connect()
         # replace the adapter's connection pid to the test process
         replace_connection_pid(adapter)
 
         msg = %Hedwig.Message{text: "pong", user: "testuser"}
-        Console.reply(adapter, msg)
+        Adapter.reply(adapter, msg)
 
         assert_receive {:reply, %Hedwig.Message{text: "testuser: pong"}}
       end
@@ -49,14 +50,14 @@ defmodule Hedwig.Adapters.ConsoleTest do
 
     test "emote/2" do
       capture_io fn ->
-        {:ok, adapter} = Hedwig.Adapter.start_link(Console, name: "hedwig", user: "testuser")
+        {:ok, adapter} = Adapter.start_link(Console, name: "hedwig", user: "testuser")
 
         handle_connect()
         # replace the adapter's connection pid to the test process
         replace_connection_pid(adapter)
 
         msg = %Hedwig.Message{text: "pong", user: "testuser"}
-        Console.emote(adapter, msg)
+        Adapter.emote(adapter, msg)
 
         assert_receive {:reply, ^msg}
       end

@@ -2,30 +2,25 @@ defmodule Hedwig.Adapter do
   @moduledoc """
   Hedwig Adapter Behaviour
 
-  An adapter is the interface to the service your bot runs on. To implement an
+  An adapter is the interface to the service a bot runs on. To implement an
   adapter you will need to translate messages from the service to the
-  `Hedwig.Message` struct and call `Hedwig.Robot.handle_message(robot, msg)`.
+  `Hedwig.Message` struct and call `Hedwig.Robot.handle_in(robot, msg)`.
   """
+
+  @type robot :: pid
+  @type state :: term
+  @type opts  :: any
+  @type msg   :: Hedwig.Message.t
 
   @doc false
   defmacro __using__(_opts) do
     quote do
-      import Kernel, except: [send: 2]
-
-      @behaviour Hedwig.Adapter
       use GenServer
 
-      def send(pid, %Hedwig.Message{} = msg) do
-        GenServer.cast(pid, {:send, msg})
-      end
+      import Kernel, except: [send: 2]
 
-      def reply(pid, %Hedwig.Message{} = msg) do
-        GenServer.cast(pid, {:reply, msg})
-      end
-
-      def emote(pid, %Hedwig.Message{} = msg) do
-        GenServer.cast(pid, {:emote, msg})
-      end
+      Module.register_attribute(__MODULE__, :hedwig_adapter, persist: true)
+      Module.put_attribute(__MODULE__, :hedwig_adapter, true)
 
       @doc false
       def start_link(robot, opts) do
@@ -43,13 +38,6 @@ defmodule Hedwig.Adapter do
         end
         :ok
       end
-
-      @doc false
-      defmacro __before_compile__(_env) do
-        :ok
-      end
-
-      defoverridable [__before_compile__: 1, send: 2, reply: 2, emote: 2]
     end
   end
 
@@ -58,12 +46,18 @@ defmodule Hedwig.Adapter do
     GenServer.start_link(module, {self(), opts})
   end
 
-  @type robot :: pid
-  @type state :: term
-  @type opts  :: any
-  @type msg   :: Hedwig.Message.t
+  @doc false
+  def send(pid, %Hedwig.Message{} = msg) do
+    GenServer.cast(pid, {:send, msg})
+  end
 
-  @callback send(pid, msg) :: term
-  @callback reply(pid, msg) :: term
-  @callback emote(pid, msg) :: term
+  @doc false
+  def reply(pid, %Hedwig.Message{} = msg) do
+    GenServer.cast(pid, {:reply, msg})
+  end
+
+  @doc false
+  def emote(pid, %Hedwig.Message{} = msg) do
+    GenServer.cast(pid, {:emote, msg})
+  end
 end
