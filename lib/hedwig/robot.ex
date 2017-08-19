@@ -493,7 +493,7 @@ defmodule Hedwig.Robot do
       :error, reason ->
         init_stop(starter, name, {reason, System.stacktrace()})
       :throw, value ->
-        reason = {{:notcatch, value}, System.stacktrace()}
+        reason = {{:nocatch, value}, System.stacktrace()}
         init_stop(starter, name, reason)
     else
       {:ok, mod_state} ->
