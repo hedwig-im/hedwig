@@ -180,7 +180,7 @@ defmodule Hedwig.Responder do
       @doc false
       def usage(name) do
         import String
-        Enum.map(@usage, &(&1 |> strip |> replace("hedwig", name)))
+        Enum.map(@usage, &(&1 |> trim |> replace("hedwig", name)))
       end
 
       def init({aka, name, opts, robot}) do
