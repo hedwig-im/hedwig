@@ -137,7 +137,7 @@ defmodule Mix.Tasks.Hedwig.Gen.Robot do
 
   defp prompt_for_name do
     Mix.shell.prompt("What would you like to name your bot?:")
-    |> String.strip
+    |> String.trim
   end
 
   defp prompt_for_adapter(adapters) do
