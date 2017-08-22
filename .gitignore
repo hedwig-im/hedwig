@@ -12,4 +12,3 @@ erl_crash.dump
 /log
 /test/tmp
 /cover
-*.DS_Store
