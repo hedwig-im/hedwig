@@ -1,13 +1,17 @@
-Code.ensure_compiled(Hedwig.Adapters.Test)
-
 defmodule Hedwig.TestRobot do
-  use Hedwig.Robot, otp_app: :hedwig, adapter: Hedwig.Adapters.Test
+  use Hedwig.Robot,
+    otp_app: :hedwig,
+    adapter: Hedwig.Adapters.Test
 
-  def handle_connect(%{name: name} = state) do
-    if :undefined == :global.whereis_name(name) do
-      :yes = :global.register_name(name, self())
-    end
+  def start_link(args) do
+    Hedwig.Robot.start_link(__MODULE__, args, name: {:global, args[:name]})
+  end
 
+  def init(_, config) do
+    {:ok, config}
+  end
+
+  def handle_connect(state) do
     {:ok, state}
   end
 
