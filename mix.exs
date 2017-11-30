@@ -39,7 +39,9 @@ defmodule Hedwig.Mixfile do
 
   defp deps do
     [{:excoveralls, "~> 0.7.2", only: :test},
-     {:ex_doc, "~> 0.16.3", only: :dev}]
+     {:ex_doc, "~> 0.16.3", only: :dev},
+     {:credo, "~> 0.8", only: [:dev, :test], runtime: false}
+    ]
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]

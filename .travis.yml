@@ -18,3 +18,4 @@ matrix:
 sudo: false
 after_script:
   - MIX_ENV=test mix coveralls.travis
+  - mix credo
