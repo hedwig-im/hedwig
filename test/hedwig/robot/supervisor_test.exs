@@ -1,4 +1,4 @@
-defmodule Hedwig.ConfigTest do
+defmodule Hedwig.Robot.SupervisorTest do
   use ExUnit.Case
 
   test "missing otp config" do
