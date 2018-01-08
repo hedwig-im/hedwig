@@ -1,6 +1,7 @@
 defmodule Hedwig.RobotCase do
   use ExUnit.CaseTemplate
 
+  @moduledoc false
   @robot Hedwig.TestRobot
   @default_responders [{Hedwig.Responders.Help, []}, {TestResponder, []}]
 

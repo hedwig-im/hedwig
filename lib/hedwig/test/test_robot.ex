@@ -3,6 +3,8 @@ Code.ensure_compiled(Hedwig.Adapters.Test)
 defmodule Hedwig.TestRobot do
   use Hedwig.Robot, otp_app: :hedwig, adapter: Hedwig.Adapters.Test
 
+  @moduledoc false
+
   def handle_connect(%{name: name} = state) do
     if :undefined == :global.whereis_name(name) do
       :yes = :global.register_name(name, self())
