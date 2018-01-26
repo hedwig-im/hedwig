@@ -9,12 +9,14 @@ matrix:
       elixir: 1.4
     - otp_release: 19.3
       elixir: 1.4
-    - otp_release: 20.0
+    - otp_release: 20.2
       elixir: 1.4
     - otp_release: 19.3
       elixir: 1.5
-    - otp_release: 20.0
+    - otp_release: 20.2
       elixir: 1.5
+    - otp_release: 20.2
+      elixir: 1.6
 sudo: false
 after_script:
   - MIX_ENV=test mix coveralls.travis
