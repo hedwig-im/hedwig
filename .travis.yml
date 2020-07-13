@@ -23,6 +23,12 @@ matrix:
       elixir: 1.7
     - otp_release: 22.0
       elixir: 1.7
+    - otp_release: 20.0
+      elixir: 1.8
+    - otp_release: 21.0
+      elixir: 1.8
+    - otp_release: 22.0
+      elixir: 1.8
 sudo: false
 after_script:
   - MIX_ENV=test mix coveralls.travis
