@@ -1,17 +1,20 @@
 defmodule Hedwig.Mixfile do
   use Mix.Project
 
-  @version "1.0.0"
+  @version "1.0.1"
 
   def project do
-    [app: :hedwig,
-     version: @version,
-     elixir: "~> 1.2",
-     docs: docs(),
+    [app: :hedwig, :hedwig_telegram,
+     version: 1.0.1,
+     elixir: "~> 1.9",
+     build_embedded: Mix.env() == :prod,
+     start_permanent: Mix.env() == :prod,docs: docs(),
      deps: deps(),
+     docs: docs(),
      package: package(),
      name: "Hedwig",
      elixirc_paths: elixirc_paths(Mix.env),
+     do: ["lib","Mix.env", "test/support" ]
      description: "An adapter-based chat bot framework",
      source_url: "https://github.com/hedwig-im/hedwig",
      homepage_url: "https://github.com/hedwig-im/hedwig",
@@ -38,20 +41,24 @@ defmodule Hedwig.Mixfile do
   end
 
   defp deps do
-    [{:excoveralls, "~> 0.5", only: :test},
-     {:ex_doc, "~> 0.14", only: :dev}]
+    [{:excoveralls, "~> 0.7.2", only: :test},
+     {:ex_doc, "~> 0.16.3", only: :dev},
+     {:credo, "~> 0.8", only: [:dev, :test], runtime: false}
+     {:hedwig, "~> 1.0"},
+     {:httpoison, "~> 0.10"},
+     {:ex_doc, "~> 0.19", only: :dev},
+     {:plug, "~> 1.2", optional: true},
+     {:plug_cowboy, "~> 1.0"},      {:poison, "~> 3.0"}]
   end
-
-  defp elixirc_paths(:test), do: ["lib", "test/support"]
-  defp elixirc_paths(_), do: ["lib"]
 
   defp package do
     [files: ["lib", "mix.exs", "README*", "LICENSE*"],
      maintainers: ["Sonny Scroggin"],
      licenses: ["MIT"],
      links: %{
-       "GitHub" => "https://github.com/hedwig-im/hedwig",
-       "Docs" => "https://hexdocs.pm/hedwig"
+     "GitHub" => "https://github.com/hedwig-im/hedwig"
+     "GitHub" => "https://github.com/fusillicode/hedwig_telegram
+     "Docs" => "https://hexdocs.pm/hedwig
      }]
   end
 end

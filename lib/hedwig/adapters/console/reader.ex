@@ -31,7 +31,7 @@ defmodule Hedwig.Adapters.Console.Reader do
   end
 
   def handle_info(text, {owner, user}) when is_binary(text) do
-    Kernel.send(owner, {:message, String.strip(text)})
+    Kernel.send(owner, {:message, String.trim(text)})
     Process.sleep(200)
     GenServer.cast(self(), :get_io)
 

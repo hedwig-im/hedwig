@@ -45,11 +45,11 @@ defmodule Mix.Tasks.Hedwig.Gen.Robot do
     """]
 
     aka     = opts[:aka]   || "/"
-    name    = opts[:name]  || prompt_for_name
+    name    = opts[:name]  || prompt_for_name()
     robot   = opts[:robot] || default_robot(app)
     adapter = get_adapter_module(deps)
 
-    underscored = Mix.Utils.underscore(robot)
+    underscored = Macro.underscore(robot)
     file = Path.join("lib", underscored) <> ".ex"
 
     robot = Module.concat([robot])
@@ -78,16 +78,22 @@ defmodule Mix.Tasks.Hedwig.Gen.Robot do
   end
 
   defp default_robot(app) do
+    app
+    |> alias_module
+    |> Module.concat(Robot)
+  end
+
+  defp alias_module(app) do
     case Application.get_env(app, :app_namespace, app) do
-      ^app -> app |> to_string |> Mix.Utils.camelize
+      ^app -> app |> to_string |> Macro.camelize
       mod  -> mod |> inspect
-    end |> Module.concat(Robot)
+    end
   end
 
   defp available_adapters(deps) do
     deps
     |> all_modules
-    |> Kernel.++(hedwig_modules)
+    |> Kernel.++(hedwig_modules())
     |> Enum.uniq
     |> Enum.filter(&implements_adapter?/1)
     |> Enum.with_index
@@ -136,8 +142,9 @@ defmodule Mix.Tasks.Hedwig.Gen.Robot do
   end
 
   defp prompt_for_name do
-    Mix.shell.prompt("What would you like to name your bot?:")
-    |> String.strip
+    "What would you like to name your bot?:"
+    |> Mix.shell.prompt
+    |> String.trim
   end
 
   defp prompt_for_adapter(adapters) do

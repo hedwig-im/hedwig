@@ -41,8 +41,9 @@ defmodule Hedwig.Adapters.Console.Connection do
   end
 
   defp get_system_user do
-    System.cmd("whoami", [])
+    "whoami"
+    |> System.cmd([])
     |> elem(0)
-    |> String.strip()
+    |> String.trim()
   end
 end

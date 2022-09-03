@@ -4,7 +4,7 @@ defmodule Hedwig.Adapters.Test do
   use Hedwig.Adapter
 
   def init({robot, opts}) do
-    GenServer.cast(self, :after_init)
+    GenServer.cast(self(), :after_init)
     {:ok, %{conn: nil, opts: opts, robot: robot}}
   end
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.1 (2018-01-26)
+
+- Clean up warnings
+
 ## v1.0.0 (2016-11-20)
 
 - Improvements
